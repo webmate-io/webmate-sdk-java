@@ -14,9 +14,17 @@ This SDK pre-release gives access to a small subset of the features available in
 
 ## Using the SDK in your Project
 
-We are working on the first official release of the webmate Java SDK. This first release will also
-be distributed via Maven Central. To use the current pre release, simply clone this repository and
-install the compiled artifacts to your local Maven repository by executing
+This is the first official release of the webmate Java SDK. This release is also
+distributed via Maven Central. Just include the following dependency to your Maven pom.xml (or another Maven based build tool):
+
+```xml
+    <groupId>com.testfabrik.webmate.sdk</groupId>
+    <artifactId>java-sdk</artifactId>
+    <version>0.12</version>
+```
+
+To build the SDK from its sources, simply clone this repository and
+install the compiled artifacts to your local Maven repository with
 
 ```bash
 $ mvn install
