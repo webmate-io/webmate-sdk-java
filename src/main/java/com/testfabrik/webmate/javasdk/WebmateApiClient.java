@@ -37,8 +37,24 @@ public class WebmateApiClient {
     private HttpClient httpClient;
     private WebmateEnvironment environment;
 
+    /**
+     * Constructor for WebmateAPIClient. Uses default HTTP connection strategy.
+     * @param authInfo webmate authentication information
+     * @param environment webmate environment to be used.
+     */
     public WebmateApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
-        this.httpClient = makeHttpClient(authInfo, environment);
+        this(authInfo, environment, HttpClientBuilder.create());
+    }
+
+    /**
+     * Constructor for WebmateAPIClient that takes an additional client builder if the user needs more
+     * influence over the HTTP connection.
+     * @param authInfo webmate authentication information
+     * @param environment webmate environment to be used.
+     * @param httpClientBuilder client builder used to create HTTP connections
+     */
+    public WebmateApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
+        this.httpClient = makeHttpClient(authInfo, environment, httpClientBuilder);
         this.environment = environment;
     }
 
@@ -49,10 +65,9 @@ public class WebmateApiClient {
      * @param environment API endpoint address
      * @return new HttpClient to be used by Service clients.
      */
-    private static HttpClient makeHttpClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
-        HttpClientBuilder builder = HttpClientBuilder.create();
+    private static HttpClient makeHttpClient(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
 
-        builder.setUserAgent(WEBMATE_JAVASDK_USERAGENT);
+        httpClientBuilder.setUserAgent(WEBMATE_JAVASDK_USERAGENT);
 
         List<Header> headers = new ArrayList<>();
 
@@ -60,10 +75,8 @@ public class WebmateApiClient {
         headers.add(new BasicHeader(WEBMATE_APITOKEN_HEADERKEY, authInfo.apiKey));
         headers.add(new BasicHeader("Content-Type", "application/json"));
 
-        builder.setDefaultHeaders(headers);
-
-
-        return builder.build();
+        httpClientBuilder.setDefaultHeaders(headers);
+        return httpClientBuilder.build();
     }
 
     private void checkErrors(HttpResponse httpResponse) {
