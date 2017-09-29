@@ -31,6 +31,7 @@ public class JobEngine {
          *
          * @param projectId ProjectId of Project where Job should be started in.
          * @param jobConfigName  Name of new JobConfig.
+         * @param nameForJobInstance Name describing the current Job.
          * @param inputValues Input values for Job.
          * @return Id of new Job.
          */
@@ -112,8 +113,10 @@ public class JobEngine {
      * Create a new webmate Job and directly start a new JobRun for this Job.
      *
      * @param jobConfigName  Name of new JobConfig.
+     * @param nameForJobInstance Name describing JobRun.
      * @param inputValues Input values for Job.
      * @param projectId ProjectId of Project where Job should be started in.
+     * @return Id of new JobRun
      */
     public JobRunId startJob(JobConfigName jobConfigName, String nameForJobInstance, Map<PortName, BrickValue> inputValues, ProjectId projectId) {
 
@@ -138,6 +141,14 @@ public class JobEngine {
         return Optional.absent();
     }
 
+    /**
+     * Create a new webmate Job and directly start a new JobRun for this Job.
+     *
+     * @param nameForJobInstance Name describing JobRun.
+     * @param config Configuration of one of webmate well-known Jobs, e.g. CrossbrowserLayoutAnalysis.
+     * @param projectId ProjectId of Project where Job should be started in.
+     * @return Id of new JobRun
+     */
     public JobRunId startJob(String nameForJobInstance, WellKnownJobInput config, ProjectId projectId) {
         JobConfigName configName = config.getName();
         Map<PortName, BrickValue> inputValues = config.makeInputValues();
@@ -153,6 +164,8 @@ public class JobEngine {
 
     /**
      * Return list of JobRunIds for the given JobId.
+     * @param jobId Id of Job, for which JobRuns should be retrieved.
+     * @return List of JobRun ids
      */
     public List<JobRunId> getJobRunsForJob(JobId jobId) {
         return this.apiClient.getJobRunsForJob(jobId);

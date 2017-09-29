@@ -56,6 +56,7 @@ public class BrowserSessionClient {
 
     /**
      * Create a new State for the given BrowserSession.
+     * @param browserSessionId BrowserSession, in which the state should be extracted.
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      */
     public void createState(BrowserSessionId browserSessionId, String matchingId) {
