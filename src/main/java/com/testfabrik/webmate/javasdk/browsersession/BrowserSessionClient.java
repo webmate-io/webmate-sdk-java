@@ -6,6 +6,7 @@ import com.testfabrik.webmate.javasdk.WebmateAPISession;
 import com.testfabrik.webmate.javasdk.WebmateApiClient;
 import com.testfabrik.webmate.javasdk.WebmateAuthInfo;
 import com.testfabrik.webmate.javasdk.WebmateEnvironment;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,8 @@ public class BrowserSessionClient {
             super(authInfo, environment);
         }
 
+        public BrowserSessionApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment,  HttpClientBuilder httpClientBuilder) {super (authInfo, environment, httpClientBuilder); }
+
         public void createState(BrowserSessionId browserSessionId, String matchingId) {
             Map<String, String>  params = ImmutableMap.of("matchingId", matchingId);
             ObjectMapper mapper = new ObjectMapper();
@@ -43,6 +46,13 @@ public class BrowserSessionClient {
         this.session = session;
         this.apiClient = new BrowserSessionApiClient(session.authInfo, session.environment);
     }
+
+    public BrowserSessionClient(WebmateAPISession session,  HttpClientBuilder httpClientBuilder) {
+        this.session = session;
+        this.apiClient = new BrowserSessionApiClient(session.authInfo, session.environment, httpClientBuilder);
+    }
+
+
 
     /**
      * Return the webmate BrowserSessionId for a given Selenium session running in webmate.
