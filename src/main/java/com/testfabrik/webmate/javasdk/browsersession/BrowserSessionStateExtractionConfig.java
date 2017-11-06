@@ -14,9 +14,9 @@ public class BrowserSessionStateExtractionConfig {
     private BrowserSessionStateId stateId;
     private Integer extractionDelay;
     private Integer extractionCooldown;
-    private Dimension ViewportDimension;
+    private Dimension optViewportDimension;
     private Integer maxAdditionWaitingTimeForStateExtraction;
-    private Boolean extractDom;
+    private Boolean extractDomStateData;
     private BrowserSessionScreenshotExtractionConfig screenShotConfig;
     private BrowserSessionWarmUpConfig warmUpConfig;
 
@@ -25,20 +25,20 @@ public class BrowserSessionStateExtractionConfig {
      * @param stateId The Session Id the state should belong to.
      * @param extractionDelay The delay before state extraction is triggered.
      * @param extractionCooldown The delay after state extraction is finished.
-     * @param viewportDimension The dimensions the viewport should be resized to.
+     * @param optViewportDimension The dimensions the viewport should be resized to.
      * @param maxAdditionWaitingTimeForStateExtraction How much additional time the state extraction should get, after the projected end time is reached.
-     * @param extractDom wether DOM data should be extracted or not.
+     * @param extractDomStateData wether DOM data should be extracted or not.
      * @param screenShotConfig The configuration for the screenshot extraction. If set to null, the default behaviour is chosen (Take no screenshot)
      * @param warmUpConfig The configuration for the warmup. If set to null, the default behaviour is chosen (Do not warm up)
      */
 
-    public BrowserSessionStateExtractionConfig(BrowserSessionStateId stateId, Integer extractionDelay, Integer extractionCooldown, Dimension viewportDimension, Integer maxAdditionWaitingTimeForStateExtraction, Boolean extractDom, BrowserSessionScreenshotExtractionConfig screenShotConfig, BrowserSessionWarmUpConfig warmUpConfig) {
+    public BrowserSessionStateExtractionConfig(BrowserSessionStateId stateId, Integer extractionDelay, Integer extractionCooldown, Dimension optViewportDimension, Integer maxAdditionWaitingTimeForStateExtraction, Boolean extractDomStateData, BrowserSessionScreenshotExtractionConfig screenShotConfig, BrowserSessionWarmUpConfig warmUpConfig) {
         this.stateId = stateId;
         this.extractionDelay = extractionDelay;
         this.extractionCooldown = extractionCooldown;
-        ViewportDimension = viewportDimension;
+        this.optViewportDimension = optViewportDimension;
         this.maxAdditionWaitingTimeForStateExtraction = maxAdditionWaitingTimeForStateExtraction;
-        this.extractDom = extractDom;
+        this.extractDomStateData = extractDomStateData;
         this.screenShotConfig = screenShotConfig;
         this.warmUpConfig = warmUpConfig;
     }
@@ -51,9 +51,9 @@ public class BrowserSessionStateExtractionConfig {
         this.stateId = null;
         this.extractionDelay = null;
         this.extractionCooldown = null;
-        ViewportDimension = null;
+        optViewportDimension = null;
         this.maxAdditionWaitingTimeForStateExtraction = null;
-        this.extractDom = null;
+        this.extractDomStateData = null;
         this.screenShotConfig = null;
         this.warmUpConfig = null;
     }
@@ -82,12 +82,12 @@ public class BrowserSessionStateExtractionConfig {
         this.extractionCooldown = extractionCooldown;
     }
 
-    public Dimension getViewportDimension() {
-        return ViewportDimension;
+    public Dimension getOptViewportDimension() {
+        return optViewportDimension;
     }
 
-    public void setViewportDimension(Dimension viewportDimension) {
-        ViewportDimension = viewportDimension;
+    public void setOptViewportDimension(Dimension optViewportDimension) {
+        this.optViewportDimension = optViewportDimension;
     }
 
     public Integer getMaxAdditionWaitingTimeForStateExtraction() {
@@ -98,8 +98,8 @@ public class BrowserSessionStateExtractionConfig {
         this.maxAdditionWaitingTimeForStateExtraction = maxAdditionWaitingTimeForStateExtraction;
     }
 
-    public Boolean isExtractDom() {
-        return extractDom;
+    public Boolean isExtractDomStateData() {
+        return extractDomStateData;
     }
 
     @Override
@@ -112,9 +112,9 @@ public class BrowserSessionStateExtractionConfig {
         if (extractionDelay != that.extractionDelay) return false;
         if (extractionCooldown != that.extractionCooldown) return false;
         if (maxAdditionWaitingTimeForStateExtraction != that.maxAdditionWaitingTimeForStateExtraction) return false;
-        if (extractDom != that.extractDom) return false;
+        if (extractDomStateData != that.extractDomStateData) return false;
         if (stateId != null ? !stateId.equals(that.stateId) : that.stateId != null) return false;
-        if (ViewportDimension != null ? !ViewportDimension.equals(that.ViewportDimension) : that.ViewportDimension != null) return false;
+        if (optViewportDimension != null ? !optViewportDimension.equals(that.optViewportDimension) : that.optViewportDimension != null) return false;
         if (screenShotConfig != null ? !screenShotConfig.equals(that.screenShotConfig) : that.screenShotConfig != null) return false;
         return warmUpConfig != null ? warmUpConfig.equals(that.warmUpConfig) : that.warmUpConfig == null;
     }
@@ -124,17 +124,17 @@ public class BrowserSessionStateExtractionConfig {
         Integer result = stateId != null ? stateId.hashCode() : 0;
         result = 31 * result + extractionDelay;
         result = 31 * result + extractionCooldown;
-        result = 31 * result + (ViewportDimension != null ? ViewportDimension.hashCode() : 0);
+        result = 31 * result + (optViewportDimension != null ? optViewportDimension.hashCode() : 0);
         result = 31 * result + maxAdditionWaitingTimeForStateExtraction;
-        result = 31 * result + (extractDom ? 1 : 0);
+        result = 31 * result + (extractDomStateData ? 1 : 0);
         result = 31 * result + (screenShotConfig != null ? screenShotConfig.hashCode() : 0);
         result = 31 * result + (warmUpConfig != null ? warmUpConfig.hashCode() : 0);
         return result;
     }
 
-    public void setExtractDom(Boolean extractDom) {
+    public void setExtractDomStateData(Boolean extractDomStateData) {
 
-        this.extractDom = extractDom;
+        this.extractDomStateData = extractDomStateData;
     }
 
     public BrowserSessionScreenshotExtractionConfig getScreenShotConfig() {

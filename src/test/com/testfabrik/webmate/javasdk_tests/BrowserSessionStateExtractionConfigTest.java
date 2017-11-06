@@ -18,8 +18,8 @@ import static junit.framework.Assert.assertEquals;
 
 @RunWith(JUnit4.class)
 public class BrowserSessionStateExtractionConfigTest {
-    String serializationStringNonNull = "{\"stateId\":\"7dfaca76-9a99-4770-ad29-3731de31f241\",\"extractionDelay\":1,\"extractionCooldown\":2,\"maxAdditionWaitingTimeForStateExtraction\":5,\"extractDom\":true,\"screenShotConfig\":{\"fullPage\":false},\"warmUpConfig\":{\"pageWarmUpScrollBy\":42,\"pageWarmUpScrollDelay\":2,\"pageWarmUpMaxScrolls\":5458},\"viewportDimension\":{\"width\":600,\"height\":800}}";
-    String serializationStringWithoutWarmUp = "{\"stateId\":\"7dfaca76-9a99-4770-ad29-3731de31f241\",\"extractionDelay\":1,\"extractionCooldown\":2,\"maxAdditionWaitingTimeForStateExtraction\":5,\"extractDom\":true,\"screenShotConfig\":{\"fullPage\":false},\"viewportDimension\":{\"width\":600,\"height\":800}}";
+    String serializationStringNonNull = "{\"stateId\":\"7dfaca76-9a99-4770-ad29-3731de31f241\",\"extractionDelay\":1,\"extractionCooldown\":2,\"optViewportDimension\":{\"width\":600,\"height\":800},\"maxAdditionWaitingTimeForStateExtraction\":5,\"extractDomStateData\":true,\"screenShotConfig\":{\"fullPage\":false},\"warmUpConfig\":{\"pageWarmUpScrollBy\":42,\"pageWarmUpScrollDelay\":2,\"pageWarmUpMaxScrolls\":5458}}";
+    String serializationStringWithoutWarmUp = "{\"stateId\":\"7dfaca76-9a99-4770-ad29-3731de31f241\",\"extractionDelay\":1,\"extractionCooldown\":2,\"optViewportDimension\":{\"width\":600,\"height\":800},\"maxAdditionWaitingTimeForStateExtraction\":5,\"extractDomStateData\":true,\"screenShotConfig\":{\"fullPage\":false}}";
     String emptyObject = "{}";
     @Test
     public void serializationNonNullFieldsTest(){
