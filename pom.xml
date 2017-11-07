@@ -4,7 +4,7 @@
 
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
-    <version>0.14</version>
+    <version>0.15-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
@@ -42,7 +42,7 @@
         <connection>scm:git:git@github.com:webmate-io/webmate-sdk-java.git</connection>
         <developerConnection>scm:git:git@github.com:webmate-io/webmate-sdk-java.git</developerConnection>
         <url>git@github.com:webmate-io/webmate-sdk-java.git</url>
-        <tag>java-sdk-0.14</tag>
+        <tag>HEAD</tag>
     </scm>
     <dependencies>
 
