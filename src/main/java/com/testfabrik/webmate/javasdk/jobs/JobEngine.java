@@ -46,7 +46,7 @@ public class JobEngine {
 
             JsonNode inputValuesJson = mapper.valueToTree(simpleInputValues);
 
-            Map<String, JsonNode> createJobDto = null;
+            Map<String, JsonNode> createJobDto;
             try {
                 createJobDto = ImmutableMap.of(
                         "nameForJobInstance", JsonNodeFactory.instance.textNode(nameForJobInstance),
@@ -153,13 +153,7 @@ public class JobEngine {
         JobConfigName configName = config.getName();
         Map<PortName, BrickValue> inputValues = config.makeInputValues();
 
-        JobId jobId = this.apiClient.createJob(projectId, configName, nameForJobInstance, inputValues);
-
-        Optional<JobRunId> firstJobRun = getFirstJobRunForJob(jobId);
-        if (! firstJobRun.isPresent()) {
-            throw new WebmateApiClientException("Could not start JobRun");
-        }
-        return firstJobRun.get();
+        return startJob(configName, nameForJobInstance, inputValues, projectId);
     }
 
     /**
