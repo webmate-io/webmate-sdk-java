@@ -1,14 +1,17 @@
 package com.testfabrik.webmate.javasdk.jobs;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
+import javax.sound.sampled.Port;
 import java.io.IOException;
 import java.util.*;
 
@@ -20,7 +23,10 @@ public class JobEngine {
     private static class JobEngineApiClient extends WebmateApiClient {
 
         private final static UriTemplate createJobTemplate = new UriTemplate("/projects/${projectId}/job/jobs");
+        private final static UriTemplate startJobTemplate = new UriTemplate("/job/jobs/${jobId}/jobruns");
         private final static UriTemplate jobRunsForJobTemplate = new UriTemplate("/job/jobs/${jobId}/jobruns");
+        private final static UriTemplate jobRunSummaryTemplate = new UriTemplate("/job/jobruns/${jobRunId}/summary");
+        private final static UriTemplate jobsForProjectTemplate = new UriTemplate("/projects/${projectId}/job/jobs");
 
         public JobEngineApiClient(WebmateAuthInfo webmateAuthInfo, WebmateEnvironment environment) {
             super(webmateAuthInfo, environment);
@@ -74,6 +80,25 @@ public class JobEngine {
         }
 
         /**
+         * Start existing job and return id of new jobrun
+         */
+        public JobRunId startExistingJob(JobId id) {
+            ApiResponse response = this.sendPOST(startJobTemplate, ImmutableMap.of("jobId", id.toString()), NullNode.getInstance());
+            Optional<HttpResponse> optHttpResponse = response.getOptHttpResponse();
+
+            if (!optHttpResponse.isPresent()) {
+                throw new WebmateApiClientException("Could not start Job with id "+id+". Got no response");
+            }
+
+            try {
+                String jobRunId = EntityUtils.toString(optHttpResponse.get().getEntity()).replaceAll("\"", "");
+                return new JobRunId(UUID.fromString(jobRunId));
+            } catch (IOException e) {
+                throw new WebmateApiClientException("Could not start Job with id "+id+". Got no JobRunId");
+            }
+        }
+
+        /**
          * Return list of JobRuns for the given JobId.
          */
         public List<JobRunId> getJobRunsForJob(JobId jobId) {
@@ -100,6 +125,52 @@ public class JobEngine {
                 throw new WebmateApiClientException("Could not read JobRun ids", e);
             }
             return jobRunIds;
+        }
+
+        /**
+         *  Get JobRunSummary jor JobRun
+         */
+        public JobRunSummary getSummaryOfJobRun(JobRunId jobRunId) {
+            ApiResponse response = this.sendGET(jobRunSummaryTemplate, ImmutableMap.of("jobRunId", jobRunId.toString()));
+
+            Optional<HttpResponse> optHttpResponse = response.getOptHttpResponse();
+            if (!optHttpResponse.isPresent()) {
+                throw new WebmateApiClientException("Could not get summary of JobRun " + jobRunId + ". Got no response");
+            }
+
+            ObjectMapper om = new ObjectMapper();
+            try {
+                JsonNode result = om.readTree(EntityUtils.toString(optHttpResponse.get().getEntity()));
+                return new JobRunSummary(JobRunState.fromString(result.at("/state").asText()), result.at("/failureMessage").asText(""), result.at("/summaryInformation"));
+            } catch (IOException e) {
+                throw new WebmateApiClientException("Could not read JobRunSummary", e);
+            }
+        }
+
+        public List<JobId> getJobsInProject(ProjectId projectId) {
+            ApiResponse response = this.sendGET(jobsForProjectTemplate, ImmutableMap.of("projectId", projectId.toString()));
+
+            Optional<HttpResponse> optHttpResponse = response.getOptHttpResponse();
+            if (!optHttpResponse.isPresent()) {
+                throw new WebmateApiClientException("Could not get Jobs for Project " + projectId + ". Got no response");
+            }
+
+            if (optHttpResponse.get().getStatusLine().getStatusCode() != 200) {
+                throw new WebmateApiClientException("Retrieving Jobs for Project " + projectId + ". Got no response");
+            }
+
+            List<JobId> jobIds = new ArrayList<>();
+            ObjectMapper om = new ObjectMapper();
+
+            try {
+                JsonNode result = om.readTree(EntityUtils.toString(optHttpResponse.get().getEntity()));
+                for (String jsonId : result.findValuesAsText("id")) {
+                    jobIds.add(new JobId(UUID.fromString(jsonId)));
+                }
+            } catch (IOException e) {
+                throw new WebmateApiClientException("Could not read Job ids", e);
+            }
+            return jobIds;
         }
     }
 
@@ -157,11 +228,38 @@ public class JobEngine {
     }
 
     /**
+     * Start a Job which already exists. (i.e. to run a Job again)
+     * @param id Id of the Job to run.
+     * @return The id of the JobRun that was created
+     */
+    public JobRunId startJob(JobId id) {
+        return this.apiClient.startExistingJob(id);
+    }
+
+    /**
      * Return list of JobRunIds for the given JobId.
      * @param jobId Id of Job, for which JobRuns should be retrieved.
      * @return List of JobRun ids
      */
     public List<JobRunId> getJobRunsForJob(JobId jobId) {
         return this.apiClient.getJobRunsForJob(jobId);
+    }
+
+    /**
+     * Get the current state summary of the JobRun with the given JobRunId
+     * @param jobRunId Id of the JobRun for which the current state should be retrieved.
+     * @return Summary of the current state of the JobRun
+     */
+    public JobRunSummary getSummaryOfJobRun(JobRunId jobRunId) {
+        return this.apiClient.getSummaryOfJobRun(jobRunId);
+    }
+
+    /**
+     * Get all existing jobs in the specified project.
+     * @param projectId id of the project that jobs should be retrieved for.
+     * @return List of Job ids
+     */
+    public List<JobId> getJobsInProject(ProjectId projectId) {
+        return apiClient.getJobsInProject(projectId);
     }
 }
