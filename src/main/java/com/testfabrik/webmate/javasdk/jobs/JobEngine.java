@@ -1,6 +1,5 @@
 package com.testfabrik.webmate.javasdk.jobs;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -11,7 +10,6 @@ import com.testfabrik.webmate.javasdk.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
-import javax.sound.sampled.Port;
 import java.io.IOException;
 import java.util.*;
 
@@ -141,7 +139,7 @@ public class JobEngine {
             ObjectMapper om = new ObjectMapper();
             try {
                 JsonNode result = om.readTree(EntityUtils.toString(optHttpResponse.get().getEntity()));
-                return new JobRunSummary(JobRunState.fromString(result.at("/state").asText()), result.at("/failureMessage").asText(""), result.at("/summaryInformation"));
+                return new JobRunSummary(JobRunState.translateApiString(result.at("/state").asText()), result.at("/failureMessage").asText(""), result.at("/summaryInformation"));
             } catch (IOException e) {
                 throw new WebmateApiClientException("Could not read JobRunSummary", e);
             }
