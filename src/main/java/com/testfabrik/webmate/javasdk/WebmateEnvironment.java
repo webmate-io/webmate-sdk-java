@@ -25,7 +25,7 @@ public class WebmateEnvironment {
     }
 
     public static WebmateEnvironment create(URI baseUri) {
-        return new WebmateEnvironment(baseUri);
+        return new WebmateEnvironment(baseUri.normalize());
     }
 
     /**
