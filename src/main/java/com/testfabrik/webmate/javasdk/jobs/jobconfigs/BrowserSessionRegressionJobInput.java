@@ -40,8 +40,8 @@ public class BrowserSessionRegressionJobInput implements WellKnownJobInput {
         compareSessionJson.add(mapper.valueToTree(sessionBrickValue));
 
         return ImmutableMap.of(
-                new PortName("referenceSession"), new BrickValue(new BrickDataType("BrowserSessionRef"), jsonNodeFactory.textNode(referenceSession.toString())),
-                new PortName("compareSessions"), new BrickValue(new BrickDataType("List[BrowserSessionRef]"), mapper.valueToTree(compareSessionJson)),
+                new PortName("referenceSession"), new BrickValue(new BrickDataType("BrowserSessionRef"), jsonNodeFactory.textNode(referenceSession.getValueAsString())),
+                new PortName("compareSession"), new BrickValue(new BrickDataType("BrowserSessionRef"), jsonNodeFactory.textNode(compareSession.getValueAsString())),
                 new PortName("matchingType"), new BrickValue(new BrickDataType("String"), jsonNodeFactory.textNode("tag")),
                 new PortName("enabledynamicelementsfilter"), new BrickValue(new BrickDataType("Boolean"), jsonNodeFactory.booleanNode(true))
         );
