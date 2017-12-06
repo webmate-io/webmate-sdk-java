@@ -5,7 +5,9 @@ import com.google.common.base.Optional;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
@@ -100,11 +102,75 @@ public class WebmateApiClient {
         return new ApiResponse(httpResponse);
     }
 
+    public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params) {
+        HttpResponse httpResponse = sendPOSTUnchecked(schema, params);
+        checkErrors(httpResponse);
+        return new ApiResponse(httpResponse);
+    }
+
+    public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, String query) {
+        HttpResponse httpResponse = sendPOSTUnchecked(schema, params, query);
+        checkErrors(httpResponse);
+        return new ApiResponse(httpResponse);
+    }
+
+    public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, List<NameValuePair> urlParams) {
+        HttpResponse httpResponse = sendPOSTUnchecked(schema, params, urlParams);
+        checkErrors(httpResponse);
+        return new ApiResponse(httpResponse);
+    }
+
     protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, JsonNode body) {
         HttpResponse httpResponse;
         try {
             HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params));
             req.setEntity(new StringEntity(body.toString()));
+            httpResponse = this.httpClient.execute(req);
+            // Buffer the response entity in memory so we can release the connection safely
+            HttpEntity old = httpResponse.getEntity();
+            EntityUtils.updateEntity(httpResponse, new StringEntity(EntityUtils.toString(old)));
+            req.releaseConnection();
+        } catch (IOException e) {
+            throw new WebmateApiClientException("Error sending POST to webmate API", e);
+        }
+        return httpResponse;
+    }
+
+    protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params) {
+        HttpResponse httpResponse;
+        try {
+            HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params));
+            httpResponse = this.httpClient.execute(req);
+            // Buffer the response entity in memory so we can release the connection safely
+            HttpEntity old = httpResponse.getEntity();
+            EntityUtils.updateEntity(httpResponse, new StringEntity(EntityUtils.toString(old)));
+            req.releaseConnection();
+        } catch (IOException e) {
+            throw new WebmateApiClientException("Error sending POST to webmate API", e);
+        }
+        return httpResponse;
+    }
+
+    protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, List<NameValuePair> urlParams) {
+        HttpResponse httpResponse;
+        try {
+            HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params));
+            req.setEntity(new UrlEncodedFormEntity(urlParams));
+            httpResponse = this.httpClient.execute(req);
+            // Buffer the response entity in memory so we can release the connection safely
+            HttpEntity old = httpResponse.getEntity();
+            EntityUtils.updateEntity(httpResponse, new StringEntity(EntityUtils.toString(old)));
+            req.releaseConnection();
+        } catch (IOException e) {
+            throw new WebmateApiClientException("Error sending POST to webmate API", e);
+        }
+        return httpResponse;
+    }
+
+    protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, String queryString) {
+        HttpResponse httpResponse;
+        try {
+            HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params, queryString));
             httpResponse = this.httpClient.execute(req);
             // Buffer the response entity in memory so we can release the connection safely
             HttpEntity old = httpResponse.getEntity();
@@ -175,6 +241,34 @@ public class WebmateApiClient {
 
             URIBuilder builder = new URIBuilder();
             builder.setScheme(baseUri.getScheme());
+            builder.setHost(baseUri.getHost());
+            builder.setPort(baseUri.getPort());
+            String path = baseUri.normalize().getPath() + schemaAfterReplacements;
+            builder.setPath(path.replaceAll("//", "/")); // Replace double slashes
+
+            for (String templateParamKey : templateParams.keySet()) {
+                String templateParamKeyAfterReplacements = replaceParamsInTemplate(templateParamKey, params);
+                String templateParamValueAfterReplacements = replaceParamsInTemplate(templateParams.get(templateParamKey), params);
+                builder.setParameter(templateParamKeyAfterReplacements, templateParamValueAfterReplacements);
+            }
+
+
+            URI result;
+            try {
+                result = builder.build();
+            } catch (URISyntaxException e) {
+                throw new WebmateApiClientException("Could not build valid API URL", e);
+            }
+            return result;
+        }
+
+        URI buildUri(URI baseUri, Map<String, String> params, String query) {
+
+            String schemaAfterReplacements = replaceParamsInTemplate(schema, params);
+
+            URIBuilder builder = new URIBuilder();
+            builder.setScheme(baseUri.getScheme());
+            builder.setCustomQuery(query);
             builder.setHost(baseUri.getHost());
             builder.setPort(baseUri.getPort());
             String path = baseUri.normalize().getPath() + schemaAfterReplacements;

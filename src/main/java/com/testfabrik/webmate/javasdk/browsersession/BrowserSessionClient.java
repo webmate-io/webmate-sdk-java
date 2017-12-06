@@ -6,13 +6,16 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
 
@@ -33,6 +36,9 @@ public class BrowserSessionClient {
 
         private final static UriTemplate checkStateProgressTemplate =
                 new UriTemplate("/browsersession-artifacts/${browserSessionArtifactId}/progress");
+
+        private final static UriTemplate terminateBrowsersessionTemplate =
+                new UriTemplate("/browsersession/${browserSessionId}");
 
         private static final int millisToWait = 8000;
 
@@ -70,6 +76,29 @@ public class BrowserSessionClient {
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             Optional<HttpResponse> r = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
             waitForStateExtractionResponse(timeoutMillis, r);
+        }
+
+
+
+        /**
+         * Tries to terminate a Browsersession. Will return wether the process was successfull or not.
+         * @param browserSessionId The id of the session that should be terminated
+         * @return true, if the Browersession was terminated successfully.
+         */
+        public boolean terminateSession(BrowserSessionId browserSessionId) {
+            Optional<HttpResponse> r = sendPOST(terminateBrowsersessionTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), "terminate").getOptHttpResponse();
+            boolean stopped = false;
+            if (!r.isPresent()){
+                throw new WebmateApiClientException("Could not stop Browsersession. Got no response");
+            }
+            else {
+                try {
+                    stopped = EntityUtils.toString(r.get().getEntity()).equals("true");
+                } catch (IOException e) {
+                    LOG.error("Failed to read response:", e);
+                }
+            }
+            return stopped;
         }
 
         private void waitForStateExtractionResponse(long timeoutMillis, Optional<HttpResponse> r) {
@@ -189,6 +218,18 @@ public class BrowserSessionClient {
         System.out.println("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
         apiClient.createState(browserSessionId, matchingId, timeoutMillis, browserSessionStateExtractionConfig);
     }
+
+
+    /**
+     * Terminate the given BrowserSession
+     * @param browserSessionId The Id for the BrowserSession that is supposed to be termianted
+     * @return Wether the Browsersession was successfully terminated or not
+     */
+    public boolean terminateBrowsersession(BrowserSessionId browserSessionId) {
+        System.out.println("Trying to terminate Browsersession with id ["+ browserSessionId +"]");
+        return apiClient.terminateSession(browserSessionId);
+    }
+
 
 
 

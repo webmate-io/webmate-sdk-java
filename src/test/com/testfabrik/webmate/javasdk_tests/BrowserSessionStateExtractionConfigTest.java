@@ -50,4 +50,7 @@ public class BrowserSessionStateExtractionConfigTest {
         String serialized = mapper.valueToTree(config).toString();
         assertEquals(emptyObject, serialized);
     }
+
+
+
 }

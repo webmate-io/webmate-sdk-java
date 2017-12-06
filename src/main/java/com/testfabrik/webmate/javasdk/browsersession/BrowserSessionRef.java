@@ -36,6 +36,15 @@ public class BrowserSessionRef {
     }
 
 
+    /**
+     * Terminates the BrowserSession
+     * @return True if the BrowserSession was successfully terminated
+     */
+    public boolean terminateSession(){
+        return session.browserSession.terminateBrowsersession(browserSessionId);
+    }
+
+
     @Override
     public int hashCode() {
         return Objects.hash(browserSessionId, session);
