@@ -202,7 +202,7 @@ public class BrowserSessionClient {
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
     public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis) {
-        System.out.println("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
+        LOG.debug("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
         apiClient.createState(browserSessionId, matchingId, timeoutMillis);
     }
 
@@ -215,7 +215,7 @@ public class BrowserSessionClient {
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
     public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
-        System.out.println("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
+        LOG.debug("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
         apiClient.createState(browserSessionId, matchingId, timeoutMillis, browserSessionStateExtractionConfig);
     }
 
@@ -226,7 +226,7 @@ public class BrowserSessionClient {
      * @return Wether the Browsersession was successfully terminated or not
      */
     public boolean terminateBrowsersession(BrowserSessionId browserSessionId) {
-        System.out.println("Trying to terminate Browsersession with id ["+ browserSessionId +"]");
+        LOG.debug("Trying to terminate Browsersession with id ["+ browserSessionId +"]");
         return apiClient.terminateSession(browserSessionId);
     }
 

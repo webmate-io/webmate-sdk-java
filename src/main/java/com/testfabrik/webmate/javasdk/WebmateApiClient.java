@@ -96,24 +96,49 @@ public class WebmateApiClient {
         }
     }
 
+    /**
+     * Sends a Post to the Uri in schema using params to populate the schema. The body of the request is a Json Node
+     * @param schema The Uri schema that will become the target of the Post
+     * @param params The params that should be used in the schema
+     * @param body The json node that is supposed to be sent in the body
+     * @return The response of the API
+     */
     public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, JsonNode body) {
         HttpResponse httpResponse = sendPOSTUnchecked(schema, params, body);
         checkErrors(httpResponse);
         return new ApiResponse(httpResponse);
     }
-
+    /**
+     * Sends a Post to the Uri in schema using params to populate the schema. The body of the request is empty
+     * @param schema The Uri schema that will become the target of the Post
+     * @param params The params that should be used in the schema
+     * @return The response of the API
+     */
     public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params) {
         HttpResponse httpResponse = sendPOSTUnchecked(schema, params);
         checkErrors(httpResponse);
         return new ApiResponse(httpResponse);
     }
 
+    /**
+     * Sends a Post to the Uri in schema using params to populate the schema. Once the schema is built, a query String will also be appended. The body of the request is empty
+     * @param schema The Uri schema that will become the target of the Post
+     * @param params The params that should be used in the schema
+     * @param query The query String that should be appended
+     * @return The response of the API
+     */
     public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, String query) {
         HttpResponse httpResponse = sendPOSTUnchecked(schema, params, query);
         checkErrors(httpResponse);
         return new ApiResponse(httpResponse);
     }
-
+    /**
+     * Sends a Post to the Uri in schema using params to populate the schema. Once the schema is built, the query Params will be appended. The body of the request is empty
+     * @param schema The Uri schema that will become the target of the Post
+     * @param params The params that should be used in the schema
+     * @param urlParams The params that should be appended to the URI
+     * @return The response of the API
+     */
     public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, List<NameValuePair> urlParams) {
         HttpResponse httpResponse = sendPOSTUnchecked(schema, params, urlParams);
         checkErrors(httpResponse);
