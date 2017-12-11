@@ -64,7 +64,7 @@ public class BrowserSessionClient {
             Object empty = Collections.emptyMap();
             // create a sane default Config, extracting DOM and taking non fullpage Screenshots. Otherwise take Webmate Defaults.
             BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig = new BrowserSessionStateExtractionConfig(null, null, null, null, null, true,
-                    new BrowserSessionScreenshotExtractionConfig(false), null);
+                    new BrowserSessionScreenshotExtractionConfig(false, false), null);
             Map<String, Object>  params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", browserSessionStateExtractionConfig);
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);

@@ -8,6 +8,16 @@ public class BrowserSessionScreenshotExtractionConfig {
 
     private boolean fullPage;
 
+    private boolean hideFixedElements;
+
+    public boolean isHideFixedElements() {
+        return hideFixedElements;
+    }
+
+    public void setHideFixedElements(boolean hideFixedElements) {
+        this.hideFixedElements = hideFixedElements;
+    }
+
     public boolean isFullPage() {
         return fullPage;
     }
@@ -19,8 +29,10 @@ public class BrowserSessionScreenshotExtractionConfig {
     /**
      * Creates a new BrowserSession ScreenshotExtractionConfig instance.
      * @param fullPage Whether fullpage screenshots should be taken or not.
+     * @param hideFixedElements Whether fixed Elements should be hidden when taking fullpage screenshots or not. Note: has no effect if fullpage is false.
      */
-    public BrowserSessionScreenshotExtractionConfig(boolean fullPage) {
+    public BrowserSessionScreenshotExtractionConfig(boolean fullPage, boolean hideFixedElements) {
         this.fullPage = fullPage;
+        this.hideFixedElements = hideFixedElements;
     }
 }
