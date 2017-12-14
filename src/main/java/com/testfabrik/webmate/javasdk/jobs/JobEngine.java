@@ -8,6 +8,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
 import org.apache.http.HttpResponse;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
@@ -25,6 +26,10 @@ public class JobEngine {
         private final static UriTemplate jobRunsForJobTemplate = new UriTemplate("/job/jobs/${jobId}/jobruns");
         private final static UriTemplate jobRunSummaryTemplate = new UriTemplate("/job/jobruns/${jobRunId}/summary");
         private final static UriTemplate jobsForProjectTemplate = new UriTemplate("/projects/${projectId}/job/jobs");
+
+        public JobEngineApiClient(WebmateAuthInfo webmateAuthInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
+            super(webmateAuthInfo, environment, httpClientBuilder);
+        }
 
         public JobEngineApiClient(WebmateAuthInfo webmateAuthInfo, WebmateEnvironment environment) {
             super(webmateAuthInfo, environment);
@@ -173,6 +178,10 @@ public class JobEngine {
     }
 
     private JobEngineApiClient apiClient;
+
+    public JobEngine(WebmateAPISession session, HttpClientBuilder httpClientBuilder) {
+        this.apiClient = new JobEngineApiClient(session.authInfo, session.environment, httpClientBuilder);
+    }
 
     public JobEngine(WebmateAPISession session) {
         this.apiClient = new JobEngineApiClient(session.authInfo, session.environment);

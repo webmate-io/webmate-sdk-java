@@ -58,7 +58,7 @@ public class BrowserSessionClient {
          * @param environment The environment the client should be used in, i.e which urls to use for communication
          * @param httpClientBuilder The HttpClientBuilder that is used for the underlying connection.
          */
-        public BrowserSessionApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment,  HttpClientBuilder httpClientBuilder) {super (authInfo, environment, httpClientBuilder); }
+        public BrowserSessionApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {super (authInfo, environment, httpClientBuilder); }
 
         /**
          * Creates a State for a Browsersession with a matching id. The extraction parameters are set to default.
