@@ -24,11 +24,11 @@ public class WebmateAPISession {
         this.browserSession = new BrowserSessionClient(this);
     }
 
-    public WebmateAPISession(WebmateAuthInfo authInfo, WebmateEnvironment environment,  HttpClientBuilder httpClientBuilder) {
+    public WebmateAPISession(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
         this.authInfo = authInfo;
         this.environment = environment;
 
-        this.jobEngine = new JobEngine(this);
+        this.jobEngine = new JobEngine(this, httpClientBuilder);
         this.browserSession = new BrowserSessionClient(this, httpClientBuilder);
     }
 }
