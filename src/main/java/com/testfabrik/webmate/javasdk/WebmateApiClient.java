@@ -8,11 +8,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
@@ -132,6 +131,7 @@ public class WebmateApiClient {
         checkErrors(httpResponse);
         return new ApiResponse(httpResponse);
     }
+
     /**
      * Sends a Post to the Uri in schema using params to populate the schema. Once the schema is built, the query Params will be appended. The body of the request is empty
      * @param schema The Uri schema that will become the target of the Post
@@ -226,6 +226,28 @@ public class WebmateApiClient {
             throw new WebmateApiClientException("Error sending GET to webmate API", e);
         }
         return httpResponse;
+    }
+
+    /**
+     * Sends a HTTP DELETE to the Uri in schema using params to populate the schema. The body of the request is empty
+     * @param schema The Uri schema that will become the target of the Post
+     * @param params The params that should be used in the schema
+     * @return The response of the API
+     */
+    public ApiResponse sendDELETE(UriTemplate schema, Map<String, String> params) {
+        HttpResponse httpResponse;
+        try {
+            HttpDelete req = new HttpDelete(schema.buildUri(environment.baseURI, params));
+            httpResponse = this.httpClient.execute(req);
+            // Buffer the response entity in memory so we can release the connection safely
+            HttpEntity old = httpResponse.getEntity();
+            EntityUtils.updateEntity(httpResponse, new StringEntity(EntityUtils.toString(old)));
+            req.releaseConnection();
+        } catch (IOException e) {
+            throw new WebmateApiClientException("Error sending DELETE to webmate API", e);
+        }
+        checkErrors(httpResponse);
+        return new ApiResponse(httpResponse);
     }
 
     /**
