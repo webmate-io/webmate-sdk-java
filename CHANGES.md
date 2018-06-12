@@ -2,6 +2,11 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.18] - 2018-06-12
+
+### New
+- You can now use the SDK to interact with your devices
+
 ## [0.17] - 2017-12-15
 
 ### Fixes
