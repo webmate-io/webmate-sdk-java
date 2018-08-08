@@ -35,7 +35,7 @@ public class BrowserSessionClient {
                 new UriTemplate("/browsersession/${browserSessionId}/states");
 
         private final static UriTemplate checkStateProgressTemplate =
-                new UriTemplate("/browsersession-artifacts/${browserSessionArtifactId}/progress");
+                new UriTemplate("/browsersession/${browserSessionId}/artifacts/${browserSessionArtifactId}/progress");
 
         private final static UriTemplate terminateBrowsersessionTemplate =
                 new UriTemplate("/browsersession/${browserSessionId}");
@@ -75,7 +75,7 @@ public class BrowserSessionClient {
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             Optional<HttpResponse> r = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
-            waitForStateExtractionResponse(timeoutMillis, r);
+            waitForStateExtractionResponse(browserSessionId, timeoutMillis, r);
         }
 
 
@@ -101,7 +101,7 @@ public class BrowserSessionClient {
             return stopped;
         }
 
-        private void waitForStateExtractionResponse(long timeoutMillis, Optional<HttpResponse> r) {
+        private void waitForStateExtractionResponse(BrowserSessionId browserSessionId, long timeoutMillis, Optional<HttpResponse> r) {
             try {
                 if (!r.isPresent()) {
                     throw new WebmateApiClientException("Could not extract state. Got no response");
@@ -113,7 +113,9 @@ public class BrowserSessionClient {
                 long deadline = System.currentTimeMillis() + timeoutMillis;
                 for (String artifactId : artifactIds) {
                     while (true) {
-                        r = sendGET(checkStateProgressTemplate, ImmutableMap.of("browserSessionArtifactId", artifactId)).getOptHttpResponse();
+                        r = sendGET(checkStateProgressTemplate, ImmutableMap.of("browserSessionId", browserSessionId.getValueAsString(),
+                                "browserSessionArtifactId", artifactId)).getOptHttpResponse();
+
                         LOG.debug("Checking if artifact " + artifactId + " is complete yet");
                         if (r.isPresent() && EntityUtils.toString(r.get().getEntity()).equals("true")) {
                             break;
@@ -137,7 +139,7 @@ public class BrowserSessionClient {
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             Optional<HttpResponse> r = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
-            waitForStateExtractionResponse(timeoutMillis, r);
+            waitForStateExtractionResponse(browserSessionId, timeoutMillis, r);
         }
 
     }
