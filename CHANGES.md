@@ -2,6 +2,11 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.19] - 2018-08-08
+
+### Fixes
+- Ensures compatibility with current Webmate Release. NOTE: prior versions will no longer work!
+
 ## [0.18] - 2018-06-12
 
 ### New
