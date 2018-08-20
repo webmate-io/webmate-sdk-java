@@ -60,7 +60,7 @@ public class JobEngine {
                 createJobDto = ImmutableMap.of(
                         "nameForJobInstance", JsonNodeFactory.instance.textNode(nameForJobInstance),
                         "inputValues", inputValuesJson,
-                        "scheduling", mapper.readTree("{ \"jobSchedulingSpec\": { \"DirectlyScheduled\": {} } }"),
+                        "scheduling", mapper.readTree("{ \"jobSchedulingSpec\": { \"ExecuteLater\": {} } }"),
                         "jobConfigIdOrName", JsonNodeFactory.instance.textNode(jobConfigName.jobConfigName));
             } catch (IOException e) {
                 throw new WebmateApiClientException("Error creating JSON", e);
@@ -200,23 +200,9 @@ public class JobEngine {
 
         // create Job
         JobId jobId = this.apiClient.createJob(projectId, jobConfigName, nameForJobInstance, inputValues);
+        JobRunId firstJobRun = startJob(jobId);
 
-        // When the Job is directly scheduled, we just have to wait for the first JobRun to appear.
-        Optional<JobRunId> firstJobRun = getFirstJobRunForJob(jobId);
-        if (! firstJobRun.isPresent()) {
-            throw new WebmateApiClientException("Could not start JobRun");
-        }
-        return firstJobRun.get();
-    }
-
-    private Optional<JobRunId> getFirstJobRunForJob(JobId jobId) {
-        for (int i = 0; i < 10; ++i) {
-            List<JobRunId> jobRunIds = this.apiClient.getJobRunsForJob(jobId);
-            if (jobRunIds.size() > 0) {
-                return Optional.of(jobRunIds.get(0));
-            }
-        }
-        return Optional.absent();
+        return firstJobRun;
     }
 
     /**
