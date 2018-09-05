@@ -2,6 +2,11 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.20] - 2018-09-05
+
+### Fixes
+- Racecondition fixed when creating jobs
+
 ## [0.19] - 2018-08-08
 
 ### Fixes
