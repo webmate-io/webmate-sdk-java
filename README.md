@@ -35,7 +35,7 @@ After that, you can include the SDK as a Maven dependency to your project, i.e. 
 ```xml
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
-    <version>0.20</version>
+    <version>0.21-SNAPSHOT-0.1</version>
 ```
 
 or using the equivalent statement in a build tool of your choice. 
