@@ -2,6 +2,11 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.21] - 2018-10-05
+
+### Fixes
+- Added timeout to BrowserSessionRefs createState Method
+
 ## [0.20] - 2018-09-05
 
 ### Fixes
