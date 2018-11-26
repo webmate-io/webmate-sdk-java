@@ -213,10 +213,26 @@ public class WebmateApiClient {
         return new ApiResponse(httpResponse);
     }
 
+    public ApiResponse sendGET(UriTemplate schema, Map<String, String> params, List<NameValuePair> queryParams){
+        HttpResponse httpResponse = sendGETUnchecked(schema, params, queryParams);
+        checkErrors(httpResponse);
+        return new ApiResponse(httpResponse);
+    }
+
     protected HttpResponse sendGETUnchecked(UriTemplate schema, Map<String, String> params) {
+        return sendGETUnchecked(schema, params, null);
+    }
+
+    protected HttpResponse sendGETUnchecked(UriTemplate schema, Map<String, String> params, List<NameValuePair> queryParams) {
         HttpResponse httpResponse;
         try {
-            HttpGet req = new HttpGet(schema.buildUri(environment.baseURI, params));
+            HttpGet req;
+            if (queryParams != null) {
+                req = new HttpGet(schema.buildUri(environment.baseURI, params, queryParams));
+            }
+            else {
+                req = new HttpGet(schema.buildUri(environment.baseURI, params));
+            }
             httpResponse = this.httpClient.execute(req);
             // Buffer the response entity in memory so we can release the connection safely
             HttpEntity old = httpResponse.getEntity();
@@ -316,6 +332,34 @@ public class WebmateApiClient {
             URIBuilder builder = new URIBuilder();
             builder.setScheme(baseUri.getScheme());
             builder.setCustomQuery(query);
+            builder.setHost(baseUri.getHost());
+            builder.setPort(baseUri.getPort());
+            String path = baseUri.normalize().getPath() + schemaAfterReplacements;
+            builder.setPath(path.replaceAll("//", "/")); // Replace double slashes
+
+            for (String templateParamKey : templateParams.keySet()) {
+                String templateParamKeyAfterReplacements = replaceParamsInTemplate(templateParamKey, params);
+                String templateParamValueAfterReplacements = replaceParamsInTemplate(templateParams.get(templateParamKey), params);
+                builder.setParameter(templateParamKeyAfterReplacements, templateParamValueAfterReplacements);
+            }
+
+
+            URI result;
+            try {
+                result = builder.build();
+            } catch (URISyntaxException e) {
+                throw new WebmateApiClientException("Could not build valid API URL", e);
+            }
+            return result;
+        }
+
+        URI buildUri(URI baseUri, Map<String, String> params, List<NameValuePair> queryParams) {
+
+            String schemaAfterReplacements = replaceParamsInTemplate(schema, params);
+
+            URIBuilder builder = new URIBuilder();
+            builder.setScheme(baseUri.getScheme());
+            builder.addParameters(queryParams);
             builder.setHost(baseUri.getHost());
             builder.setPort(baseUri.getPort());
             String path = baseUri.normalize().getPath() + schemaAfterReplacements;

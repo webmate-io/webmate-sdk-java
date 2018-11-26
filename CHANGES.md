@@ -2,6 +2,11 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.22] - 2018-11-27
+###New
+- Added Selenium Service API methods
+- Added Browser Utils to retrieve the most recent Browsers available in a given Project
+
 ## [0.21] - 2018-10-05
 
 ### Fixes
