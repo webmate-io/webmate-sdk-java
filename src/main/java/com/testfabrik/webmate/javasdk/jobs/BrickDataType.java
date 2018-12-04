@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public class BrickDataType {
 
-    @JsonValue
+
     private String tpe;
 
     public BrickDataType(String tpe) {
@@ -23,6 +23,15 @@ public class BrickDataType {
     @Override
     public int hashCode() {
         return tpe != null ? tpe.hashCode() : 0;
+    }
+
+    @JsonValue
+    public String getTpe() {
+        return tpe;
+    }
+
+    public void setTpe(String tpe) {
+        this.tpe = tpe;
     }
 
     @Override

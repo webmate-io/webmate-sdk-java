@@ -2,6 +2,11 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.23] - 2018-12-04
+###Fixes
+- Fixes rare Serialization Issue
+
+
 ## [0.22] - 2018-11-27
 ###New
 - Added Selenium Service API methods
