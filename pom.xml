@@ -4,7 +4,7 @@
 
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
-    <version>0.19-SNAPSHOT</version>
+    <version>0.24-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
@@ -29,7 +29,7 @@
 
     <properties>
         <version.guava>19.0</version.guava>
-        <version.jackson>2.9.5</version.jackson>
+        <version.jackson>2.9.8</version.jackson>
         <version.slf4j>1.7.25</version.slf4j>
         <version.joda>2.10.1</version.joda>
         <maven.compiler.source>1.7</maven.compiler.source>
