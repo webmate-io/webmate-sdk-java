@@ -1,8 +1,8 @@
-package com.testfabrik.webmate.javasdk_tests;
+package com.testfabrik.webmate.javasdk;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.testfabrik.webmate.javasdk.CommonUtils.Dimension;
+import com.testfabrik.webmate.javasdk.commonutils.Dimension;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionScreenshotExtractionConfig;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionStateId;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionWarmUpConfig;
