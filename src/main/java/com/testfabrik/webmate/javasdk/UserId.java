@@ -5,20 +5,19 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.UUID;
 
-public class ProjectId {
+/**
+ * UserId in webmate.
+ */
+public class UserId {
     private UUID value;
 
     @JsonCreator
-    public ProjectId(UUID value) {
+    public UserId(UUID value) {
         this.value = value;
     }
 
-    public static ProjectId of(String idStr) {
-        return new ProjectId(UUID.fromString(idStr));
-    }
-
-    public static ProjectId FOR_TESTING() {
-        return new ProjectId(new UUID(0, 30 /* TODO */));
+    static UserId FOR_TESTING() {
+        return new UserId(new UUID(0, 30 /* TODO */));
     }
 
     @Override
@@ -26,9 +25,9 @@ public class ProjectId {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ProjectId projectId = (ProjectId) o;
+        UserId userId = (UserId) o;
 
-        return value.equals(projectId.value);
+        return value.equals(userId.value);
     }
 
     @Override
