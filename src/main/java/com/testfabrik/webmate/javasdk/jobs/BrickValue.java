@@ -9,10 +9,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class BrickValue {
 
     @JsonProperty("type")
-    public final BrickDataType dataType;
+    public BrickDataType dataType;
 
     @JsonProperty("data")
-    public final JsonNode value;
+    public JsonNode value;
+
+    // for jackson
+    private BrickValue() {}
 
     public BrickValue(BrickDataType dataType, JsonNode value) {
         this.dataType = dataType;

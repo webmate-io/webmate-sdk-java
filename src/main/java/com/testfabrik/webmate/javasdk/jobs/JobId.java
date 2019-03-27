@@ -9,7 +9,14 @@ public class JobId {
         this.value = value;
     }
 
-    static JobId FOR_TESTING() {
+    /**
+     * Create JobId from string representation.
+     */
+    public static JobId of(String jobIdStr) {
+        return new JobId(UUID.fromString(jobIdStr));
+    }
+
+    public static JobId FOR_TESTING() {
         return new JobId(new UUID(0, 30 /* TODO */));
     }
 
