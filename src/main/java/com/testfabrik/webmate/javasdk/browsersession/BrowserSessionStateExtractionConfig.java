@@ -1,6 +1,6 @@
 package com.testfabrik.webmate.javasdk.browsersession;
 
-import com.testfabrik.webmate.javasdk.CommonUtils.Dimension;
+import com.testfabrik.webmate.javasdk.commonutils.Dimension;
 
 /**
  * A Wrapper class for proper state extraction Configuration. The different parameters determine the behaviour during state extraction. If parameters are

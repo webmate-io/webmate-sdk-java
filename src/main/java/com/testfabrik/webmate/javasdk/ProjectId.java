@@ -1,15 +1,23 @@
 package com.testfabrik.webmate.javasdk;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.UUID;
 
 public class ProjectId {
     private UUID value;
 
+    @JsonCreator
     public ProjectId(UUID value) {
         this.value = value;
     }
 
-    static ProjectId FOR_TESTING() {
+    public static ProjectId of(String idStr) {
+        return new ProjectId(UUID.fromString(idStr));
+    }
+
+    public static ProjectId FOR_TESTING() {
         return new ProjectId(new UUID(0, 30 /* TODO */));
     }
 
@@ -29,6 +37,7 @@ public class ProjectId {
     }
 
     @Override
+    @JsonValue
     public String toString() {
         return value.toString();
     }

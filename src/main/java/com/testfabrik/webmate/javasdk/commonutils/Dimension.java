@@ -1,9 +1,4 @@
-package com.testfabrik.webmate.javasdk.CommonUtils;
-
-import com.fasterxml.jackson.annotation.JsonValue;
-
-import java.util.Objects;
-import java.util.UUID;
+package com.testfabrik.webmate.javasdk.commonutils;
 
 /**
  * Wrapper class to describe screen and viewport resolutions.

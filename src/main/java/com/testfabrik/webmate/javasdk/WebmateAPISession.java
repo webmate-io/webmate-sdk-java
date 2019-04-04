@@ -3,6 +3,7 @@ package com.testfabrik.webmate.javasdk;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionClient;
 import com.testfabrik.webmate.javasdk.devices.DeviceClient;
 import com.testfabrik.webmate.javasdk.jobs.JobEngine;
+import com.testfabrik.webmate.javasdk.testmgmt.TestMgmtClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 /**
@@ -28,6 +29,11 @@ public class WebmateAPISession {
      */
     public final DeviceClient device;
 
+    /**
+     * Facade to webmate's TestMgmt subsystem.
+     */
+    public final TestMgmtClient testMgmt;
+
     public WebmateAPISession(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
         this.authInfo = authInfo;
         this.environment = environment;
@@ -35,6 +41,7 @@ public class WebmateAPISession {
         this.jobEngine = new JobEngine(this);
         this.browserSession = new BrowserSessionClient(this);
         this.device = new DeviceClient(this);
+        this.testMgmt = new TestMgmtClient(this);
     }
 
     public WebmateAPISession(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
@@ -44,5 +51,6 @@ public class WebmateAPISession {
         this.jobEngine = new JobEngine(this, httpClientBuilder);
         this.browserSession = new BrowserSessionClient(this, httpClientBuilder);
         this.device = new DeviceClient(this, httpClientBuilder);
+        this.testMgmt = new TestMgmtClient(this, httpClientBuilder);
     }
 }

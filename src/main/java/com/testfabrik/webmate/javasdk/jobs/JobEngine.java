@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
+import com.testfabrik.webmate.javasdk.testmgmt.TestInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -141,10 +142,10 @@ public class JobEngine {
                 throw new WebmateApiClientException("Could not get summary of JobRun " + jobRunId + ". Got no response");
             }
 
-            ObjectMapper om = new ObjectMapper();
+            ObjectMapper om = JacksonMapper.getInstance();
             try {
-                JsonNode result = om.readTree(EntityUtils.toString(optHttpResponse.get().getEntity()));
-                return new JobRunSummary(JobRunState.translateApiString(result.at("/state").asText()), result.at("/failureMessage").asText(""), result.at("/summaryInformation"));
+                String jobRunSummaryJson = EntityUtils.toString(optHttpResponse.get().getEntity());
+                return om.readValue(jobRunSummaryJson, JobRunSummary.class);
             } catch (IOException e) {
                 throw new WebmateApiClientException("Could not read JobRunSummary", e);
             }

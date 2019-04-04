@@ -1,4 +1,4 @@
-package com.testfabrik.webmate.javasdk.CommonUtils;
+package com.testfabrik.webmate.javasdk.commonutils;
 
 import com.testfabrik.webmate.javasdk.WebmateApiClient;
 import com.testfabrik.webmate.javasdk.WebmateApiClientException;
