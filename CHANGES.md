@@ -2,6 +2,13 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.24] - 2019-04-08
+###New
+- Added Functionality to interact with Tests and Testruns and retrieve their result
+- Added missing functionality of Jobs and Jobruns.
+
+
+
 ## [0.23] - 2018-12-04
 ###Fixes
 - Fixes rare Serialization Issue
