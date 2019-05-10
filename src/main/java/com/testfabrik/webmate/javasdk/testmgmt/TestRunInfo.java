@@ -1,5 +1,6 @@
 package com.testfabrik.webmate.javasdk.testmgmt;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
@@ -25,6 +26,7 @@ public class TestRunInfo {
     }
 
     @JsonProperty("testRunIndex")
+    @JsonAlias({"index"})
     public int getIndex() {
         return index;
     }

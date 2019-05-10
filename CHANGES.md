@@ -2,6 +2,10 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.25] - 2019-04-08
+###Fixes
+- Fixed an issue that prevented correct retrieval of test run results
+
 ## [0.24] - 2019-04-08
 ###New
 - Added Functionality to interact with Tests and Testruns and retrieve their result
