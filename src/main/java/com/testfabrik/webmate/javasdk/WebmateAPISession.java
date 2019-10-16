@@ -1,8 +1,10 @@
 package com.testfabrik.webmate.javasdk;
 
+import com.testfabrik.webmate.javasdk.artifacts.ArtifactClient;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionClient;
 import com.testfabrik.webmate.javasdk.devices.DeviceClient;
 import com.testfabrik.webmate.javasdk.jobs.JobEngine;
+import com.testfabrik.webmate.javasdk.mailtest.MailTestClient;
 import com.testfabrik.webmate.javasdk.testmgmt.TestMgmtClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
@@ -34,6 +36,11 @@ public class WebmateAPISession {
      */
     public final TestMgmtClient testMgmt;
 
+    public final MailTestClient mailTest;
+
+    public final ArtifactClient artifact;
+
+
     public WebmateAPISession(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
         this.authInfo = authInfo;
         this.environment = environment;
@@ -42,6 +49,8 @@ public class WebmateAPISession {
         this.browserSession = new BrowserSessionClient(this);
         this.device = new DeviceClient(this);
         this.testMgmt = new TestMgmtClient(this);
+        this.artifact = new ArtifactClient(this);
+        this.mailTest = new MailTestClient(this, artifact);
     }
 
     public WebmateAPISession(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
@@ -52,5 +61,7 @@ public class WebmateAPISession {
         this.browserSession = new BrowserSessionClient(this, httpClientBuilder);
         this.device = new DeviceClient(this, httpClientBuilder);
         this.testMgmt = new TestMgmtClient(this, httpClientBuilder);
+        this.artifact = new ArtifactClient(this);
+        this.mailTest = new MailTestClient(this, artifact);
     }
 }

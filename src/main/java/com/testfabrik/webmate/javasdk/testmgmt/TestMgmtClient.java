@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Facade of TestMgmt subsystem.
@@ -22,7 +23,7 @@ public class TestMgmtClient {
     private WebmateAPISession session;
     private TestMgmtApiClient apiClient;
 
-    private static final Logger LOG = LoggerFactory.getLogger(TestMgmtApiClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestMgmtClient.class);
 
     private static class TestMgmtApiClient extends WebmateApiClient {
 
@@ -151,5 +152,14 @@ public class TestMgmtClient {
      */
     public Optional<List<TestResult>> getTestResults(TestId id, int testRunIndex) {
         return this.apiClient.getTestResults(id, testRunIndex);
+    }
+
+
+    /**
+     * Get Id of TestRun associated with a Selenium session.
+     * @param opaqueSeleniumSessionIdString
+     */
+    public TestRunId getTestRunIdForSessionId(String opaqueSeleniumSessionIdString) {
+        return new TestRunId(UUID.randomUUID());
     }
 }
