@@ -1,14 +1,13 @@
 package com.testfabrik.webmate.javasdk.artifacts;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.testfabrik.webmate.javasdk.*;
-import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
 import com.testfabrik.webmate.javasdk.testmgmt.*;
-import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.io.Charsets;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -58,7 +57,7 @@ public class ArtifactClient {
             if (!artifactTypes.isEmpty()) {
                 StringBuilder typesParam = new StringBuilder();
                 for (ArtifactType artifactType : artifactTypes) {
-                    String typeName = artifactType.getTypeName();
+                    String typeName = artifactType.asSerializedString();
                     typesParam = typesParam.length() > 0 ? typesParam.append(",").append(typeName) : typesParam.append(typeName);
                 }
                 params.add(new BasicNameValuePair("types", typesParam.toString()));
@@ -73,6 +72,7 @@ public class ArtifactClient {
             try {
                 String testInfosJson = EntityUtils.toString(optHttpResponse.get().getEntity());
                 ObjectMapper mapper = JacksonMapper.getInstance();
+                mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
                 artifactInfos = mapper.readValue(testInfosJson, ArtifactInfo[].class);
             } catch (IOException e) {
                 throw new WebmateApiClientException("Error reading data: " + e.getMessage(), e);
@@ -89,9 +89,7 @@ public class ArtifactClient {
             Artifact artifact;
             try {
                 String artifactJson = EntityUtils.toString(optHttpResponse.get().getEntity());
-
-                ObjectMapper mapper = JacksonMapper.getInstance();
-                artifact = mapper.readValue(artifactJson, Artifact.class);
+                artifact = Artifact.fromJsonString(artifactJson);
             } catch (IOException e) {
                 throw new WebmateApiClientException("Error reading Artifact data: " + e.getMessage(), e);
             }

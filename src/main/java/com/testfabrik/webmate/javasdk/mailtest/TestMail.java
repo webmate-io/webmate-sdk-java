@@ -6,21 +6,35 @@ import java.util.List;
 import java.util.Objects;
 
 public class TestMail {
-    private String from;
-    private List<String> to;
+    private JsonNode from;
+    private List<JsonNode> to;
     private JsonNode emailContent;
 
-    public TestMail(String from, List<String> to, JsonNode emailContent) {
+    public TestMail() {}
+
+    public void setFrom(JsonNode from) {
+        this.from = from;
+    }
+
+    public void setTo(List<JsonNode> to) {
+        this.to = to;
+    }
+
+    public void setEmailContent(JsonNode emailContent) {
+        this.emailContent = emailContent;
+    }
+
+    public TestMail(JsonNode from, List<JsonNode> to, JsonNode emailContent) {
         this.from = from;
         this.to = to;
         this.emailContent = emailContent;
     }
 
-    public String getFrom() {
+    public JsonNode getFrom() {
         return from;
     }
 
-    public List<String> getTo() {
+    public List<JsonNode> getTo() {
         return to;
     }
 

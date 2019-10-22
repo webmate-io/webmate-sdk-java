@@ -1,13 +1,14 @@
 package com.testfabrik.webmate.javasdk.testmgmt;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
+import com.testfabrik.webmate.javasdk.JacksonMapper;
 import com.testfabrik.webmate.javasdk.ProjectId;
-import com.testfabrik.webmate.javasdk.Tag;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
 import org.joda.time.DateTime;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -22,12 +23,13 @@ public class Artifact {
     private Optional<DateTime> endTime;
     private Optional<BrowserSessionId> associatedBrowserSession;
     private Optional<TestRunId> associatedTestRun;
-    private String data;
+    private ArtifactAssociation associations;
+    private JsonNode data;
 
     // for jackson
     private Artifact() {}
 
-    public Artifact(ArtifactId id, ArtifactType artifactType, ProjectId projectId, DateTime creationTime, Optional<DateTime> endTime, Optional<BrowserSessionId> associatedBrowserSession, Optional<TestRunId> associatedTestRun, String data) {
+    public Artifact(ArtifactId id, ArtifactType artifactType, ProjectId projectId, DateTime creationTime, Optional<DateTime> endTime, Optional<BrowserSessionId> associatedBrowserSession, Optional<TestRunId> associatedTestRun, ArtifactAssociation associations, JsonNode data) {
         this.id = id;
         this.artifactType = artifactType;
         this.projectId = projectId;
@@ -35,6 +37,7 @@ public class Artifact {
         this.endTime = endTime;
         this.associatedBrowserSession = associatedBrowserSession;
         this.associatedTestRun = associatedTestRun;
+        this.associations = associations;
         this.data = data;
     }
 
@@ -66,7 +69,7 @@ public class Artifact {
         return associatedTestRun;
     }
 
-    public String getData() {
+    public JsonNode getData() {
         return data;
     }
 
@@ -101,5 +104,18 @@ public class Artifact {
                 ", associatedBrowserSession=" + associatedBrowserSession +
                 ", associatedTestRun=" + associatedTestRun +
                 '}';
+    }
+
+    public ArtifactAssociation getAssociations() {
+        return associations;
+    }
+
+    public void setAssociations(ArtifactAssociation associations) {
+        this.associations = associations;
+    }
+
+    public static Artifact fromJsonString(String string) throws IOException {
+        ObjectMapper mapper = JacksonMapper.getInstance();
+        return mapper.readValue(string, Artifact.class);
     }
 }

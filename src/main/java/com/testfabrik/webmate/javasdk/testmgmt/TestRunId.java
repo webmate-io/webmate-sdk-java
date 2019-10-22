@@ -14,6 +14,7 @@ public class TestRunId {
     /**
      * Create new TestId.
      */
+    @JsonCreator
     public TestRunId(final UUID value) {
         this.value = value;
     }

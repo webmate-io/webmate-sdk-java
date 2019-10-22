@@ -1,6 +1,5 @@
 package com.testfabrik.webmate.javasdk.testmgmt;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Optional;
 import com.testfabrik.webmate.javasdk.ProjectId;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
@@ -20,11 +19,13 @@ public class ArtifactInfo {
     private Optional<DateTime> endTime;
     private Optional<BrowserSessionId> associatedBrowserSession;
     private Optional<TestRunId> associatedTestRun;
+    private ArtifactAssociation associations;
 
     // for jackson
     private ArtifactInfo() {}
 
-    public ArtifactInfo(ArtifactId id, ArtifactType artifactType, ProjectId projectId, DateTime creationTime, Optional<DateTime> endTime, Optional<BrowserSessionId> associatedBrowserSession, Optional<TestRunId> associatedTestRun) {
+    public ArtifactInfo(ArtifactId id, ArtifactType artifactType, ProjectId projectId, DateTime creationTime, Optional<DateTime> endTime,
+                        Optional<BrowserSessionId> associatedBrowserSession, Optional<TestRunId> associatedTestRun, ArtifactAssociation associations) {
         this.id = id;
         this.artifactType = artifactType;
         this.projectId = projectId;
@@ -32,6 +33,7 @@ public class ArtifactInfo {
         this.endTime = endTime;
         this.associatedBrowserSession = associatedBrowserSession;
         this.associatedTestRun = associatedTestRun;
+        this.associations = associations;
     }
 
     public ArtifactId getId() {
@@ -92,5 +94,13 @@ public class ArtifactInfo {
                 ", associatedBrowserSession=" + associatedBrowserSession +
                 ", associatedTestRun=" + associatedTestRun +
                 '}';
+    }
+
+    public ArtifactAssociation getAssociations() {
+        return associations;
+    }
+
+    public void setAssociations(ArtifactAssociation associations) {
+        this.associations = associations;
     }
 }

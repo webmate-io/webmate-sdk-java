@@ -3,9 +3,7 @@ package com.testfabrik.webmate.javasdk.mailtest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -37,7 +35,6 @@ public class MailTestClient {
     private static class MailTestApiClient extends WebmateApiClient {
 
         private final static UriTemplate createTestMailAddressInProjectTemplate =
-//                new UriTemplate("/projects/${projectId}/testmail");
                 new UriTemplate("/mailtest/testmail/${projectId}");
 
 
@@ -111,7 +108,7 @@ public class MailTestClient {
 
         ObjectMapper mapper = JacksonMapper.getInstance();
         try {
-            return mapper.readValue(artifact.getData(), TestMail.class);
+            return mapper.readValue(artifact.getData().toString(), TestMail.class);
         } catch (IOException e) {
             throw new WebmateApiClientException("Error parsing TestMail json: " + e.getMessage(), e);
         }

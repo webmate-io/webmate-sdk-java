@@ -1,5 +1,6 @@
 package com.testfabrik.webmate.javasdk.browsersession;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Objects;
@@ -10,6 +11,7 @@ public class BrowserSessionId {
     private UUID value;
 
 
+    @JsonCreator
     public BrowserSessionId(UUID value) {
         this.value = value;
     }
