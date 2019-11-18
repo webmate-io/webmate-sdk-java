@@ -1,5 +1,6 @@
 package com.testfabrik.webmate.javasdk.testmgmt;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
@@ -34,7 +35,7 @@ public class TestMgmtClient {
                 new UriTemplate("/testmgmt/tests/${testId}");
 
         private final static UriTemplate getTestResultsTemplate =
-                new UriTemplate("/testmgmt/tests/${testId}/testruns/${testRunIdx}/results");
+                new UriTemplate("/testmgmt/testruns/${testRunId}/results");
 
         public TestMgmtApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
             super(authInfo, environment);
@@ -81,14 +82,11 @@ public class TestMgmtClient {
 
         /**
          * Get TestResults of Test with given id and testrun index.
-         * @param id Id of Test.
-         * @param testRunIndex Index of TestRun.
+         * @param id Id of TestRun.
          * @return Optional with list of TestResults or Optional.absent if there was no such Test or TestRun. If there were no TestResults, the result is Optional of empty list.
          */
-        public Optional<List<TestResult>> getTestResults(TestId id, int testRunIndex) {
-            Optional<HttpResponse> optHttpResponse = sendGET(getTestResultsTemplate, ImmutableMap.of(
-                    "testId", id.toString(),
-                    "testRunIdx", String.valueOf(testRunIndex))).getOptHttpResponse();
+        public Optional<List<TestResult>> getTestResults(TestRunId id) {
+            Optional<HttpResponse> optHttpResponse = sendGET(getTestResultsTemplate, ImmutableMap.of("testRunId", id.toString())).getOptHttpResponse();
             if (!optHttpResponse.isPresent()) {
                 return Optional.absent();
             }
@@ -98,8 +96,8 @@ public class TestMgmtClient {
                 String testJson = EntityUtils.toString(optHttpResponse.get().getEntity());
 
                 ObjectMapper mapper = JacksonMapper.getInstance();
-                TestResult[] testResults = mapper.readValue(testJson, TestResult[].class);
-                result = Arrays.asList(testResults);
+                ApiResult<TestResult[]> testResults = mapper.readValue(testJson, new TypeReference<ApiResult<TestResult[]>>() {});
+                result = Arrays.asList(testResults.value);
             } catch (IOException e) {
                 throw new WebmateApiClientException("Error reading TestResult data: " + e.getMessage(), e);
             }
@@ -145,13 +143,12 @@ public class TestMgmtClient {
     }
 
     /**
-     * Retrieve list of TestResults for given test and testrun.
-     * @param id Id of Test.
-     * @param testRunIndex Index of TestRun.
-     * @return List of TestResults. Optional.absent if there was no such Test or Testrun.
+     * Retrieve list of TestResults for given test and test run.
+     * @param id Id of TestRun.
+     * @return List of TestResults. Optional.absent if there was no such Test or TestRun.
      */
-    public Optional<List<TestResult>> getTestResults(TestId id, int testRunIndex) {
-        return this.apiClient.getTestResults(id, testRunIndex);
+    public Optional<List<TestResult>> getTestResults(TestRunId id) {
+        return this.apiClient.getTestResults(id);
     }
 
 

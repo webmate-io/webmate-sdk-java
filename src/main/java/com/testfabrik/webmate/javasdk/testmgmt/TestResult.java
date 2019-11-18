@@ -12,7 +12,8 @@ import java.util.Objects;
 public class TestResult {
 
     private TestResultId id;
-    private TestRunInfo testRunInfo;
+    private TestRunId testRunId;
+    private TestId testId;
     private TestResultType issueType;
     private JsonNode properties;
     private List<ArtifactId> associatedArtifacts;
@@ -21,9 +22,10 @@ public class TestResult {
     // for jackson
     private TestResult() {}
 
-    public TestResult(TestResultId id, TestRunInfo testRunInfo, TestResultType issueType, JsonNode properties, List<ArtifactId> associatedArtifacts, List<Tag> tags) {
+    public TestResult(TestResultId id, TestRunId testRunId, TestId testId, TestResultType issueType, JsonNode properties, List<ArtifactId> associatedArtifacts, List<Tag> tags) {
         this.id = id;
-        this.testRunInfo = testRunInfo;
+        this.testId = testId;
+        this.testRunId = testRunId;
         this.issueType = issueType;
         this.properties = properties;
         this.associatedArtifacts = associatedArtifacts;
@@ -38,10 +40,25 @@ public class TestResult {
     }
 
     /**
+     * @return Id of TestRun
+     */
+    public TestRunId getTestRunId() {
+        return testRunId;
+    }
+
+    /**
+     * @return Id of Test
+     */
+    public TestId getTestId() {
+        return testId;
+    }
+
+    /**
      * @return Id of Test and test run index that this TestResult is associated with.
+     * @deprecated Use testId and testRunId instead.
      */
     public TestRunInfo getTestRunInfo() {
-        return testRunInfo;
+        return new TestRunInfo(testId, testRunId);
     }
 
     /**
@@ -79,7 +96,8 @@ public class TestResult {
         if (o == null || getClass() != o.getClass()) return false;
         TestResult that = (TestResult) o;
         return id.equals(that.id) &&
-                testRunInfo.equals(that.testRunInfo) &&
+                testId.equals(that.testId) &&
+                testRunId.equals(that.testRunId) &&
                 issueType.equals(that.issueType) &&
                 properties.equals(that.properties) &&
                 associatedArtifacts.equals(that.associatedArtifacts) &&
@@ -88,14 +106,15 @@ public class TestResult {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, testRunInfo, issueType, properties, associatedArtifacts, tags);
+        return Objects.hash(id, testId, testRunId, issueType, properties, associatedArtifacts, tags);
     }
 
     @Override
     public String toString() {
         return "TestResult{" +
                 "id=" + id +
-                ", testRunInfo=" + testRunInfo +
+                ", testId=" + testId +
+                ", testRunId=" + testRunId +
                 ", issueType=" + issueType +
                 ", properties=" + properties +
                 ", associatedArtifacts=" + associatedArtifacts +
