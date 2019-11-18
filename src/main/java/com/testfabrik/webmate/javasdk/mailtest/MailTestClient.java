@@ -74,6 +74,7 @@ public class MailTestClient {
     /**
      * Creates a MailTestApiClient based on a WebmateApiSession
      * @param session The WebmateApiSession used by the TestMgmtClient
+     * @param artifactClient client for the artifact subsystem (comes from webmate session)
      */
     public MailTestClient(WebmateAPISession session, ArtifactClient artifactClient) {
         this.session = session;

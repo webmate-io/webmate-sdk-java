@@ -13,6 +13,7 @@ public class ArtifactId {
 
     /**
      * Create new ArtifactId.
+     * @param value uuid of id
      */
     public ArtifactId(final UUID value) {
         this.value = value;
@@ -20,6 +21,8 @@ public class ArtifactId {
 
     /**
      * Create ArtifactId from UUID represented as a String.
+     * @param idStr string representation of id
+     * @return artifact id
      */
     @JsonCreator
     static ArtifactId of(final String idStr) {

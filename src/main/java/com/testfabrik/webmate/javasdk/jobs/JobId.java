@@ -11,6 +11,8 @@ public class JobId {
 
     /**
      * Create JobId from string representation.
+     * @param jobIdStr string representation of job id
+     * @return JobId
      */
     public static JobId of(String jobIdStr) {
         return new JobId(UUID.fromString(jobIdStr));

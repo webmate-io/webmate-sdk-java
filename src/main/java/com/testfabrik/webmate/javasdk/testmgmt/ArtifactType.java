@@ -22,6 +22,7 @@ public class ArtifactType {
 
     /**
      * Category of type
+     * @return Category of Artifact, e.g. Page.
      */
     public ArtifactCategory getCategory() {
         return category;
@@ -29,13 +30,14 @@ public class ArtifactType {
 
     /**
      * Name of type
+     * @return Type of artifact, e.g. FullpageScreenshot
      */
     public String getTypeName() {
         return typeName;
     }
 
     /**
-     * @return String representation of TestResultType.
+     * @return String representation of ArtifactType.
      */
     @JsonValue
     public String asSerializedString() {
@@ -57,9 +59,9 @@ public class ArtifactType {
     }
 
     /**
-     * Create an instance of TestResultType from its string representation, e.g. "Layout.AdditionalElement".
-     * @param input
-     * @return
+     * Create an instance of ArtifactType from its string representation, e.g. "Page.FullpageScreenshot".
+     * @param input string representation
+     * @return new instance
      */
     @JsonCreator
     public static ArtifactType fromString(String input) {

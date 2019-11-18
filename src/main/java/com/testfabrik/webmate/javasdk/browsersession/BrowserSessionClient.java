@@ -195,6 +195,14 @@ public class BrowserSessionClient {
             }
         }
 
+        /**
+         * Create new state artifact associated with browser session.
+         *
+         * @param browserSessionId id of browser session
+         * @param matchingId "Name" of state
+         * @param timeoutMillis time to wait for completion of operation (may still be successful after timeout)
+         * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionScreenshotExtractionConfig}.
+         */
         public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
 
             Map<String, Object>  params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", browserSessionStateExtractionConfig);
@@ -251,6 +259,7 @@ public class BrowserSessionClient {
      * Create a new State for the given BrowserSession with a default timeout of 5 minutes.
      * @param browserSessionId BrowserSession, in which the state should be extracted.
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
+     * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionScreenshotExtractionConfig}.
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
     public void createState(BrowserSessionId browserSessionId, String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
@@ -275,7 +284,7 @@ public class BrowserSessionClient {
      * @param browserSessionId BrowserSession, in which the state should be extracted.
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @param timeoutMillis Maximal amount of time to wait for the state extraction to complete in milliseconds.
-     * @param browserSessionStateExtractionConfig The configuration that is supposed to be used durin extractionß
+     * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionScreenshotExtractionConfig}.
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
     public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {

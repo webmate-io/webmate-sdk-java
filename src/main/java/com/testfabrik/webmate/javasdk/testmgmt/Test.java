@@ -22,6 +22,7 @@ public class Test {
 
     /**
      * Get general information about the test, e.g. name, creation time, etc.
+     * @return TestInfo with meta data about test
      */
     public TestInfo getInfo() {
         return info;
@@ -29,6 +30,7 @@ public class Test {
 
     /**
      * Get information about the test runs of this Test. The list returned is sorted according to the creation time of the test run.
+     * @return list of test runs associated with test
      */
     public List<TestRunSummary> getTestRuns() {
         return ImmutableList.copyOf(testRuns);

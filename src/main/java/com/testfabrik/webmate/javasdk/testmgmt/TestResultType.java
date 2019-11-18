@@ -22,6 +22,7 @@ public class TestResultType {
 
     /**
      * Category of type
+     * @return category, e.g. LayoutComparison
      */
     public TestResultCategory getCategory() {
         return category;
@@ -29,6 +30,7 @@ public class TestResultType {
 
     /**
      * Name of type
+     * @return type name, e.g. AdditionalElement
      */
     public String getTypeName() {
         return typeName;
@@ -58,8 +60,8 @@ public class TestResultType {
 
     /**
      * Create an instance of TestResultType from its string representation, e.g. "Layout.AdditionalElement".
-     * @param input
-     * @return
+     * @param input string representation
+     * @return new instance
      */
     @JsonCreator
     public static TestResultType fromString(String input) {

@@ -48,6 +48,13 @@ public class ArtifactClient {
             super(authInfo, environment, clientBuilder);
         }
 
+        /**
+         * Retrieve matching artifacts in a project.
+         * @param id Id of project to retrieve artifacts from
+         * @param associatedTestRun If of test run associated with artifacts.
+         * @param artifactTypes Types of artifacts to retrieve. If set is empty, artifacts of all types are retrieved.
+         * @return list of matching artifact infos
+         */
         public Optional<List<ArtifactInfo>> queryArtifacts(ProjectId id, TestRunId associatedTestRun, Set<ArtifactType> artifactTypes) {
 
 
@@ -117,10 +124,11 @@ public class ArtifactClient {
     }
 
     /**
-     * Retrieve Artifact infos associated with testrun in project
+     * Retrieve Artifact infos associated with test run in project
      *
      * @param projectId project id
-     * @param associatedTestRun testRunId associated with artifacts. TODO other association types
+     * @param associatedTestRun testRunId associated with artifacts.
+     * @param types Types of artifacts to retrieve. If set is empty, artifacts of all types are retrieved.
      * @return artifactInfo list
      */
     public List<ArtifactInfo> queryArtifacts(ProjectId projectId, TestRunId associatedTestRun, Set<ArtifactType> types) {

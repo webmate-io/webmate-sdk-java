@@ -135,7 +135,7 @@ public class DeviceClient {
     /**
      * Get all Device ids for a project.
      * @param projectId Id of Project (as found in dashboard), for which devices should be retrieved.
-     *
+     * @return Collection of device ids.
      */
     public Collection<DeviceId> getDeviceIdsForProject(ProjectId projectId) {
         return this.apiClient.getDeviceIdsForProject(projectId);
@@ -143,8 +143,9 @@ public class DeviceClient {
 
     /**
      * Get all Device templates available in a project.
-     * @param projectId Id of Project (as found in dashboard), for which devices should be retrieved.
      *
+     * @param projectId Id of Project (as found in dashboard), for which devices should be retrieved.
+     * @return Templates available in project
      */
     public Collection<DeviceTemplate> getDeviceTemplatesForProject(ProjectId projectId) {
         return this.apiClient.getDeviceTemplatesForProject(projectId);

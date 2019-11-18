@@ -13,6 +13,7 @@ public class TestResultId {
 
     /**
      * Create new TestId.
+     * @param value uuid of test result id
      */
     @JsonCreator
     public TestResultId(final UUID value) {

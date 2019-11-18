@@ -15,6 +15,8 @@ public class JobRunId {
 
     /**
      * Create new JobRunId from String representation.
+     * @param jobRunIdStr string representation of job run id
+     * @return JobRunId
      */
     public static JobRunId of(String jobRunIdStr) {
         return new JobRunId(UUID.fromString(jobRunIdStr));

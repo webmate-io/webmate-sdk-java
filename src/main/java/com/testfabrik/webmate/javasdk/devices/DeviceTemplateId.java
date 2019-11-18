@@ -14,10 +14,12 @@ public class DeviceTemplateId {
     }
 
     /**
-     * Create new JobRunId from String representation.
+     * Create new DeviceTemplateId from String representation.
+     * @param templateIdStr id of template
+     * @return created template id
      */
-    public static DeviceTemplateId of(String jobRunIdStr) {
-        return new DeviceTemplateId(UUID.fromString(jobRunIdStr));
+    public static DeviceTemplateId of(String templateIdStr) {
+        return new DeviceTemplateId(UUID.fromString(templateIdStr));
     }
 
     static DeviceTemplateId FOR_TESTING() {

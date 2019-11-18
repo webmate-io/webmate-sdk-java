@@ -12,7 +12,8 @@ public class TestRunId {
     private final UUID value;
 
     /**
-     * Create new TestId.
+     * Create new TestRunId.
+     * @param value uuid of test run id
      */
     @JsonCreator
     public TestRunId(final UUID value) {

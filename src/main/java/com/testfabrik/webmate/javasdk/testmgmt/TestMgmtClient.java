@@ -154,7 +154,8 @@ public class TestMgmtClient {
 
     /**
      * Get Id of TestRun associated with a Selenium session.
-     * @param opaqueSeleniumSessionIdString
+     * @param opaqueSeleniumSessionIdString selenium session id
+     * @return test run id
      */
     public TestRunId getTestRunIdForSessionId(String opaqueSeleniumSessionIdString) {
         return new TestRunId(UUID.randomUUID());

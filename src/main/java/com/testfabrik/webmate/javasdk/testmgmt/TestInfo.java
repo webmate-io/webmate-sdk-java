@@ -26,6 +26,7 @@ public class TestInfo {
 
     /**
      * Id of Test.
+     * @return id of Test
      */
     public TestId getId() {
         return id;
@@ -33,6 +34,7 @@ public class TestInfo {
 
     /**
      * Name of Test.
+     * @return name of Test
      */
     public String getName() {
         return name;
@@ -40,6 +42,7 @@ public class TestInfo {
 
     /**
      * Time when the Test was created.
+     * @return creation time
      */
     public DateTime getCreationTime() {
         return creationTime;
@@ -47,6 +50,7 @@ public class TestInfo {
 
     /**
      * Human readable description of Test.
+     * @return human readable description
      */
     public String getDescription() {
         return description;
@@ -54,6 +58,7 @@ public class TestInfo {
 
     /**
      * Version of Test document.
+     * @return version of test.
      */
     public int getVersion() {
         return version;

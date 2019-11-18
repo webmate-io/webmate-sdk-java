@@ -14,6 +14,7 @@ public class TestId {
 
     /**
      * Create new TestId.
+     * @param value uuid of TestId
      */
     public TestId(final UUID value) {
         this.value = value;
@@ -21,6 +22,8 @@ public class TestId {
 
     /**
      * Create TestId from UUID represented as a String.
+     * @param idStr string representation of TestId
+     * @return new TestId
      */
     @JsonCreator
     static TestId of(final String idStr) {
