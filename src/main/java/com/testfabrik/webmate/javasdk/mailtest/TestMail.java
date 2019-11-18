@@ -1,40 +1,49 @@
 package com.testfabrik.webmate.javasdk.mailtest;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.testfabrik.webmate.javasdk.JacksonMapper;
+import com.testfabrik.webmate.javasdk.WebmateApiClientException;
+import com.testfabrik.webmate.javasdk.testmgmt.Artifact;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
 public class TestMail {
-    private JsonNode from;
-    private List<JsonNode> to;
+    private String from;
+    private List<String> to;
     private JsonNode emailContent;
 
-    public TestMail() {}
+    // for jackson
+    private TestMail() {}
 
-    public void setFrom(JsonNode from) {
-        this.from = from;
-    }
-
-    public void setTo(List<JsonNode> to) {
-        this.to = to;
-    }
-
-    public void setEmailContent(JsonNode emailContent) {
-        this.emailContent = emailContent;
-    }
-
-    public TestMail(JsonNode from, List<JsonNode> to, JsonNode emailContent) {
+    public TestMail(String from, List<String> to, JsonNode emailContent) {
         this.from = from;
         this.to = to;
         this.emailContent = emailContent;
     }
 
-    public JsonNode getFrom() {
+    /**
+     * Create TestMail from Artifact instance.
+     * @param artifact artifact to be interpreted as a TestMail.
+     * @return TestMail
+     * @throws com.testfabrik.webmate.javasdk.WebmateApiClientException if TestMail could not be instantiated
+     */
+    public static TestMail fromArtifact(Artifact artifact) {
+        ObjectMapper mapper = JacksonMapper.getInstance();
+        try {
+            return mapper.readValue(artifact.getData().toString(), TestMail.class);
+        } catch (IOException e) {
+            throw new WebmateApiClientException("Error parsing TestMail json: " + e.getMessage(), e);
+        }
+    }
+
+    public String getFrom() {
         return from;
     }
 
-    public List<JsonNode> getTo() {
+    public List<String> getTo() {
         return to;
     }
 

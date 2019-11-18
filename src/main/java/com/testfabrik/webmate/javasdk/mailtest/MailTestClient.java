@@ -104,16 +104,6 @@ public class MailTestClient {
         return result;
     }
 
-    private TestMail makeTestMailFromArtifact(Artifact artifact) {
-
-        ObjectMapper mapper = JacksonMapper.getInstance();
-        try {
-            return mapper.readValue(artifact.getData().toString(), TestMail.class);
-        } catch (IOException e) {
-            throw new WebmateApiClientException("Error parsing TestMail json: " + e.getMessage(), e);
-        }
-    }
-
     /**
      * Get TestResults of Test with given id and testrun index.
      * @param projectId Project id.
@@ -128,7 +118,7 @@ public class MailTestClient {
          for (ArtifactInfo info : infos) {
              Optional<Artifact> artifact = artifactClient.getArtifact(info.getId());
              if (artifact.isPresent()) {
-                 result.add(makeTestMailFromArtifact(artifact.get()));
+                 result.add(TestMail.fromArtifact(artifact.get()));
              } else {
                  LOG.warn("Could not retrieve artifact [" + info.getId() + "]");
              }
