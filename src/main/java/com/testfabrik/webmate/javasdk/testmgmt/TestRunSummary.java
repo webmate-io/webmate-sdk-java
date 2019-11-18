@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class TestRunSummary {
     private TestId testId;
-    private int testRunIndex;
+    private TestRunId testRunId;
     private UserId creator;
     private ProjectId projectId;
     private DateTime startTime;
@@ -26,8 +26,8 @@ public class TestRunSummary {
         return testId;
     }
 
-    public int getTestRunIndex() {
-        return testRunIndex;
+    public TestRunId getTestRunId() {
+        return testRunId;
     }
 
     /**
@@ -69,7 +69,7 @@ public class TestRunSummary {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TestRunSummary that = (TestRunSummary) o;
-        return testRunIndex == that.testRunIndex &&
+        return testRunId == that.testRunId &&
                 testId.equals(that.testId) &&
                 creator.equals(that.creator) &&
                 projectId.equals(that.projectId) &&
@@ -82,14 +82,14 @@ public class TestRunSummary {
 
     @Override
     public int hashCode() {
-        return Objects.hash(testId, testRunIndex, creator, projectId, startTime, endTime, lastUpdateTime, numIssues, numFilteredIssues);
+        return Objects.hash(testId, testRunId, creator, projectId, startTime, endTime, lastUpdateTime, numIssues, numFilteredIssues);
     }
 
     @Override
     public String toString() {
         return "TestRunSummary{" +
                 "testId=" + testId +
-                ", testRunIndex=" + testRunIndex +
+                ", testRunId=" + testRunId +
                 ", creator=" + creator +
                 ", projectId=" + projectId +
                 ", startTime=" + startTime +

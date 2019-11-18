@@ -2,6 +2,8 @@ package com.testfabrik.webmate.javasdk.jobs;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.testfabrik.webmate.javasdk.UserId;
+import com.testfabrik.webmate.javasdk.testmgmt.TestId;
+import com.testfabrik.webmate.javasdk.testmgmt.TestRunId;
 import com.testfabrik.webmate.javasdk.testmgmt.TestRunInfo;
 import org.joda.time.DateTime;
 
@@ -26,11 +28,12 @@ public class JobRunSummary {
     private DateTime lastUpdateTime;
     private String failureMessage;
     private Map<String, BrickValue> inputPorts;
-    private TestRunInfo optTestRunInfo;
+    private TestId testId;
+    private TestRunId testRunId;
     private Map<String, JsonNode> summaryInformation;
 
     public JobRunSummary(JobRunId id, JobRunState state, UserId creator, DateTime creationTime, DateTime startTime, DateTime endTime, DateTime lastUpdateTime, String failureMessage,
-                         Map<String, BrickValue> inputPorts, TestRunInfo optTestRunInfo, Map<String, JsonNode> summaryInformation) {
+                         Map<String, BrickValue> inputPorts, TestId testId, TestRunId testRunId, Map<String, JsonNode> summaryInformation) {
         this.id = id;
         this.state = state;
         this.creator = creator;
@@ -40,7 +43,6 @@ public class JobRunSummary {
         this.lastUpdateTime = lastUpdateTime;
         this.failureMessage = failureMessage;
         this.inputPorts = inputPorts;
-        this.optTestRunInfo = optTestRunInfo;
         this.summaryInformation = summaryInformation;
     }
 
@@ -107,7 +109,21 @@ public class JobRunSummary {
      * @return If this Job was part of a TestRun, this is the associated TestRun information. May be null.
      */
     public TestRunInfo getOptTestRunInfo() {
-        return optTestRunInfo;
+        return new TestRunInfo(getTestId(), getTestRunId());
+    }
+
+    /**
+     * @return Id of TestRun associated with this Job.
+     */
+    public TestRunId getTestRunId() {
+        return testRunId;
+    }
+
+    /**
+     * @return Id of Test associated with this Job.
+     */
+    public TestId getTestId() {
+        return testId;
     }
 
     /**
@@ -132,13 +148,14 @@ public class JobRunSummary {
                 Objects.equals(lastUpdateTime, that.lastUpdateTime) &&
                 Objects.equals(failureMessage, that.failureMessage) &&
                 inputPorts.equals(that.inputPorts) &&
-                Objects.equals(optTestRunInfo, that.optTestRunInfo) &&
+                Objects.equals(testId, that.testId) &&
+                Objects.equals(testRunId, that.testRunId) &&
                 summaryInformation.equals(that.summaryInformation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, state, creator, creationTime, startTime, endTime, lastUpdateTime, failureMessage, inputPorts, optTestRunInfo, summaryInformation);
+        return Objects.hash(id, state, creator, creationTime, startTime, endTime, lastUpdateTime, failureMessage, inputPorts, testId, testRunId, summaryInformation);
     }
 
     @Override
@@ -153,7 +170,8 @@ public class JobRunSummary {
                 ", lastUpdateTime=" + lastUpdateTime +
                 ", failureMessage='" + failureMessage + '\'' +
                 ", inputPorts=" + inputPorts +
-                ", optTestRunInfo=" + optTestRunInfo +
+                ", testId=" + testId +
+                ", testRunId=" + testRunId +
                 ", summaryInformation=" + summaryInformation +
                 '}';
     }

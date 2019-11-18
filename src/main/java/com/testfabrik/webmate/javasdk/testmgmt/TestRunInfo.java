@@ -11,24 +11,24 @@ import java.util.Objects;
 public class TestRunInfo {
     private TestId testId;
 
-    private int index;
+    private TestRunId testRunId;
 
     // for jackson
     private TestRunInfo() {}
 
-    public TestRunInfo(final TestId testId, final int index) {
+    public TestRunInfo(final TestId testId, final TestRunId testRunId) {
         this.testId = testId;
-        this.index = index;
+        this.testRunId = testRunId;
     }
 
     public TestId getTestId() {
         return testId;
     }
 
-    @JsonProperty("testRunIndex")
-    @JsonAlias({"index"})
-    public int getIndex() {
-        return index;
+    @JsonProperty("testRunId")
+    @JsonAlias({"id"})
+    public TestRunId getTestRunId() {
+        return testRunId;
     }
 
     @Override
@@ -36,20 +36,20 @@ public class TestRunInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TestRunInfo that = (TestRunInfo) o;
-        return index == that.index &&
+        return testRunId == that.testRunId &&
                 testId.equals(that.testId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(testId, index);
+        return Objects.hash(testId, testRunId);
     }
 
     @Override
     public String toString() {
         return "TestRunInfo{" +
                 "testId=" + testId +
-                ", index=" + index +
+                ", index=" + testRunId +
                 '}';
     }
 }
