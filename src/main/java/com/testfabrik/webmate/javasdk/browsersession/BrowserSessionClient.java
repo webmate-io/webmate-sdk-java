@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.testfabrik.webmate.javasdk.*;
-import com.testfabrik.webmate.javasdk.jobs.JobId;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -16,7 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Facade for webmate BrowserSession service.
@@ -33,21 +34,11 @@ public class BrowserSessionClient {
         private final static UriTemplate createStateTemplate =
                 new UriTemplate("/browsersession/${browserSessionId}/states");
 
-        private final static UriTemplate extractLayoutTemplate =
-                new UriTemplate("/browsersession/${browserSessionId}/artifacts");
-
         private final static UriTemplate checkStateProgressTemplate =
                 new UriTemplate("/browsersession/${browserSessionId}/artifacts/${browserSessionArtifactId}/progress");
 
         private final static UriTemplate terminateBrowsersessionTemplate =
                 new UriTemplate("/browsersession/${browserSessionId}");
-
-        // TODO: fact endpoints to factsession client
-        private final static UriTemplate createFactSessionTemplate =
-                new UriTemplate("/factengine/factsessions");
-
-        private final static UriTemplate getFactSessionInfoTemplate =
-                new UriTemplate("/factengine/factsessions/${factSessionId}");
 
         private static final int millisToWait = 8000;
 
@@ -74,71 +65,18 @@ public class BrowserSessionClient {
          * @param browserSessionId The Browsersession Id the state should be created for
          * @param matchingId The Id for the state. Used for matching
          * @param timeoutMillis The timeout for the statecreation in milliseconds
-         * @deprecated renamed to createStateAndExtractLayout
          */
         public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis) {
-            createStateAndExtractLayout(browserSessionId, matchingId, timeoutMillis);
-        }
-
-        /**
-         * Creates a State for a Browsersession with a matching id. The extraction parameters are set to default.
-         * @param browserSessionId The Browsersession Id the state should be created for
-         * @param name Name of the new state
-         * @param timeoutMillis The timeout for the statecreation in milliseconds
-         */
-        public void createStateAndExtractLayout(BrowserSessionId browserSessionId, String name, long timeoutMillis) {
             Object empty = Collections.emptyMap();
-
-            ObjectMapper mapper = new ObjectMapper();
-
             // create a sane default Config, extracting DOM and taking non fullpage Screenshots. Otherwise take Webmate Defaults.
             BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig = new BrowserSessionStateExtractionConfig(null, null, null, null, null, true,
                     new BrowserSessionScreenshotExtractionConfig(false, false), null);
-            Map<String, String>  createStateParams = ImmutableMap.of("name", name);
-            Optional<HttpResponse> createStateResponse = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(createStateParams)).getOptHttpResponse();
-
-            Map<String, BrowserSessionStateExtractionConfig>  extractLayoutParams = ImmutableMap.of("extractionConfig", browserSessionStateExtractionConfig);
+            Map<String, Object>  params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", browserSessionStateExtractionConfig);
+            ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            Optional<HttpResponse> extractLayoutResponse = sendPOST(extractLayoutTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(extractLayoutParams)).getOptHttpResponse();
-
-            waitForStateExtractionResponse(browserSessionId, timeoutMillis, extractLayoutResponse);
+            Optional<HttpResponse> r = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
+            waitForStateExtractionResponse(browserSessionId, timeoutMillis, r);
         }
-
-//        public FactSessionId createFactSession(List<FactRequest> factRequests) {
-//            ObjectMapper mapper = new ObjectMapper();
-//
-//            Optional<HttpResponse> optHttpResponse = sendPOST(createFactSessionTemplate, Maps.<String, String>newHashMap(), mapper.valueToTree(factRequests)).getOptHttpResponse();
-//
-//            if (!optHttpResponse.isPresent()) {
-//                throw new WebmateApiClientException("Could not start FactSession. Got no response");
-//            }
-//
-//            String sessionId;
-//            try {
-//                sessionId = EntityUtils.toString(optHttpResponse.get().getEntity());
-//            } catch (IOException e) {
-//                throw new WebmateApiClientException("Could not start FactSession. Got no session id.");
-//            }
-//            return new FactSessionId(UUID.fromString(sessionId));
-//        }
-//
-//        public FactSessionInfo getFactSessionInfo(FactSessionId factSessionId) {
-//
-//            Optional<HttpResponse> optHttpResponse = sendPOST(getFactSessionInfoTemplate, ImmutableMap.of("factSessionId", factSessionId.getValueAsString())).getOptHttpResponse();
-//
-//            if (!optHttpResponse.isPresent()) {
-//                throw new WebmateApiClientException("Could not start FactSession. Got no response");
-//            }
-//
-//            String sessionId;
-//            try {
-//                sessionId = EntityUtils.toString(optHttpResponse.get().getEntity());
-//            } catch (IOException e) {
-//                throw new WebmateApiClientException("Could not start FactSession. Got no session id.");
-//            }
-//            return new FactSessionId(UUID.fromString(sessionId));
-//        }
-
 
 
 
