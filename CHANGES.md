@@ -2,6 +2,20 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.27] - 2019-11-26
+
+###Fixes
+- Fixes a regression that broke state creation when not providing a BrowserSessionExtractionConfig
+
+
+## [0.26] - 2019-11-18
+##New
+- Added Mailtest functionality
+  - Users can request a mail address that they can use during a test
+  - Users can also retrieve Mails that are sent to this address to execute additional tests on the mail
+###Fixes
+- Adjusted api methods to match webmate release 18.11
+
 ## [0.25] - 2019-04-08
 ###Fixes
 - Fixed an issue that prevented correct retrieval of test run results
