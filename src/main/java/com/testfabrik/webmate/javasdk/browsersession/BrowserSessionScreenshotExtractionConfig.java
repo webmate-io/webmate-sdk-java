@@ -10,6 +10,8 @@ public class BrowserSessionScreenshotExtractionConfig {
 
     private boolean hideFixedElements;
 
+    private boolean useTranslateYScrollStrategy;
+
     public boolean isHideFixedElements() {
         return hideFixedElements;
     }
@@ -26,6 +28,12 @@ public class BrowserSessionScreenshotExtractionConfig {
         this.fullPage = fullPage;
     }
 
+    public void setUseTranslateYScrollStrategy(boolean useTranslateYScrollStrategy) {
+        this.useTranslateYScrollStrategy = useTranslateYScrollStrategy;
+    }
+
+    public boolean isUseTranslateYScrollStrategy(){ return this.useTranslateYScrollStrategy;}
+
     /**
      * Creates a new BrowserSession ScreenshotExtractionConfig instance.
      * @param fullPage Whether fullpage screenshots should be taken or not.
@@ -34,5 +42,12 @@ public class BrowserSessionScreenshotExtractionConfig {
     public BrowserSessionScreenshotExtractionConfig(boolean fullPage, boolean hideFixedElements) {
         this.fullPage = fullPage;
         this.hideFixedElements = hideFixedElements;
+        this.useTranslateYScrollStrategy = false;
+    }
+
+    public BrowserSessionScreenshotExtractionConfig(boolean fullPage, boolean hideFixedElements, boolean useTranslateYScrollStrategy) {
+        this.fullPage = fullPage;
+        this.hideFixedElements = hideFixedElements;
+        this.useTranslateYScrollStrategy = useTranslateYScrollStrategy;
     }
 }
