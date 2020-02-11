@@ -12,6 +12,8 @@ There is no official version of the webmate Java SDK, yet. This is a preview rel
 
 This SDK pre-release gives access to a small subset of the features available in the API. The SDK will be completed over time.
 
+For a list of recent change refer to the [changelog](CHANGES.md)
+
 
 ## Using the SDK in your Project
 
@@ -20,7 +22,7 @@ This release is also distributed via Maven Central. Just include the following d
 ```xml
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
-    <version>0.27</version>
+    <version>0.28.0</version>
 ```
 
 To build the SDK from its sources, simply clone this repository and
@@ -35,7 +37,7 @@ After that, you can include the SDK as a Maven dependency to your project, i.e. 
 ```xml
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
-    <version>0.28-SNAPSHOT</version>
+    <version>0.29.0-SNAPSHOT</version>
 ```
 
 or using the equivalent statement in a build tool of your choice. 
