@@ -2,6 +2,12 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.28.0] - 2020-02-10
+
+###New
+- Synchronized versioning with webmate JavaScript SDK
+- Artifacts can be queried by BrowserSessionId
+
 ## [0.27] - 2019-11-26
 
 ###Fixes

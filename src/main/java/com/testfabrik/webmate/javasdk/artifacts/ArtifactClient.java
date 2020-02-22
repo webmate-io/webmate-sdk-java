@@ -6,6 +6,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.testfabrik.webmate.javasdk.*;
+import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
 import com.testfabrik.webmate.javasdk.testmgmt.*;
 import org.apache.commons.io.Charsets;
 import org.apache.http.HttpResponse;
@@ -51,15 +52,17 @@ public class ArtifactClient {
         /**
          * Retrieve matching artifacts in a project.
          * @param id Id of project to retrieve artifacts from
-         * @param associatedTestRun If of test run associated with artifacts.
+         * @param associatedTestRun Id of test run associated with artifacts.
+         * @param associatedBrowserSession Id of browser session associated with artifacts
          * @param artifactTypes Types of artifacts to retrieve. If set is empty, artifacts of all types are retrieved.
          * @return list of matching artifact infos
          */
-        public Optional<List<ArtifactInfo>> queryArtifacts(ProjectId id, TestRunId associatedTestRun, Set<ArtifactType> artifactTypes) {
+        public Optional<List<ArtifactInfo>> queryArtifacts(ProjectId id, TestRunId associatedTestRun, BrowserSessionId associatedBrowserSession, Set<ArtifactType> artifactTypes) {
 
 
             List<NameValuePair> params = Lists.newArrayList();
-            params.add(new BasicNameValuePair("testRunId", associatedTestRun.toString()));
+            if (associatedTestRun != null) params.add(new BasicNameValuePair("testRunId", associatedTestRun.toString()));
+            if (associatedBrowserSession != null) params.add(new BasicNameValuePair("browserSessionId", associatedBrowserSession.toString()));
 
             if (!artifactTypes.isEmpty()) {
                 StringBuilder typesParam = new StringBuilder();
@@ -69,7 +72,6 @@ public class ArtifactClient {
                 }
                 params.add(new BasicNameValuePair("types", typesParam.toString()));
             }
-
             Optional<HttpResponse> optHttpResponse = sendGET(queryArtifactsTemplate, ImmutableMap.of("projectId", id.toString()), params).getOptHttpResponse();
             if (!optHttpResponse.isPresent()) {
                 return Optional.absent();
@@ -132,7 +134,32 @@ public class ArtifactClient {
      * @return artifactInfo list
      */
     public List<ArtifactInfo> queryArtifacts(ProjectId projectId, TestRunId associatedTestRun, Set<ArtifactType> types) {
-        return this.apiClient.queryArtifacts(projectId, associatedTestRun, types).get();
+        return this.apiClient.queryArtifacts(projectId, associatedTestRun, null, types).get();
+    }
+
+    /**
+     * Retrieve Artifact infos associated with browser session in project
+     *
+     * @param projectId project id
+     * @param associatedBrowserSession browserSessionId associated with artifacts.
+     * @param types Types of artifacts to retrieve. If set is empty, artifacts of all types are retrieved.
+     * @return artifactInfo list
+     */
+    public List<ArtifactInfo> queryArtifacts(ProjectId projectId, BrowserSessionId associatedBrowserSession, Set<ArtifactType> types) {
+        return this.apiClient.queryArtifacts(projectId,  null, associatedBrowserSession, types).get();
+    }
+
+    /**
+     * Retrieve Artifact infos associated with test run and browser session in project
+     *
+     * @param projectId project id
+     * @param associatedTestRun testRunId associated with artifacts.
+     *                               * @param associatedBrowserSession browserSessionId associated with artifacts.
+     * @param types Types of artifacts to retrieve. If set is empty, artifacts of all types are retrieved.
+     * @return artifactInfo list
+     */
+    public List<ArtifactInfo> queryArtifacts(ProjectId projectId, TestRunId associatedTestRun, BrowserSessionId associatedBrowserSession, Set<ArtifactType> types) {
+        return this.apiClient.queryArtifacts(projectId, associatedTestRun, associatedBrowserSession, types).get();
     }
 
     /**
