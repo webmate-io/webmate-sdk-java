@@ -222,7 +222,7 @@ public class BrowserSessionClient {
      * @param browserSessionId BrowserSession, in which the state should be extracted.
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @param timeoutMillis Maximal amount of time to wait for the state extraction to complete in milliseconds.
-     * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionScreenshotExtractionConfig}.
+     * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
     public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {

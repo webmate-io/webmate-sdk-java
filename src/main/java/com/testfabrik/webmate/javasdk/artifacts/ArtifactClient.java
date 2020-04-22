@@ -107,8 +107,8 @@ public class ArtifactClient {
     }
 
     /**
-     * Creates a TestMgmtClient based on a WebmateApiSession
-     * @param session The WebmateApiSession used by the TestMgmtClient
+     * Creates an ArtifactClient based on a WebmateApiSession
+     * @param session The WebmateApiSession used by the ArtifactClient
      */
     public ArtifactClient(WebmateAPISession session) {
         this.session = session;
@@ -116,8 +116,8 @@ public class ArtifactClient {
     }
 
     /**
-     * Creates a TestMgmtClient based on a WebmateApiSession and a custom HttpClientBuilder.
-     * @param session The WebmateApiSession used by the TestMgmtClient
+     * Creates an ArtifactClient based on a WebmateApiSession and a custom HttpClientBuilder.
+     * @param session The WebmateApiSession used by the ArtifactClient
      * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection.
      */
     public ArtifactClient(WebmateAPISession session, HttpClientBuilder httpClientBuilder) {

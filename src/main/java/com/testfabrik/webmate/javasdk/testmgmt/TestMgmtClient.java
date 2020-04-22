@@ -126,7 +126,7 @@ public class TestMgmtClient {
 
     /**
      * Retrieve Tests in project with id
-     * @param id Id of Test.
+     * @param id Id of Project.
      * @return Test
      */
     public Optional<List<TestInfo>> getTestsInProject(ProjectId id) {
