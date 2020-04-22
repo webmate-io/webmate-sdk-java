@@ -45,6 +45,12 @@ public class BrowserSessionScreenshotExtractionConfig {
         this.useTranslateYScrollStrategy = false;
     }
 
+    /**
+     * Creates a new BrowserSession ScreenshotExtractionConfig instance.
+     * @param fullPage Whether fullpage screenshots should be taken or not.
+     * @param hideFixedElements Whether fixed Elements should be hidden when taking fullpage screenshots or not. Note: has no effect if fullpage is false.
+     * @param useTranslateYScrollStrategy Wether the translateY css property should be used to take fullpage screenshots
+     */
     public BrowserSessionScreenshotExtractionConfig(boolean fullPage, boolean hideFixedElements, boolean useTranslateYScrollStrategy) {
         this.fullPage = fullPage;
         this.hideFixedElements = hideFixedElements;

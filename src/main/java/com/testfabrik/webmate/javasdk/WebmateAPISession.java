@@ -36,11 +36,24 @@ public class WebmateAPISession {
      */
     public final TestMgmtClient testMgmt;
 
+    /**
+     * Facade to webmate's MailTest subsystem.
+     */
     public final MailTestClient mailTest;
 
+    /**
+     * Facade to webmate's Artifact subsystem.
+     */
     public final ArtifactClient artifact;
 
 
+    /**
+     * Constructor to create a new WebmateAPISession.
+     * The session is used to access all functionality of webmate.
+     *
+     * @param authInfo an instance of WebmateAuthInfo which contains the users credentials
+     * @param environment an instance of WebmateEnvironment which contains the url of webmate
+     */
     public WebmateAPISession(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
         this.authInfo = authInfo;
         this.environment = environment;
@@ -53,6 +66,14 @@ public class WebmateAPISession {
         this.mailTest = new MailTestClient(this, artifact);
     }
 
+    /**
+     * Constructor to create a new WebmateAPISession.
+     * The session is used to access all functionality of webmate.
+     *
+     * @param authInfo an instance of WebmateAuthInfo which contains the users credentials
+     * @param environment an instance of WebmateEnvironment which contains the url of webmate
+     * @param httpClientBuilder client builder used to create HTTP connections
+     */
     public WebmateAPISession(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
         this.authInfo = authInfo;
         this.environment = environment;

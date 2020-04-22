@@ -39,7 +39,7 @@ public class BrowserSessionRef {
      * Creates a State for a Browsersession with a matching id using a custom config.
      * @param matchingId The Id for the state. Used for matching.
      * @param browserSessionStateExtractionConfig The custom config that is supposed to be used.
-     * @param timeout The timeout for the state extraction in miliseconds.
+     * @param timeout The timeout for the state extraction in milliseconds.
      */
     public void createState(String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig, long timeout) {
         session.browserSession.createState(browserSessionId, matchingId, timeout, browserSessionStateExtractionConfig);
@@ -48,7 +48,7 @@ public class BrowserSessionRef {
     /**
      * Creates a State for a Browsersession with a matching id using a custom config.
      * @param matchingId The Id for the state. Used for matching.
-     * @param timeout The timeout for the state extraction in miliseconds.
+     * @param timeout The timeout for the state extraction in milliseconds.
      */
     public void createState(String matchingId, long timeout) {
         session.browserSession.createState(browserSessionId, matchingId, timeout);
@@ -56,7 +56,7 @@ public class BrowserSessionRef {
 
     /**
      * Terminates the BrowserSession
-     * @return True if the BrowserSession was successfully terminated
+     * @return true if the BrowserSession was successfully terminated
      */
     public boolean terminateSession(){
         return session.browserSession.terminateBrowsersession(browserSessionId);

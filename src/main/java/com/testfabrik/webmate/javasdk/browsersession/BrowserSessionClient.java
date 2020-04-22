@@ -176,7 +176,7 @@ public class BrowserSessionClient {
     /**
      * Return the webmate BrowserSessionId for a given Selenium session running in webmate.
      * @param opaqueSeleniumSessionIdString Selenium SessionId that can be obtained by calling WebDriver.getSessionId().toString().
-     * @return BrowserSessionId
+     * @return BrowserSessionRef that can be used to interact with the BrowserSession
      */
     public BrowserSessionRef getBrowserSessionForSeleniumSession(String opaqueSeleniumSessionIdString) {
         // it seems that currently the BrowserSessionId is equal to the Selenium SessionId (which I would consider a bug)
@@ -234,7 +234,7 @@ public class BrowserSessionClient {
     /**
      * Terminate the given BrowserSession
      * @param browserSessionId The Id for the BrowserSession that is supposed to be termianted
-     * @return Wether the Browsersession was successfully terminated or not
+     * @return true if the Browsersession was successfully terminated
      */
     public boolean terminateBrowsersession(BrowserSessionId browserSessionId) {
         LOG.debug("Trying to terminate Browsersession with id ["+ browserSessionId +"]");

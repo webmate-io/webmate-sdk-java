@@ -255,35 +255,84 @@ public class SeleniumServiceClient {
         return this.apiClient.getSeleniumsessionsForProject(projectId, after, count, state);
     }
 
-    //region Overloads for getSeleniumsessionsForProject
+    /**
+     * Get all Selenium sessions for a project by project ID
+     * @param projectId The ID of the project of which Selenium sessions shall be retrieved
+     * @return (Filtered) List of Selenium sessions in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium sessions could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<SeleniumSession> getSeleniumsessionsForProject(ProjectId projectId) throws WebmateApiClientException {
         return getSeleniumsessionsForProject(projectId, null, null, null);
     }
 
+    /**
+     * Get all Selenium sessions for a project by project ID
+     * @param projectId The ID of the project of which Selenium sessions shall be retrieved
+     * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given Id.
+     * @return (Filtered) List of Selenium sessions in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium sessions could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<SeleniumSession> getSeleniumsessionsForProject(ProjectId projectId, WebmateSeleniumSessionId after) throws WebmateApiClientException {
         return getSeleniumsessionsForProject(projectId, after, null, null);
     }
 
+    /**
+     * Get all Selenium sessions for a project by project ID
+     * @param projectId The ID of the project of which Selenium sessions shall be retrieved
+     * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
+     * @return (Filtered) List of Selenium sessions in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium sessions could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<SeleniumSession> getSeleniumsessionsForProject(ProjectId projectId, int count) throws WebmateApiClientException {
         return getSeleniumsessionsForProject(projectId, null, count, null);
     }
 
+    /**
+     * Get all Selenium sessions for a project by project ID
+     * @param projectId The ID of the project of which Selenium sessions shall be retrieved
+     * @param state (optional) Only SeleniumSessions in the given state are considered and returned by the call, all other Sessions are filtered out.
+     * @return (Filtered) List of Selenium sessions in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium sessions could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<SeleniumSession> getSeleniumsessionsForProject(ProjectId projectId, String state) throws WebmateApiClientException {
         return getSeleniumsessionsForProject(projectId, null, null, state);
     }
 
+    /**
+     * Get all Selenium sessions for a project by project ID
+     * @param projectId The ID of the project of which Selenium sessions shall be retrieved
+     * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given Id.
+     * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
+     * @return (Filtered) List of Selenium sessions in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium sessions could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<SeleniumSession> getSeleniumsessionsForProject(ProjectId projectId, WebmateSeleniumSessionId after, int count) throws WebmateApiClientException {
         return getSeleniumsessionsForProject(projectId, after, count, null);
     }
 
+    /**
+     * Get all Selenium sessions for a project by project ID
+     * @param projectId The ID of the project of which Selenium sessions shall be retrieved
+     * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given Id.
+     * @param state (optional) Only SeleniumSessions in the given state are considered and returned by the call, all other Sessions are filtered out.
+     * @return (Filtered) List of Selenium sessions in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium sessions could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<SeleniumSession> getSeleniumsessionsForProject(ProjectId projectId, WebmateSeleniumSessionId after, String state) throws WebmateApiClientException {
         return getSeleniumsessionsForProject(projectId, after, null, state);
     }
 
+    /**
+     * Get all Selenium sessions for a project by project ID
+     * @param projectId The ID of the project of which Selenium sessions shall be retrieved
+     * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
+     * @param state (optional) Only SeleniumSessions in the given state are considered and returned by the call, all other Sessions are filtered out.
+     * @return (Filtered) List of Selenium sessions in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium sessions could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<SeleniumSession> getSeleniumsessionsForProject(ProjectId projectId, int count, String state) throws WebmateApiClientException {
         return getSeleniumsessionsForProject(projectId, null, count, state);
     }
-    //endregion
 
     /**
      * Get all Selenium session IDs for a project by project ID
@@ -298,35 +347,84 @@ public class SeleniumServiceClient {
         return this.apiClient.getSeleniumsessionIdsForProject(projectId, after, count, state);
     }
 
-    //region Overloads for getSeleniumsessionIdsForProject
+    /**
+     * Get all Selenium session IDs for a project by project ID
+     * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
+     * @return (Filtered) List of Selenium session IDs in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium session IDs could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<WebmateSeleniumSessionId> getSeleniumsessionIdsForProject(ProjectId projectId) throws WebmateApiClientException {
         return getSeleniumsessionIdsForProject(projectId, null, null, null);
     }
 
+    /**
+     * Get all Selenium session IDs for a project by project ID
+     * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
+     * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given ID.
+     * @return (Filtered) List of Selenium session IDs in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium session IDs could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<WebmateSeleniumSessionId> getSeleniumsessionIdsForProject(ProjectId projectId, WebmateSeleniumSessionId after) throws WebmateApiClientException {
         return getSeleniumsessionIdsForProject(projectId, after, null, null);
     }
 
+    /**
+     * Get all Selenium session IDs for a project by project ID
+     * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
+     * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
+     * @return (Filtered) List of Selenium session IDs in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium session IDs could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<WebmateSeleniumSessionId> getSeleniumsessionIdsForProject(ProjectId projectId, int count) throws WebmateApiClientException {
         return getSeleniumsessionIdsForProject(projectId, null, count, null);
     }
 
+    /**
+     * Get all Selenium session IDs for a project by project ID
+     * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
+     * @param state (optional) Only SeleniumSessions in the given state are considered and returned by the call, all other Sessions are filtered out.
+     * @return (Filtered) List of Selenium session IDs in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium session IDs could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<WebmateSeleniumSessionId> getSeleniumsessionIdsForProject(ProjectId projectId, String state) throws WebmateApiClientException {
         return getSeleniumsessionIdsForProject(projectId, null, null, state);
     }
 
+    /**
+     * Get all Selenium session IDs for a project by project ID
+     * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
+     * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given ID.
+     * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
+     * @return (Filtered) List of Selenium session IDs in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium session IDs could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<WebmateSeleniumSessionId> getSeleniumsessionIdsForProject(ProjectId projectId, WebmateSeleniumSessionId after, int count) throws WebmateApiClientException {
         return getSeleniumsessionIdsForProject(projectId, after, count, null);
     }
 
+    /**
+     * Get all Selenium session IDs for a project by project ID
+     * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
+     * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given ID.
+     * @param state (optional) Only SeleniumSessions in the given state are considered and returned by the call, all other Sessions are filtered out.
+     * @return (Filtered) List of Selenium session IDs in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium session IDs could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<WebmateSeleniumSessionId> getSeleniumsessionIdsForProject(ProjectId projectId, WebmateSeleniumSessionId after, String state) throws WebmateApiClientException {
         return getSeleniumsessionIdsForProject(projectId, after, null, state);
     }
 
+    /**
+     * Get all Selenium session IDs for a project by project ID
+     * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
+     * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
+     * @param state (optional) Only SeleniumSessions in the given state are considered and returned by the call, all other Sessions are filtered out.
+     * @return (Filtered) List of Selenium session IDs in the given project (Actual type: ArrayList)
+     * @throws WebmateApiClientException if a HTTP error occurred or the Selenium session IDs could not be retrieved (e.g. due to missing permissions)
+     */
     public Collection<WebmateSeleniumSessionId> getSeleniumsessionIdsForProject(ProjectId projectId, int count, String state) throws WebmateApiClientException {
         return getSeleniumsessionIdsForProject(projectId, null, count, state);
     }
-    //endregion
 
     /**
      * Stop a Selenium session by ID

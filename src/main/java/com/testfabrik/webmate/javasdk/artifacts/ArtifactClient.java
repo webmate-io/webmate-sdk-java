@@ -154,7 +154,7 @@ public class ArtifactClient {
      *
      * @param projectId project id
      * @param associatedTestRun testRunId associated with artifacts.
-     *                               * @param associatedBrowserSession browserSessionId associated with artifacts.
+     * @param associatedBrowserSession browserSessionId associated with artifacts.
      * @param types Types of artifacts to retrieve. If set is empty, artifacts of all types are retrieved.
      * @return artifactInfo list
      */
