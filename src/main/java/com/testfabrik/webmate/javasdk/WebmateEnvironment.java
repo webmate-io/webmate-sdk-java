@@ -10,7 +10,6 @@ import java.net.URISyntaxException;
 public class WebmateEnvironment {
 
     private final static String WEBMATE_DEFAULT_BASEURI = "https://api.webmate.io/v1";
-//    private final static String WEBMATE_DEFAULT_BASEURI = "http://localhost:54321/v1";
 
     public final URI baseURI;
 

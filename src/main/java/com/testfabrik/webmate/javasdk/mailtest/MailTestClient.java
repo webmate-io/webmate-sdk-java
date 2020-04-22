@@ -106,10 +106,10 @@ public class MailTestClient {
     }
 
     /**
-     * Get TestResults of Test with given id and testrun index.
+     * Get emails for the test mail adress in the given TestRun and project
      * @param projectId Project id.
      * @param testRunId Id of TestRun.
-     * @return Optional with list of TestResults or Optional.absent if there was no such Test or TestRun. If there were no TestResults, the result is Optional of empty list.
+     * @return list of TestMails
      */
     public List<TestMail> getMailsInTestRun(ProjectId projectId, TestRunId testRunId) {
 

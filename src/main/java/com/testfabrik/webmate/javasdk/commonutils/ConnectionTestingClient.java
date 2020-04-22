@@ -12,10 +12,21 @@ public class ConnectionTestingClient extends WebmateApiClient {
 
     private static final UriTemplate currentUserTemplate = new UriTemplate("/users/current");
 
+    /**
+     * Simple client to test the connectivity for the given credentials and environment
+     *
+     * @param authInfo an instance of WebmateAuthInfo which contains the users credentials
+     * @param environment an instance of WebmateEnvironment which contains the url of webmate
+     */
     public ConnectionTestingClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
         super(authInfo, environment);
     }
 
+    /**
+     * Tests the connection to webmate given the configuration passed to the constructor.
+     *
+     * @return a Result enum value presenting the connectivity state
+     */
     public Result testConnection() {
         try {
             HttpResponse r = sendGETUnchecked(currentUserTemplate, new HashMap<String, String>());
