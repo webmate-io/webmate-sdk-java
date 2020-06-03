@@ -22,7 +22,7 @@ public class BrowserSessionStateExtractionConfigTest {
     String serializationStringWithoutWarmUp = "{\"stateId\":\"7dfaca76-9a99-4770-ad29-3731de31f241\",\"extractionDelay\":1,\"extractionCooldown\":2,\"optViewportDimension\":{\"width\":600,\"height\":800},\"maxAdditionWaitingTimeForStateExtraction\":5,\"extractDomStateData\":true,\"screenShotConfig\":{\"fullPage\":false,\"hideFixedElements\":false,\"useTranslateYScrollStrategy\":false}}";
     String emptyObject = "{}";
     @Test
-    public void serializationNonNullFieldsTest(){
+    public void serializationNonNullFieldsTest() {
         BrowserSessionStateExtractionConfig config = new BrowserSessionStateExtractionConfig(new BrowserSessionStateId(UUID.fromString("7dfaca76-9a99-4770-ad29-3731de31f241")), 1,2,
                 new Dimension(600,800),5,true, new BrowserSessionScreenshotExtractionConfig(false, false),
                 new BrowserSessionWarmUpConfig(42,2,5458));
@@ -32,7 +32,7 @@ public class BrowserSessionStateExtractionConfigTest {
     }
 
     @Test
-    public void serializationNullFieldsTest(){
+    public void serializationNullFieldsTest() {
         BrowserSessionStateExtractionConfig config = new BrowserSessionStateExtractionConfig(new BrowserSessionStateId(UUID.fromString("7dfaca76-9a99-4770-ad29-3731de31f241")), 1,2,
                 new Dimension(600,800),5,true, new BrowserSessionScreenshotExtractionConfig(false, false),
                 null);
@@ -43,14 +43,12 @@ public class BrowserSessionStateExtractionConfigTest {
     }
 
     @Test
-    public void serializationAllNullFieldsTest(){
+    public void serializationAllNullFieldsTest() {
         BrowserSessionStateExtractionConfig config = new BrowserSessionStateExtractionConfig();
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         String serialized = mapper.valueToTree(config).toString();
         assertEquals(emptyObject, serialized);
     }
-
-
 
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public class BrickDataType {
 
-
     private String tpe;
 
     public BrickDataType(String tpe) {
