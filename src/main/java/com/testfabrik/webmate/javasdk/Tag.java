@@ -24,6 +24,16 @@ public class Tag {
         this.value = value;
     }
 
+    public Tag(String name, String value) {
+        this.name = name;
+        this.value = JsonNodeFactory.instance.textNode(value);
+    }
+
+    public Tag(String name) {
+        this.name = name;
+        this.value = JsonNodeFactory.instance.booleanNode(true);
+    }
+
     // for jackson
     private Tag() {}
 
@@ -37,7 +47,11 @@ public class Tag {
 
     @JsonValue
     public JsonNode asJson() {
-        return JsonNodeFactory.instance.objectNode().put(getName(), getValue());
+        System.out.println("HERE in asJson: " + getName() + ":" + getValue());
+        ObjectNode result = JsonNodeFactory.instance.objectNode();
+        result.set(getName(), getValue());
+        System.out.println("HERE in asJson2: " + result);
+        return result;
     }
 
     @JsonCreator

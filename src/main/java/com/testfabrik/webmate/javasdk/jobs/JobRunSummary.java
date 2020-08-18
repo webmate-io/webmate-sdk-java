@@ -27,13 +27,13 @@ public class JobRunSummary {
     private DateTime endTime;
     private DateTime lastUpdateTime;
     private String failureMessage;
-    private Map<String, BrickValue> inputPorts;
+    private Map<String, WMValue> inputPorts;
     private TestId testId;
     private TestRunId testRunId;
     private Map<String, JsonNode> summaryInformation;
 
     public JobRunSummary(JobRunId id, JobRunState state, UserId creator, DateTime creationTime, DateTime startTime, DateTime endTime, DateTime lastUpdateTime, String failureMessage,
-                         Map<String, BrickValue> inputPorts, TestId testId, TestRunId testRunId, Map<String, JsonNode> summaryInformation) {
+                         Map<String, WMValue> inputPorts, TestId testId, TestRunId testRunId, Map<String, JsonNode> summaryInformation) {
         this.id = id;
         this.state = state;
         this.creator = creator;
@@ -101,7 +101,7 @@ public class JobRunSummary {
     /**
      * @return Parameters the JobRun has been started with.
      */
-    public Map<String, BrickValue> getInputPorts() {
+    public Map<String, WMValue> getInputPorts() {
         return inputPorts;
     }
 

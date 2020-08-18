@@ -12,6 +12,6 @@ public interface WellKnownJobInput {
      * Create Job input values.
      * @return input values map for concrete WellKnownJob.
      */
-    Map<PortName, BrickValue> makeInputValues();
+    Map<PortName, WMValue> makeInputValues();
 }
 

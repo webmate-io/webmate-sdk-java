@@ -30,20 +30,20 @@ public class BrowserSessionRegressionJobInput implements WellKnownJobInput {
     }
 
     @Override
-    public Map<PortName, BrickValue> makeInputValues() {
+    public Map<PortName, WMValue> makeInputValues() {
         JsonNodeFactory jsonNodeFactory = JsonNodeFactory.instance;
         ObjectMapper mapper = new ObjectMapper();
 
         List<JsonNode> compareSessionJson = new ArrayList<>();
         JsonNode sessionNode = mapper.valueToTree(compareSession);
-        BrickValue sessionBrickValue = new BrickValue(new BrickDataType("BrowserSessionRef"), sessionNode);
-        compareSessionJson.add(mapper.valueToTree(sessionBrickValue));
+        WMValue sessionWMValue = new WMValue(new WMDataType("BrowserSessionRef"), sessionNode);
+        compareSessionJson.add(mapper.valueToTree(sessionWMValue));
 
         return ImmutableMap.of(
-                new PortName("referenceSession"), new BrickValue(new BrickDataType("BrowserSessionRef"), jsonNodeFactory.textNode(referenceSession.getValueAsString())),
-                new PortName("compareSession"), new BrickValue(new BrickDataType("BrowserSessionRef"), jsonNodeFactory.textNode(compareSession.getValueAsString())),
-                new PortName("matchingType"), new BrickValue(new BrickDataType("String"), jsonNodeFactory.textNode("tag")),
-                new PortName("enabledynamicelementsfilter"), new BrickValue(new BrickDataType("Boolean"), jsonNodeFactory.booleanNode(true))
+                new PortName("referenceSession"), new WMValue(new WMDataType("BrowserSessionRef"), jsonNodeFactory.textNode(referenceSession.getValueAsString())),
+                new PortName("compareSession"), new WMValue(new WMDataType("BrowserSessionRef"), jsonNodeFactory.textNode(compareSession.getValueAsString())),
+                new PortName("matchingType"), new WMValue(new WMDataType("String"), jsonNodeFactory.textNode("tag")),
+                new PortName("enabledynamicelementsfilter"), new WMValue(new WMDataType("Boolean"), jsonNodeFactory.booleanNode(true))
         );
     }
 

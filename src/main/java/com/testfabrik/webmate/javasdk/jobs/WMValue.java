@@ -6,18 +6,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Input or output value of JobEngine
  */
-public class BrickValue {
+public class WMValue {
 
     @JsonProperty("type")
-    public BrickDataType dataType;
+    public WMDataType dataType;
 
     @JsonProperty("data")
     public JsonNode value;
 
     // for jackson
-    private BrickValue() {}
+    private WMValue() {}
 
-    public BrickValue(BrickDataType dataType, JsonNode value) {
+    public WMValue(WMDataType dataType, JsonNode value) {
         this.dataType = dataType;
         this.value = value;
     }
@@ -27,7 +27,7 @@ public class BrickValue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        BrickValue that = (BrickValue) o;
+        WMValue that = (WMValue) o;
 
         if (!dataType.equals(that.dataType)) return false;
         return value.equals(that.value);

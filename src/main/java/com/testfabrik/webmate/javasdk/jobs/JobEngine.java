@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
-import com.testfabrik.webmate.javasdk.testmgmt.TestInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -45,7 +44,7 @@ public class JobEngine {
          * @param inputValues Input values for Job.
          * @return Id of new Job.
          */
-        public JobId createJob(ProjectId projectId, JobConfigName jobConfigName, String nameForJobInstance, Map<PortName, BrickValue> inputValues) {
+        public JobId createJob(ProjectId projectId, JobConfigName jobConfigName, String nameForJobInstance, Map<PortName, WMValue> inputValues) {
 
             ObjectMapper mapper = new ObjectMapper();
 
@@ -197,7 +196,7 @@ public class JobEngine {
      * @param projectId ProjectId of Project where Job should be started in.
      * @return Id of new JobRun
      */
-    public JobRunId startJob(JobConfigName jobConfigName, String nameForJobInstance, Map<PortName, BrickValue> inputValues, ProjectId projectId) {
+    public JobRunId startJob(JobConfigName jobConfigName, String nameForJobInstance, Map<PortName, WMValue> inputValues, ProjectId projectId) {
 
         // create Job
         JobId jobId = this.apiClient.createJob(projectId, jobConfigName, nameForJobInstance, inputValues);
@@ -216,7 +215,7 @@ public class JobEngine {
      */
     public JobRunId startJob(String nameForJobInstance, WellKnownJobInput config, ProjectId projectId) {
         JobConfigName configName = config.getName();
-        Map<PortName, BrickValue> inputValues = config.makeInputValues();
+        Map<PortName, WMValue> inputValues = config.makeInputValues();
 
         return startJob(configName, nameForJobInstance, inputValues, projectId);
     }

@@ -2,12 +2,13 @@ package com.testfabrik.webmate.javasdk.jobs;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public class BrickDataType {
+public class WMDataType {
 
+    public static final WMDataType ExpeditionId = new WMDataType("BrowserSessionRef");
 
     private String tpe;
 
-    public BrickDataType(String tpe) {
+    public WMDataType(String tpe) {
         this.tpe = tpe;
     }
 
@@ -16,7 +17,7 @@ public class BrickDataType {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        BrickDataType dataType = (BrickDataType) o;
+        WMDataType dataType = (WMDataType) o;
         return tpe != null ? tpe.equals(dataType.tpe) : dataType.tpe == null;
     }
 
