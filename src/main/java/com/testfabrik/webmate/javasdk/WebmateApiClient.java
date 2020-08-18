@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
@@ -145,6 +146,19 @@ public class WebmateApiClient {
         return new ApiResponse(httpResponse);
     }
 
+    /**
+     * Sends a Post to the Uri in schema using params to populate the schema. The body of the request is a byte array
+     * @param schema The Uri schema that will become the target of the Post
+     * @param params The params that should be used in the schema
+     * @param byteParam The byte array that is supposed to be sent in the body
+     * @return The response of the API
+     */
+    public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, byte[] byteParam) {
+        HttpResponse httpResponse = sendPOSTUnchecked(schema, params, byteParam);
+        checkErrors(httpResponse);
+        return new ApiResponse(httpResponse);
+    }
+
     protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, JsonNode body) {
         HttpResponse httpResponse;
         try {
@@ -181,6 +195,22 @@ public class WebmateApiClient {
         try {
             HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params));
             req.setEntity(new UrlEncodedFormEntity(urlParams));
+            httpResponse = this.httpClient.execute(req);
+            // Buffer the response entity in memory so we can release the connection safely
+            HttpEntity old = httpResponse.getEntity();
+            EntityUtils.updateEntity(httpResponse, new StringEntity(EntityUtils.toString(old)));
+            req.releaseConnection();
+        } catch (IOException e) {
+            throw new WebmateApiClientException("Error sending POST to webmate API", e);
+        }
+        return httpResponse;
+    }
+
+    protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, byte[] byteParam) {
+        HttpResponse httpResponse;
+        try {
+            HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params));
+            req.setEntity(new ByteArrayEntity(byteParam));
             httpResponse = this.httpClient.execute(req);
             // Buffer the response entity in memory so we can release the connection safely
             HttpEntity old = httpResponse.getEntity();

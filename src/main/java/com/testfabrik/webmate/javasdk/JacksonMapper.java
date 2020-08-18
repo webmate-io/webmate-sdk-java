@@ -1,6 +1,7 @@
 package com.testfabrik.webmate.javasdk;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 /**
@@ -16,6 +17,8 @@ public class JacksonMapper {
         if (JacksonMapper.theInstance == null) {
             JacksonMapper.theInstance = new ObjectMapper();
             JacksonMapper.theInstance.registerModule(new JodaModule());
+            JacksonMapper.theInstance.registerModule(new GuavaModule());
+
         }
         return JacksonMapper.theInstance;
     }
