@@ -6,18 +6,13 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Facade for webmate BrowserSession service.
@@ -28,6 +23,12 @@ public class BrowserSessionClient {
     private BrowserSessionApiClient apiClient;
 
     private static final Logger LOG = LoggerFactory.getLogger(BrowserSessionClient.class);
+
+    private static final Integer DefaultBrowserSessionTimeoutMillis = 5 * 60 * 1000; // Default timeout: 5 minutes
+
+    // Sane default Config, extracting DOM and taking non fullpage Screenshots. Otherwise take Webmate Defaults.
+    private static final BrowserSessionStateExtractionConfig DefaultStateExtractionConfig = new BrowserSessionStateExtractionConfig(null, null, null, null, null, true,
+                                                                                                                                      new BrowserSessionScreenshotExtractionConfig(false, false), null);
 
     private static class BrowserSessionApiClient extends WebmateApiClient {
 
@@ -41,6 +42,7 @@ public class BrowserSessionClient {
                 new UriTemplate("/browsersession/${browserSessionId}");
 
         private static final int millisToWait = 8000;
+
 
         /**
          * Creates an webmate api client.
@@ -67,11 +69,7 @@ public class BrowserSessionClient {
          * @param timeoutMillis The timeout for the statecreation in milliseconds
          */
         public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis) {
-            Object empty = Collections.emptyMap();
-            // create a sane default Config, extracting DOM and taking non fullpage Screenshots. Otherwise take Webmate Defaults.
-            BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig = new BrowserSessionStateExtractionConfig(null, null, null, null, null, true,
-                    new BrowserSessionScreenshotExtractionConfig(false, false), null);
-            Map<String, Object>  params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", browserSessionStateExtractionConfig);
+            Map<String, Object>  params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", DefaultStateExtractionConfig);
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             Optional<HttpResponse> r = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
@@ -190,7 +188,7 @@ public class BrowserSessionClient {
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
     public void createState(BrowserSessionId browserSessionId, String matchingId) {
-        createState(browserSessionId, matchingId, 5*60*1000);
+        createState(browserSessionId, matchingId, DefaultBrowserSessionTimeoutMillis);
     }
 
     /**
@@ -201,7 +199,7 @@ public class BrowserSessionClient {
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
     public void createState(BrowserSessionId browserSessionId, String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
-        createState(browserSessionId, matchingId, 5*60*1000, browserSessionStateExtractionConfig);
+        createState(browserSessionId, matchingId, DefaultBrowserSessionTimeoutMillis, browserSessionStateExtractionConfig);
     }
 
 
@@ -228,6 +226,70 @@ public class BrowserSessionClient {
     public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
         LOG.debug("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
         apiClient.createState(browserSessionId, matchingId, timeoutMillis, browserSessionStateExtractionConfig);
+    }
+
+    /**
+     * Create a new State for the BrowserSession registered in webmate sesssion (there must be only one).
+     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
+     * @param timeoutMillis Maximal amount of time to wait for the state extraction to complete in milliseconds.
+     * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
+     * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
+     */
+    public void createState(String matchingId, long timeoutMillis, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
+        List<BrowserSessionId> associatedExpeditions = session.getAssociatedExpeditions();
+        if (associatedExpeditions.size() != 1) {
+            throw new WebmateApiClientException("If createState is called without browsersession id, there must be only one " +
+                    "BrowserSession associated with the API session (to be able to identify the correct one) " +
+                    "but currently there are " + associatedExpeditions.size());
+        }
+
+        BrowserSessionId browserSessionId = associatedExpeditions.get(0);
+        LOG.info("Creating state for browsersession " + browserSessionId);
+
+        LOG.debug("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
+        apiClient.createState(browserSessionId, matchingId, timeoutMillis, browserSessionStateExtractionConfig);
+    }
+
+    /**
+     * Create a new State for the BrowserSession registered in webmate sesssion (there must be only one).
+     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
+     * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
+     * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
+     */
+    public void createState(String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
+        List<BrowserSessionId> associatedExpeditions = session.getAssociatedExpeditions();
+        if (associatedExpeditions.size() != 1) {
+            throw new WebmateApiClientException("If createState is called without browsersession id, there must be only one " +
+                    "BrowserSession associated with the API session (to be able to identify the correct one) " +
+                    "but currently there are " + associatedExpeditions.size());
+        }
+
+        BrowserSessionId browserSessionId = associatedExpeditions.get(0);
+        LOG.info("Creating state for browsersession " + browserSessionId);
+
+        LOG.debug("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
+        apiClient.createState(browserSessionId, matchingId, DefaultBrowserSessionTimeoutMillis, browserSessionStateExtractionConfig);
+    }
+
+    /**
+     * Create a new State for the BrowserSession registered in webmate sesssion (there must be only one). Uses defaults for timeout and
+     * state extraction configuration.
+     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
+     * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
+     */
+    public void createState(String matchingId) {
+        List<BrowserSessionId> associatedExpeditions = session.getAssociatedExpeditions();
+        if (associatedExpeditions.size() != 1) {
+            throw new WebmateApiClientException("If createState is called without browsersession id, there must be only one " +
+                    "BrowserSession associated with the API session (to be able to identify the correct one) " +
+                    "but currently there are " + associatedExpeditions.size());
+        }
+
+        BrowserSessionId browserSessionId = associatedExpeditions.get(0);
+        LOG.info("Creating state for browsersession " + browserSessionId);
+
+        LOG.debug("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
+        apiClient.createState(browserSessionId, matchingId, DefaultBrowserSessionTimeoutMillis, DefaultStateExtractionConfig);
     }
 
 
