@@ -1,10 +1,16 @@
 package com.testfabrik.webmate.javasdk.browsersession;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
+import com.testfabrik.webmate.javasdk.commonutils.HttpHelpers;
+import com.testfabrik.webmate.javasdk.testmgmt.Artifact;
+import com.testfabrik.webmate.javasdk.testmgmt.ArtifactId;
+import com.testfabrik.webmate.javasdk.testmgmt.TestRunId;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -22,6 +28,8 @@ public class BrowserSessionClient {
     private WebmateAPISession session;
     private BrowserSessionApiClient apiClient;
 
+    private Stack<ActionSpanId> currentSpanIds = new Stack<>();
+
     private static final Logger LOG = LoggerFactory.getLogger(BrowserSessionClient.class);
 
     private static final Integer DefaultBrowserSessionTimeoutMillis = 5 * 60 * 1000; // Default timeout: 5 minutes
@@ -37,6 +45,9 @@ public class BrowserSessionClient {
 
         private final static UriTemplate checkStateProgressTemplate =
                 new UriTemplate("/browsersession/${browserSessionId}/artifacts/${browserSessionArtifactId}/progress");
+
+        private final static UriTemplate addArtifactTemplate =
+                new UriTemplate("/browsersession/${expeditionId}/artifacts");
 
         private final static UriTemplate terminateBrowsersessionTemplate =
                 new UriTemplate("/browsersession/${browserSessionId}");
@@ -144,10 +155,21 @@ public class BrowserSessionClient {
             Map<String, Object>  params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", browserSessionStateExtractionConfig);
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            Optional<HttpResponse> r = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
-            waitForStateExtractionResponse(browserSessionId, timeoutMillis, r);
+            sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
         }
 
+        public void startAction(BrowserSessionId expeditionId, StartStoryActionAddArtifactData art) {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String>  params = ImmutableMap.of("expeditionId", expeditionId.getValueAsString());
+
+            sendPOST(addArtifactTemplate, params, mapper.valueToTree(art)).getOptHttpResponse();
+        }
+
+        public void finishAction(BrowserSessionId expeditionId, FinishStoryActionAddArtifactData art) {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String>  params = ImmutableMap.of("expeditionId", expeditionId.getValueAsString());
+            sendPOST(addArtifactTemplate, params, mapper.valueToTree(art)).getOptHttpResponse();
+        }
     }
 
     /**
@@ -290,6 +312,44 @@ public class BrowserSessionClient {
 
         LOG.debug("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
         apiClient.createState(browserSessionId, matchingId, DefaultBrowserSessionTimeoutMillis, DefaultStateExtractionConfig);
+    }
+
+
+    public void startAction(String actionName) {
+        LOG.debug("Start action " + actionName);
+        BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
+        ActionSpanId spanId = new ActionSpanId(UUID.randomUUID());
+        StartStoryActionAddArtifactData artifactData = new StartStoryActionAddArtifactData(actionName, spanId);
+        apiClient.startAction(expeditionId, artifactData);
+        this.currentSpanIds.push(spanId);
+        return;
+    }
+
+    public void finishAction() {
+        BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
+        if (this.currentSpanIds.isEmpty()) {
+            throw new WebmateApiClientException("Trying to finish action but none is active.");
+        }
+        ActionSpanId spanId = this.currentSpanIds.pop();
+        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId ));
+    }
+
+    public void finishAction(String successMessage) {
+        BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
+        if (this.currentSpanIds.isEmpty()) {
+            throw new WebmateApiClientException("Trying to finish action but none is active.");
+        }
+        ActionSpanId spanId = this.currentSpanIds.pop();
+        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId, successMessage));
+    }
+
+    public void finishActionAsFailure(String errorMessage) {
+        BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
+        if (this.currentSpanIds.isEmpty()) {
+           throw new WebmateApiClientException("Trying to finish action but none is active.");
+        }
+        ActionSpanId spanId = this.currentSpanIds.pop();
+        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.failure(spanId, errorMessage, Optional.<JsonNode>absent()));
     }
 
 

@@ -82,6 +82,17 @@ public class WebmateAPISession {
         return ImmutableList.copyOf(associatedExpeditions);
     }
 
+    /**
+     * Check if there is only one associated Expedition / BrowserSession and return it.
+     */
+    public BrowserSessionId getOnlyAssociatedExpedition() {
+        if (associatedExpeditions.size() != 1) {
+            throw new WebmateApiClientException("Expected exactly one active Expedition (e.g. BrowserSession) in WebmateSession, but there are " +
+                    associatedExpeditions.size());
+        }
+        return associatedExpeditions.get(0);
+    }
+
     public List<TestSessionId> getAssociatedTestSessions() {
         return ImmutableList.copyOf(associatedTestSessions);
     }
@@ -188,4 +199,24 @@ public class WebmateAPISession {
         this.associatedTestSessions.add(session);
     }
 
+    /**
+     * Start an action of type "story" with the given name.
+     */
+    public void startAction(String actionName) {
+        this.browserSession.startAction(actionName);
+    }
+
+    /**
+     * Finish the current action with successful result.
+     */
+    public void finishAction() {
+        this.browserSession.finishAction();
+    }
+
+    /**
+     * Finish the current action with successful result.
+     */
+    public void finishActionAsFailure(String message) {
+        this.browserSession.finishActionAsFailure(message);
+    }
 }
