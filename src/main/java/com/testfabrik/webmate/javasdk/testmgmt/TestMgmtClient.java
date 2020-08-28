@@ -65,9 +65,6 @@ public class TestMgmtClient {
         private final static UriTemplate createTestExecutionTemplate =
                 new UriTemplate("/projects/${projectId}/testexecutions");
 
-        private final static UriTemplate createAndStartTestExecutionTemplate =
-                new UriTemplate("/projects/${projectId}/testexecutions?start=true");
-
         private final static UriTemplate createTestSessionTemplate =
                 new UriTemplate("/projects/${projectId}/testsessions");
 
@@ -100,8 +97,8 @@ public class TestMgmtClient {
         }
 
         public CreateTestExecutionResponse createAndStartTestExecution(ProjectId projectId, TestExecutionSpec spec) {
-            Optional<HttpResponse> optHttpResponse = sendPOST(createAndStartTestExecutionTemplate, ImmutableMap.of(
-                    "projectId", projectId.toString()), spec.asJson()).getOptHttpResponse();
+            Optional<HttpResponse> optHttpResponse = sendPOST(createTestExecutionTemplate, ImmutableMap.of(
+                    "projectId", projectId.toString()), "start=true", spec.asJson()).getOptHttpResponse();
 
             return handleCreateTestExecutionResponse(optHttpResponse);
         }

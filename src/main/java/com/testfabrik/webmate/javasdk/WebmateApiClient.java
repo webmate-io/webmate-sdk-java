@@ -161,6 +161,37 @@ public class WebmateApiClient {
         return httpResponse;
     }
 
+    protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, String query, JsonNode body) {
+        HttpResponse httpResponse;
+        try {
+            HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params, query));
+            req.setEntity(new StringEntity(body.toString()));
+            httpResponse = this.httpClient.execute(req);
+            // Buffer the response entity in memory so we can release the connection safely
+            HttpEntity old = httpResponse.getEntity();
+            EntityUtils.updateEntity(httpResponse, new StringEntity(EntityUtils.toString(old)));
+            req.releaseConnection();
+        } catch (IOException e) {
+            throw new WebmateApiClientException("Error sending POST to webmate API", e);
+        }
+        return httpResponse;
+    }
+
+    /**
+     * Sends a Post to the Uri in schema using params to populate the schema. The body of the request is a Json Node.
+     * After template replacement the query string will be appended.
+     * @param schema The Uri schema that will become the target of the Post
+     * @param params The params that should be used in the schema
+     * @param query The query String that should be appended
+     * @param body The json node that is supposed to be sent in the body
+     * @return The response of the API
+     */
+    public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, String query, JsonNode body) {
+        HttpResponse httpResponse = sendPOSTUnchecked(schema, params, query, body);
+        checkErrors(httpResponse);
+        return new ApiResponse(httpResponse);
+    }
+
     protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params) {
         HttpResponse httpResponse;
         try {
