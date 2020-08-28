@@ -65,6 +65,9 @@ public class TestMgmtClient {
         private final static UriTemplate createTestExecutionTemplate =
                 new UriTemplate("/projects/${projectId}/testexecutions");
 
+        private final static UriTemplate createAndStartTestExecutionTemplate =
+                new UriTemplate("/projects/${projectId}/testexecutions?start=true");
+
         private final static UriTemplate createTestSessionTemplate =
                 new UriTemplate("/projects/${projectId}/testsessions");
 
@@ -82,15 +85,21 @@ public class TestMgmtClient {
             super(authInfo, environment, clientBuilder);
         }
 
-        private TestExecutionId handleCreateTestExecutionResponse(Optional<HttpResponse> response) {
+        private CreateTestExecutionResponse handleCreateTestExecutionResponse(Optional<HttpResponse> response) {
             if (!response.isPresent()) {
                 throw new WebmateApiClientException("Could not create TestExecution. Got no response");
             }
-
-            return HttpHelpers.getObjectFromJsonEntity(response.get(), TestExecutionId.class);
+            return HttpHelpers.getObjectFromJsonEntity(response.get(), CreateTestExecutionResponse.class);
         }
 
-        public TestExecutionId createTestExecution(ProjectId projectId, TestExecutionSpec spec) {
+        public CreateTestExecutionResponse createTestExecution(ProjectId projectId, TestExecutionSpec spec) {
+            Optional<HttpResponse> optHttpResponse = sendPOST(createTestExecutionTemplate, ImmutableMap.of(
+                    "projectId", projectId.toString()), spec.asJson()).getOptHttpResponse();
+
+            return handleCreateTestExecutionResponse(optHttpResponse);
+        }
+
+        public CreateTestExecutionResponse createAndStartTestExecution(ProjectId projectId, TestExecutionSpec spec) {
             Optional<HttpResponse> optHttpResponse = sendPOST(createTestExecutionTemplate, ImmutableMap.of(
                     "projectId", projectId.toString()), spec.asJson()).getOptHttpResponse();
 
@@ -253,8 +262,11 @@ public class TestMgmtClient {
     }
 
     public TestRunId startExecution(TestExecutionSpec spec, ProjectId projectId) {
-       TestExecutionId executionId = apiClient.createTestExecution(projectId, spec);
-       return apiClient.startTestExecution(executionId);
+        CreateTestExecutionResponse executionAndRun = apiClient.createAndStartTestExecution(projectId, spec);
+        if (!executionAndRun.optTestRunId.isPresent()) {
+            throw new WebmateApiClientException("Got no testrun id for new execution.");
+        }
+        return executionAndRun.optTestRunId.get();
     }
 
     /**
