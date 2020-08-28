@@ -100,7 +100,7 @@ public class TestMgmtClient {
         }
 
         public CreateTestExecutionResponse createAndStartTestExecution(ProjectId projectId, TestExecutionSpec spec) {
-            Optional<HttpResponse> optHttpResponse = sendPOST(createTestExecutionTemplate, ImmutableMap.of(
+            Optional<HttpResponse> optHttpResponse = sendPOST(createAndStartTestExecutionTemplate, ImmutableMap.of(
                     "projectId", projectId.toString()), spec.asJson()).getOptHttpResponse();
 
             return handleCreateTestExecutionResponse(optHttpResponse);
