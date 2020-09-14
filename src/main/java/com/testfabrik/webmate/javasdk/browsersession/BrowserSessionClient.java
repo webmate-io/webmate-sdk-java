@@ -79,12 +79,12 @@ public class BrowserSessionClient {
          * @param matchingId The Id for the state. Used for matching
          * @param timeoutMillis The timeout for the statecreation in milliseconds
          */
-        public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis) {
+        public BrowserSessionStateId createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis) {
             Map<String, Object>  params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", DefaultStateExtractionConfig);
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            Optional<HttpResponse> r = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
-            waitForStateExtractionResponse(browserSessionId, timeoutMillis, r);
+            Optional<HttpResponse> optHttpResponse = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
+            return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), BrowserSessionStateId.class);
         }
 
 
@@ -108,38 +108,6 @@ public class BrowserSessionClient {
                 }
             }
             return stopped;
-        }
-
-        private void waitForStateExtractionResponse(BrowserSessionId browserSessionId, long timeoutMillis, Optional<HttpResponse> r) {
-            try {
-                if (!r.isPresent()) {
-                    throw new WebmateApiClientException("Could not extract state. Got no response");
-                }
-
-                ObjectMapper om = new ObjectMapper();
-                String[] artifactIds = om.readValue(r.get().getEntity().getContent(), String[].class);
-                /* Wait for each returned artifact in turn */
-                long deadline = System.currentTimeMillis() + timeoutMillis;
-                for (String artifactId : artifactIds) {
-                    while (true) {
-                        r = sendGET(checkStateProgressTemplate, ImmutableMap.of("browserSessionId", browserSessionId.getValueAsString(),
-                                "browserSessionArtifactId", artifactId)).getOptHttpResponse();
-
-                        LOG.debug("Checking if artifact " + artifactId + " is complete yet");
-                        if (r.isPresent() && EntityUtils.toString(r.get().getEntity()).equals("true")) {
-                            break;
-                        } else if (System.currentTimeMillis() > deadline) {
-                            throw new WebmateApiClientException("State extraction timeout reached.");
-                        } else {
-                            Thread.sleep(millisToWait);
-                        }
-                    }
-                }
-            } catch (InterruptedException e) {
-                LOG.warn("Got interrupt while waiting for state extraction to complete, extracted state might be incomplete!");
-            } catch (IOException e) {
-                LOG.error("Failed to check state extraction progress", e);
-            }
         }
 
         /**
