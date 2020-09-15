@@ -90,7 +90,7 @@ public class BrowserSessionClient {
 
 
         /**
-         * Tries to terminate a Browsersession. Will return wether the process was successfull or not.
+         * Tries to terminate a Browsersession. Will return whether the process was successful or not.
          * @param browserSessionId The id of the session that should be terminated
          * @return true, if the Browersession was terminated successfully.
          */
@@ -219,7 +219,7 @@ public class BrowserSessionClient {
     }
 
     /**
-     * Create a new State for the BrowserSession registered in webmate sesssion (there must be only one).
+     * Create a new State for the BrowserSession registered in webmate session (there must be only one).
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @param timeoutMillis Maximal amount of time to wait for the state extraction to complete in milliseconds.
      * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
@@ -241,7 +241,7 @@ public class BrowserSessionClient {
     }
 
     /**
-     * Create a new State for the BrowserSession registered in webmate sesssion (there must be only one).
+     * Create a new State for the BrowserSession registered in webmate session (there must be only one).
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
@@ -262,7 +262,7 @@ public class BrowserSessionClient {
     }
 
     /**
-     * Create a new State for the BrowserSession registered in webmate sesssion (there must be only one). Uses defaults for timeout and
+     * Create a new State for the BrowserSession registered in webmate session (there must be only one). Uses defaults for timeout and
      * state extraction configuration.
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
@@ -323,7 +323,7 @@ public class BrowserSessionClient {
 
     /**
      * Terminate the given BrowserSession
-     * @param browserSessionId The Id for the BrowserSession that is supposed to be termianted
+     * @param browserSessionId The Id for the BrowserSession that is supposed to be terminated
      * @return true if the Browsersession was successfully terminated
      */
     public boolean terminateBrowsersession(BrowserSessionId browserSessionId) {
