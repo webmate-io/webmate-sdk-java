@@ -2,9 +2,9 @@ package com.testfabrik.webmate.javasdk.testmgmt;
 
 import com.google.common.base.Optional;
 import com.testfabrik.webmate.javasdk.ProjectId;
-import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
 import org.joda.time.DateTime;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -17,22 +17,22 @@ public class ArtifactInfo {
     private ProjectId projectId;
     private DateTime creationTime;
     private Optional<DateTime> endTime;
-    private Optional<BrowserSessionId> associatedBrowserSession;
-    private Optional<TestRunId> associatedTestRun;
-    private ArtifactAssociation associations;
+    private List<ArtifactAssociation> associations;
 
-    // for jackson
+    // For jackson
     private ArtifactInfo() {}
 
-    public ArtifactInfo(ArtifactId id, ArtifactType artifactType, ProjectId projectId, DateTime creationTime, Optional<DateTime> endTime,
-                        Optional<BrowserSessionId> associatedBrowserSession, Optional<TestRunId> associatedTestRun, ArtifactAssociation associations) {
+    public ArtifactInfo(ArtifactId id,
+                        ArtifactType artifactType,
+                        ProjectId projectId,
+                        DateTime creationTime,
+                        Optional<DateTime> endTime,
+                        List<ArtifactAssociation> associations) {
         this.id = id;
         this.artifactType = artifactType;
         this.projectId = projectId;
         this.creationTime = creationTime;
         this.endTime = endTime;
-        this.associatedBrowserSession = associatedBrowserSession;
-        this.associatedTestRun = associatedTestRun;
         this.associations = associations;
     }
 
@@ -56,12 +56,12 @@ public class ArtifactInfo {
         return endTime;
     }
 
-    public Optional<BrowserSessionId> getAssociatedBrowserSession() {
-        return associatedBrowserSession;
+    public List<ArtifactAssociation> getAssociations() {
+        return associations;
     }
 
-    public Optional<TestRunId> getAssociatedTestRun() {
-        return associatedTestRun;
+    public void setAssociations(List<ArtifactAssociation> associations) {
+        this.associations = associations;
     }
 
     @Override
@@ -73,14 +73,12 @@ public class ArtifactInfo {
                 artifactType.equals(artifact.artifactType) &&
                 projectId.equals(artifact.projectId) &&
                 creationTime.equals(artifact.creationTime) &&
-                endTime.equals(artifact.endTime) &&
-                associatedBrowserSession.equals(artifact.associatedBrowserSession) &&
-                associatedTestRun.equals(artifact.associatedTestRun);
+                endTime.equals(artifact.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, artifactType, projectId, creationTime, endTime, associatedBrowserSession, associatedTestRun);
+        return Objects.hash(id, artifactType, projectId, creationTime, endTime, associations);
     }
 
     @Override
@@ -91,16 +89,8 @@ public class ArtifactInfo {
                 ", projectId=" + projectId +
                 ", creationTime=" + creationTime +
                 ", endTime=" + endTime +
-                ", associatedBrowserSession=" + associatedBrowserSession +
-                ", associatedTestRun=" + associatedTestRun +
+                ", associations=" + associations +
                 '}';
     }
 
-    public ArtifactAssociation getAssociations() {
-        return associations;
-    }
-
-    public void setAssociations(ArtifactAssociation associations) {
-        this.associations = associations;
-    }
 }

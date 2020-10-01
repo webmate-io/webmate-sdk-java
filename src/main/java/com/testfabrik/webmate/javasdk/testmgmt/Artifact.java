@@ -9,6 +9,7 @@ import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -21,22 +22,24 @@ public class Artifact {
     private ProjectId projectId;
     private DateTime creationTime;
     private Optional<DateTime> endTime;
-    private Optional<BrowserSessionId> associatedBrowserSession;
-    private Optional<TestRunId> associatedTestRun;
-    private ArtifactAssociation associations;
+    private List<ArtifactAssociation> associations;
     private JsonNode data;
 
-    // for jackson
+    // For jackson
     private Artifact() {}
 
-    public Artifact(ArtifactId id, ArtifactType artifactType, ProjectId projectId, DateTime creationTime, Optional<DateTime> endTime, Optional<BrowserSessionId> associatedBrowserSession, Optional<TestRunId> associatedTestRun, ArtifactAssociation associations, JsonNode data) {
+    public Artifact(ArtifactId id,
+                    ArtifactType artifactType,
+                    ProjectId projectId,
+                    DateTime creationTime,
+                    Optional<DateTime> endTime,
+                    List<ArtifactAssociation> associations,
+                    JsonNode data) {
         this.id = id;
         this.artifactType = artifactType;
         this.projectId = projectId;
         this.creationTime = creationTime;
         this.endTime = endTime;
-        this.associatedBrowserSession = associatedBrowserSession;
-        this.associatedTestRun = associatedTestRun;
         this.associations = associations;
         this.data = data;
     }
@@ -61,14 +64,6 @@ public class Artifact {
         return endTime;
     }
 
-    public Optional<BrowserSessionId> getAssociatedBrowserSession() {
-        return associatedBrowserSession;
-    }
-
-    public Optional<TestRunId> getAssociatedTestRun() {
-        return associatedTestRun;
-    }
-
     public JsonNode getData() {
         return data;
     }
@@ -83,14 +78,13 @@ public class Artifact {
                 projectId.equals(artifact.projectId) &&
                 creationTime.equals(artifact.creationTime) &&
                 endTime.equals(artifact.endTime) &&
-                associatedBrowserSession.equals(artifact.associatedBrowserSession) &&
-                associatedTestRun.equals(artifact.associatedTestRun) &&
+                associations.equals(artifact.associations) &&
                 data.equals(artifact.data);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, artifactType, projectId, creationTime, endTime, associatedBrowserSession, associatedTestRun, data);
+        return Objects.hash(id, artifactType, projectId, creationTime, endTime, associations, data);
     }
 
     @Override
@@ -101,21 +95,20 @@ public class Artifact {
                 ", projectId=" + projectId +
                 ", creationTime=" + creationTime +
                 ", endTime=" + endTime +
-                ", associatedBrowserSession=" + associatedBrowserSession +
-                ", associatedTestRun=" + associatedTestRun +
+                ", associations=" + associations +
                 '}';
-    }
-
-    public ArtifactAssociation getAssociations() {
-        return associations;
-    }
-
-    public void setAssociations(ArtifactAssociation associations) {
-        this.associations = associations;
     }
 
     public static Artifact fromJsonString(String string) throws IOException {
         ObjectMapper mapper = JacksonMapper.getInstance();
         return mapper.readValue(string, Artifact.class);
+    }
+
+    public List<ArtifactAssociation> getAssociations() {
+        return associations;
+    }
+
+    public void setAssociations(List<ArtifactAssociation> associations) {
+        this.associations = associations;
     }
 }

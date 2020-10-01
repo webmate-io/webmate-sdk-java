@@ -1,36 +1,44 @@
 package com.testfabrik.webmate.javasdk.testmgmt;
 
-import com.google.common.base.Optional;
-import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
+import java.util.UUID;
 
 public class ArtifactAssociation {
 
-    private BrowserSessionId browserSession;
-    private TestRunId testRun;
+    private UUID id;
+    private ArtifactAssociationType associationType;
+    private AssociationRole relationName;
 
+    // For jackson
+    private ArtifactAssociation() {}
 
-    //for jackson
-    private ArtifactAssociation(){}
-
-    private ArtifactAssociation(BrowserSessionId browserSession, TestRunId associatedTestRun) {
-        this.browserSession = browserSession;
-        this.testRun = associatedTestRun;
+    private ArtifactAssociation(UUID id, ArtifactAssociationType associationType, AssociationRole relationName) {
+        this.id = id;
+        this.associationType = associationType;
+        this.relationName = relationName;
     }
 
-
-    public BrowserSessionId getBrowserSession() {
-        return browserSession;
+    public UUID getId() {
+        return id;
     }
 
-    public void setBrowserSession(BrowserSessionId browserSession) {
-        this.browserSession = browserSession;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
-    public TestRunId getTestRun() {
-        return testRun;
+    public ArtifactAssociationType getAssociationType() {
+        return associationType;
     }
 
-    public void setTestRun(TestRunId testRun) {
-        this.testRun = testRun;
+    public void setAssociationType(ArtifactAssociationType associationType) {
+        this.associationType = associationType;
     }
+
+    public AssociationRole getRelationName() {
+        return relationName;
+    }
+
+    public void setRelationName(AssociationRole relationName) {
+        this.relationName = relationName;
+    }
+
 }
