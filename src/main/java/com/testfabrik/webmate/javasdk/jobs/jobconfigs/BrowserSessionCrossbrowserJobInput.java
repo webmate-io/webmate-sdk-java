@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.collect.ImmutableMap;
+import com.testfabrik.webmate.javasdk.ComparisonOptions;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
 import com.testfabrik.webmate.javasdk.jobs.*;
 
@@ -17,11 +18,20 @@ import java.util.Map;
 public class BrowserSessionCrossbrowserJobInput implements WellKnownJobInput {
 
     private final BrowserSessionId referenceSession;
-    private final List<BrowserSessionId> compareSessions;
+    private List<BrowserSessionId> compareSessions;
+    private final ComparisonOptions comparisonOptions;
 
-    public BrowserSessionCrossbrowserJobInput(BrowserSessionId referenceSession, List<BrowserSessionId> compareSessions) {
+    public BrowserSessionCrossbrowserJobInput(BrowserSessionId referenceSession,
+                                              List<BrowserSessionId> compareSessions) {
+        this(referenceSession, compareSessions, new ComparisonOptions());
+    }
+
+    public BrowserSessionCrossbrowserJobInput(BrowserSessionId referenceSession,
+                                              List<BrowserSessionId> compareSessions,
+                                              ComparisonOptions comparisonOptions) {
         this.referenceSession = referenceSession;
         this.compareSessions = compareSessions;
+        this.comparisonOptions = comparisonOptions;
     }
 
     @Override
@@ -45,9 +55,9 @@ public class BrowserSessionCrossbrowserJobInput implements WellKnownJobInput {
                 new PortName("referenceSession"), new BrickValue(new BrickDataType("BrowserSessionRef"), jsonNodeFactory.textNode(referenceSession.toString())),
                 new PortName("compareSessions"), new BrickValue(new BrickDataType("List[BrowserSessionRef]"), mapper.valueToTree(compareSessionJson)),
                 new PortName("matchingType"), new BrickValue(new BrickDataType("String"), jsonNodeFactory.textNode("tag")),
-                new PortName("enabledynamicelementsfilter"), new BrickValue(new BrickDataType("Boolean"), jsonNodeFactory.booleanNode(true))
+                new PortName("enabledynamicelementsfilter"), new BrickValue(new BrickDataType("Boolean"), jsonNodeFactory.booleanNode(true)),
+                new PortName("comparisonOptions"), new BrickValue(new BrickDataType("ComparisonOptions"), mapper.valueToTree(comparisonOptions))
         );
     }
-
 
 }
