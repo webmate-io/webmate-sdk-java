@@ -7,9 +7,7 @@ import com.testfabrik.webmate.javasdk.commonutils.Dimension;
  * set to null, the default value will be taken. NOTE: In some cases, this means thah specific operations are not done, e.g if the warmUpConfig parameter is
  * set to null, the state extraction will not perform a warmup before extracting the state. For further Information, please refer to the online documentation
  */
-
 public class BrowserSessionStateExtractionConfig {
-
 
     private BrowserSessionStateId stateId;
     private Integer extractionDelay;
@@ -21,7 +19,8 @@ public class BrowserSessionStateExtractionConfig {
     private BrowserSessionWarmUpConfig warmUpConfig;
 
     /**
-     * Creates a new StateExtracionConfig.
+     * Creates a new StateExtractionConfig.
+     *
      * @param stateId The Session Id the state should belong to.
      * @param extractionDelay The delay before state extraction is triggered.
      * @param extractionCooldown The delay after state extraction is finished.

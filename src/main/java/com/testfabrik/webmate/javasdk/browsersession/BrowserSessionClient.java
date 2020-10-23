@@ -57,6 +57,7 @@ public class BrowserSessionClient {
 
         /**
          * Creates an webmate api client.
+         *
          * @param authInfo The authentication information needed for the API interaction
          * @param environment The environment the client should be used in, i.e which urls to use for communication
          */
@@ -67,6 +68,7 @@ public class BrowserSessionClient {
 
         /**
          * Creates an webmate api client using a custom HttpClientBuilder, which allows the use of proxies.
+         *
          * @param authInfo The authentication information needed for the API interaction
          * @param environment The environment the client should be used in, i.e which urls to use for communication
          * @param httpClientBuilder The HttpClientBuilder that is used for the underlying connection.
@@ -91,6 +93,7 @@ public class BrowserSessionClient {
 
         /**
          * Tries to terminate a Browsersession. Will return whether the process was successful or not.
+         *
          * @param browserSessionId The id of the session that should be terminated
          * @return true, if the Browersession was terminated successfully.
          */
@@ -141,7 +144,8 @@ public class BrowserSessionClient {
     }
 
     /**
-     * Creates a BrowserSessionClient based on a WebmateApiSession
+     * Creates a BrowserSessionClient based on a WebmateApiSession.
+     *
      * @param session The WebmateApiSession the BrowserSessionClient is supposed to be based on
      */
     public BrowserSessionClient(WebmateAPISession session) {
@@ -150,7 +154,8 @@ public class BrowserSessionClient {
     }
 
     /**
-     * Creates a BrowserSessionClient based on a WebmateApiSession and a custom HttpClientBuilder
+     * Creates a BrowserSessionClient based on a WebmateApiSession and a custom HttpClientBuilder.
+     *
      * @param session The WebmateApiSession the BrowserSessionClient is supposed to be based on
      * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection
      */
@@ -163,6 +168,7 @@ public class BrowserSessionClient {
 
     /**
      * Return the webmate BrowserSessionId for a given Selenium session running in webmate.
+     *
      * @param opaqueSeleniumSessionIdString Selenium SessionId that can be obtained by calling WebDriver.getSessionId().toString().
      * @return BrowserSessionRef that can be used to interact with the BrowserSession
      */
@@ -173,6 +179,7 @@ public class BrowserSessionClient {
 
     /**
      * Create a new State for the given BrowserSession with a default timeout of 5 minutes.
+     *
      * @param browserSessionId BrowserSession, in which the state should be extracted.
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
@@ -183,6 +190,7 @@ public class BrowserSessionClient {
 
     /**
      * Create a new State for the given BrowserSession with a default timeout of 5 minutes.
+     *
      * @param browserSessionId BrowserSession, in which the state should be extracted.
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionScreenshotExtractionConfig}.
@@ -195,6 +203,7 @@ public class BrowserSessionClient {
 
     /**
      * Create a new State for the given BrowserSession.
+     *
      * @param browserSessionId BrowserSession, in which the state should be extracted.
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @param timeoutMillis Maximal amount of time to wait for the state extraction to complete in milliseconds.
@@ -207,6 +216,7 @@ public class BrowserSessionClient {
 
     /**
      * Create a new State for the given BrowserSession.
+     *
      * @param browserSessionId BrowserSession, in which the state should be extracted.
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @param timeoutMillis Maximal amount of time to wait for the state extraction to complete in milliseconds.
@@ -220,6 +230,7 @@ public class BrowserSessionClient {
 
     /**
      * Create a new State for the BrowserSession registered in webmate session (there must be only one).
+     *
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @param timeoutMillis Maximal amount of time to wait for the state extraction to complete in milliseconds.
      * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
@@ -242,6 +253,7 @@ public class BrowserSessionClient {
 
     /**
      * Create a new State for the BrowserSession registered in webmate session (there must be only one).
+     *
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
@@ -264,6 +276,7 @@ public class BrowserSessionClient {
     /**
      * Create a new State for the BrowserSession registered in webmate session (there must be only one). Uses defaults for timeout and
      * state extraction configuration.
+     *
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
@@ -323,6 +336,7 @@ public class BrowserSessionClient {
 
     /**
      * Terminate the given BrowserSession
+     *
      * @param browserSessionId The Id for the BrowserSession that is supposed to be terminated
      * @return true if the Browsersession was successfully terminated
      */
