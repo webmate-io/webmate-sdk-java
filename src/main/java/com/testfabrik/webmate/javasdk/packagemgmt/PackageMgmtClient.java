@@ -40,7 +40,7 @@ public class PackageMgmtClient {
 
         private final static UriTemplate createPackageTemplate = new UriTemplate("/projects/${projectId}/packages");
 
-        private final static UriTemplate getPackageTemplate = new UriTemplate("/packages/${packageId}");
+        private final static UriTemplate getPackageTemplate = new UriTemplate("/package/packages/${packageId}");
 
 
         public PackageMgmtApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
@@ -135,8 +135,9 @@ public class PackageMgmtClient {
     }
 
     public Package uploadApplicationPackage(ProjectId projectId, byte[] appPackage, String packageName, String extension){
+        String contentType = (extension.equals("apk"))? "application/vnd.android.package-archive" : "application/x-ios-app";
         BlobClient blobClient = new BlobClient(this.session);
-        BlobId blobId = blobClient.putBlob(projectId, appPackage);
+        BlobId blobId = blobClient.putBlob(projectId, appPackage, Optional.of(contentType));
         return this.createPackage(projectId, blobId, packageName, extension);
 
     }

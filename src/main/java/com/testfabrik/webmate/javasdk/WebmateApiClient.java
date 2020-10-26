@@ -7,15 +7,18 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,8 +156,8 @@ public class WebmateApiClient {
      * @param byteParam The byte array that is supposed to be sent in the body
      * @return The response of the API
      */
-    public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, byte[] byteParam) {
-        HttpResponse httpResponse = sendPOSTUnchecked(schema, params, byteParam);
+    public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, byte[] byteParam, Optional<String> contentType) {
+        HttpResponse httpResponse = sendPOSTUnchecked(schema, params, byteParam, contentType);
         checkErrors(httpResponse);
         return new ApiResponse(httpResponse);
     }
@@ -237,11 +240,15 @@ public class WebmateApiClient {
         return httpResponse;
     }
 
-    protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, byte[] byteParam) {
+    protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, byte[] byteParam, Optional<String> contentType) {
         HttpResponse httpResponse;
         try {
             HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params));
-            req.setEntity(new ByteArrayEntity(byteParam));
+            if (contentType.isPresent()) {
+                req.setEntity(new ByteArrayEntity(byteParam, ContentType.create(contentType.get())));
+            } else {
+                req.setEntity(new ByteArrayEntity(byteParam));
+            }
             httpResponse = this.httpClient.execute(req);
             // Buffer the response entity in memory so we can release the connection safely
             HttpEntity old = httpResponse.getEntity();

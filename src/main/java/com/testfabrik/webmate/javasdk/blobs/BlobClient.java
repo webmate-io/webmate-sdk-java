@@ -44,8 +44,8 @@ public class BlobClient {
             super (authInfo, environment, httpClientBuilder);
         }
 
-        public BlobId putBlob(ProjectId projectId, byte[] uploadingBlob ) {
-            Optional<HttpResponse> r = sendPOST(putBlobTemplate, ImmutableMap.of("projectId", projectId.toString()), uploadingBlob).getOptHttpResponse();
+        public BlobId putBlob(ProjectId projectId, byte[] uploadingBlob, Optional<String> contentType) {
+            Optional<HttpResponse> r = sendPOST(putBlobTemplate, ImmutableMap.of("projectId", projectId.toString()), uploadingBlob, contentType).getOptHttpResponse();
 
             if (!r.isPresent()) {
                 throw new WebmateApiClientException("Could not put blob. Got no response");
@@ -92,8 +92,8 @@ public class BlobClient {
      * @param blob the Blob that should be uploaded to webmate
      * @return BlobId of the uploaded blob
      */
-    public BlobId putBlob(ProjectId projectId, byte[] blob) {
-        return this.apiClient.putBlob(projectId, blob);
+    public BlobId putBlob(ProjectId projectId, byte[] blob, Optional<String> contentType) {
+        return this.apiClient.putBlob(projectId, blob, contentType);
     }
 
     /**
