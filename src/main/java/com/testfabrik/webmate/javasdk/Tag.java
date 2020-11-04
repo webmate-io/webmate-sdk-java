@@ -47,10 +47,8 @@ public class Tag {
 
     @JsonValue
     public JsonNode asJson() {
-        System.out.println("HERE in asJson: " + getName() + ":" + getValue());
         ObjectNode result = JsonNodeFactory.instance.objectNode();
         result.set(getName(), getValue());
-        System.out.println("HERE in asJson2: " + result);
         return result;
     }
 

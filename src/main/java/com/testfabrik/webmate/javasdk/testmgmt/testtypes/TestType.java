@@ -1,9 +1,7 @@
-package com.testfabrik.webmate.javasdk.testmgmt;
+package com.testfabrik.webmate.javasdk.testmgmt.testtypes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-
-import java.util.UUID;
 
 /**
  * Type of Test.

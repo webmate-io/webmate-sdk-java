@@ -3,6 +3,7 @@ package com.testfabrik.webmate.javasdk.testmgmt;
 import com.google.common.base.Optional;
 import com.testfabrik.webmate.javasdk.Tag;
 import com.testfabrik.webmate.javasdk.WebmateAPISession;
+import com.testfabrik.webmate.javasdk.testmgmt.spec.TestExecutionSpec;
 
 import java.util.ArrayList;
 import java.util.List;

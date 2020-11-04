@@ -41,8 +41,11 @@ public class Package {
     // for jackson
     private Package() {}
 
-    public Package(PackageId id, ProjectId projectId, UserId creator, DateTime creationTime, String name, String description, String versionComment, int index, int amountOfVersions, PackageId origPackageId,
-                   String origPackageType, BlobId origBlobId, JsonNode origMetaData, JsonNode origProperties, Optional<PackageId> instrumentedPackageId, Optional<String> instrumentedPackageType, Optional<BlobId> instrumentedBlobId) {
+    public Package(PackageId id, ProjectId projectId, UserId creator, DateTime creationTime, String name,
+                   String description, String versionComment, int index, int amountOfVersions, PackageId origPackageId,
+                   String origPackageType, BlobId origBlobId, JsonNode origMetaData, JsonNode origProperties,
+                   Optional<PackageId> instrumentedPackageId, Optional<String> instrumentedPackageType,
+                   Optional<BlobId> instrumentedBlobId) {
         this.id = id;
         this.projectId = projectId;
         this.creator = creator;

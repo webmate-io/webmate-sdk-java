@@ -1,6 +1,5 @@
-package com.testfabrik.webmate.javasdk.testmgmt.testtypes;
+package com.testfabrik.webmate.javasdk.testmgmt.spec;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -8,9 +7,10 @@ import com.testfabrik.webmate.javasdk.Tag;
 import com.testfabrik.webmate.javasdk.WebmateAPISession;
 import com.testfabrik.webmate.javasdk.WebmateApiClientException;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
-import com.testfabrik.webmate.javasdk.jobs.WMValue;
 import com.testfabrik.webmate.javasdk.jobs.WMValueFactory;
 import com.testfabrik.webmate.javasdk.testmgmt.*;
+import com.testfabrik.webmate.javasdk.testmgmt.testtypes.StandardTestTypes;
+import com.testfabrik.webmate.javasdk.testmgmt.testtypes.TestType;
 
 import java.util.List;
 
@@ -27,9 +27,9 @@ public class StoryCheckSpec extends TestExecutionSpec {
 
     private BrowserSessionId expeditionId;
 
-    private StoryCheckSpec(String executionName, List<Tag> tags, List<ApplicationModelId> models, List<TestSessionId> testSessions,
-                            BrowserSessionId expeditionId) {
-        super(executionName, TestType.of("story_check"), "Default StoryCheck", tags, models, testSessions);
+    private StoryCheckSpec(String executionName, List<Tag> tags, List<ApplicationModelId> models,
+                           List<TestSessionId> testSessions, BrowserSessionId expeditionId) {
+        super(executionName, TestType.of(StandardTestTypes.StoryCheck.getTestType()), "Default StoryCheck", tags, models, testSessions);
         this.expeditionId = expeditionId;
     }
 

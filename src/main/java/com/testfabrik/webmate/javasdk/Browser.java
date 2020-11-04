@@ -8,14 +8,14 @@ public class Browser {
     private String platform;
     private JsonNode properties; // Could be null!
 
-    public Browser(String browserType, String version, String platform){
+    public Browser(String browserType, String version, String platform) {
         this.browserType = browserType;
         this.version = version;
         this.platform = platform;
         properties = null;
     }
 
-    public Browser(String browserType, String version, String platform, JsonNode properties){
+    public Browser(String browserType, String version, String platform, JsonNode properties) {
         this.browserType = browserType;
         this.version = version;
         this.platform = platform;

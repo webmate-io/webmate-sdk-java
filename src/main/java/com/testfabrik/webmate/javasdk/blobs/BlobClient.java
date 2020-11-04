@@ -2,14 +2,9 @@ package com.testfabrik.webmate.javasdk.blobs;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
-import com.testfabrik.webmate.javasdk.devices.DeviceId;
-import com.testfabrik.webmate.javasdk.devices.DeviceTemplate;
-import com.testfabrik.webmate.javasdk.devices.DeviceTemplateId;
-import com.testfabrik.webmate.javasdk.testmgmt.Artifact;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -17,11 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.UUID;
 
-/**
- * Facade to the webmate Device subsystem.
- */
 public class BlobClient {
 
     private WebmateAPISession session;
