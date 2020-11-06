@@ -10,10 +10,6 @@ import org.joda.time.DateTime;
 import java.util.Map;
 import java.util.Objects;
 
-//case class JobRunSummaryDTO(id: JobRunId, state: JobRunState, creator: UserId, creationTime: DateTime, startTime: Option[DateTime],
-//                            endTime: Option[DateTime], lastUpdateTime: Option[DateTime], failureMessage: Option[String],
-//                            inputPorts: Map[PortName, BrickValue], optTestRunInfo: Option[TestRunInfoDTO], summaryInformation: Map[PortName, JsValue])
-
 /**
  * Represents a concise summary describing the state of a JobRun.
  */
@@ -32,8 +28,10 @@ public class JobRunSummary {
     private TestRunId testRunId;
     private Map<String, JsonNode> summaryInformation;
 
-    public JobRunSummary(JobRunId id, JobRunState state, UserId creator, DateTime creationTime, DateTime startTime, DateTime endTime, DateTime lastUpdateTime, String failureMessage,
-                         Map<String, WMValue> inputPorts, TestId testId, TestRunId testRunId, Map<String, JsonNode> summaryInformation) {
+    public JobRunSummary(JobRunId id, JobRunState state, UserId creator, DateTime creationTime, DateTime startTime,
+                         DateTime endTime, DateTime lastUpdateTime, String failureMessage,
+                         Map<String, WMValue> inputPorts, TestId testId, TestRunId testRunId,
+                         Map<String, JsonNode> summaryInformation) {
         this.id = id;
         this.state = state;
         this.creator = creator;

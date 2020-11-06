@@ -77,6 +77,7 @@ public class BrowserSessionClient {
 
         /**
          * Creates a State for a Browsersession with a matching id. The extraction parameters are set to default.
+         *
          * @param browserSessionId The Browsersession Id the state should be created for
          * @param matchingId The Id for the state. Used for matching
          * @param timeoutMillis The timeout for the statecreation in milliseconds
@@ -88,8 +89,6 @@ public class BrowserSessionClient {
             Optional<HttpResponse> optHttpResponse = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
             return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), BrowserSessionStateId.class);
         }
-
-
 
         /**
          * Tries to terminate a Browsersession. Will return whether the process was successful or not.
@@ -122,7 +121,6 @@ public class BrowserSessionClient {
          * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionScreenshotExtractionConfig}.
          */
         public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
-
             Map<String, Object>  params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", browserSessionStateExtractionConfig);
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -344,8 +342,5 @@ public class BrowserSessionClient {
         LOG.debug("Trying to terminate Browsersession with id ["+ browserSessionId +"]");
         return apiClient.terminateSession(browserSessionId);
     }
-
-
-
 
 }

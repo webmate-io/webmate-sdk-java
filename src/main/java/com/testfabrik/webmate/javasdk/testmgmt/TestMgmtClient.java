@@ -2,6 +2,7 @@ package com.testfabrik.webmate.javasdk.testmgmt;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
@@ -10,6 +11,7 @@ import com.testfabrik.webmate.javasdk.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.testfabrik.webmate.javasdk.commonutils.HttpHelpers;
 import com.testfabrik.webmate.javasdk.jobs.WMValue;
+import com.testfabrik.webmate.javasdk.testmgmt.spec.TestExecutionSpec;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -17,10 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Facade of TestMgmt subsystem.
@@ -53,8 +52,8 @@ public class TestMgmtClient {
 
     private static class TestMgmtApiClient extends WebmateApiClient {
 
-        private final static UriTemplate getTestsInProjectTemplate =
-                new UriTemplate("/projects/${projectId}/testmgmt/tests");
+        private final static UriTemplate getTestTemplatesTemplate =
+                new UriTemplate("/projects/${projectId}/tests");
 
         private final static UriTemplate getTestTemplate =
                 new UriTemplate("/testmgmt/tests/${testId}");
@@ -62,13 +61,16 @@ public class TestMgmtClient {
         private final static UriTemplate getTestResultsTemplate =
                 new UriTemplate("/testmgmt/testruns/${testRunId}/results");
 
-        private final static UriTemplate createTestExecutionTemplate =
-                new UriTemplate("/projects/${projectId}/testexecutions");
-
         private final static UriTemplate createTestSessionTemplate =
                 new UriTemplate("/projects/${projectId}/testsessions");
 
+        private final static UriTemplate createTestExecutionTemplate =
+                new UriTemplate("/projects/${projectId}/testexecutions");
+
         private final static UriTemplate startTestExecutionTemplate =
+                new UriTemplate("/testmgmt/testexecutions/${testExecutionId}");
+
+        private final static UriTemplate getTestExecutionTemplate =
                 new UriTemplate("/testmgmt/testexecutions/${testExecutionId}");
 
         private final static UriTemplate finishTestRunTemplate =
@@ -130,6 +132,17 @@ public class TestMgmtClient {
             return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), TestRunId.class);
         }
 
+        public TestExecutionSummary getTestExecution(TestExecutionId id) {
+            Optional<HttpResponse> optHttpResponse = sendGET(getTestExecutionTemplate, ImmutableMap.of(
+                    "testExecutionId", id.toString())).getOptHttpResponse();
+
+            if (!optHttpResponse.isPresent()) {
+                throw new WebmateApiClientException("Could not get TestExecution. Got no response");
+            }
+
+            return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), TestExecutionSummary.class);
+        }
+
         public void finishTestRun(TestRunId id, TestRunFinishData data) {
             ObjectMapper mapper = JacksonMapper.getInstance();
             JsonNode dataJson = mapper.valueToTree(data);
@@ -142,21 +155,25 @@ public class TestMgmtClient {
             }
         }
 
-        public Optional<List<TestInfo>> getTestsInProject(ProjectId id) {
-            Optional<HttpResponse> optHttpResponse = sendGET(getTestsInProjectTemplate, ImmutableMap.of("projectId", id.toString())).getOptHttpResponse();
-            if (!optHttpResponse.isPresent()) {
-                return Optional.absent();
-            }
-
-            TestInfo[] testInfos;
+        public List<TestTemplate> getTestTemplates(ProjectId projectId) {
+            Optional<HttpResponse> optHttpResponse = sendGET(getTestTemplatesTemplate, ImmutableMap.of("projectId", projectId.toString())).getOptHttpResponse();
+            List<TestTemplate> testTemplates;
             try {
-                String testInfosJson = EntityUtils.toString(optHttpResponse.get().getEntity());
-                ObjectMapper mapper = JacksonMapper.getInstance();
-                testInfos = mapper.readValue(testInfosJson, TestInfo[].class);
+                if (!optHttpResponse.isPresent()) {
+                    testTemplates = new ArrayList<>();
+                } else {
+                    String testInfosJson = EntityUtils.toString(optHttpResponse.get().getEntity());
+                    ObjectMapper mapper = JacksonMapper.getInstance();
+                    mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+
+                    ApiDataResult<TestTemplate[]> testResults = mapper.readValue(testInfosJson, new TypeReference<ApiDataResult<TestTemplate[]>>() {});
+                    testTemplates = Arrays.asList(testResults.data);
+                }
             } catch (IOException e) {
                 throw new WebmateApiClientException("Error reading data: " + e.getMessage(), e);
             }
-            return Optional.of(Arrays.asList(testInfos));
+            return testTemplates;
         }
 
         public Optional<Test> getTest(TestId id) {
@@ -183,7 +200,8 @@ public class TestMgmtClient {
          * @return Optional with list of TestResults or Optional.absent if there was no such Test or TestRun. If there were no TestResults, the result is Optional of empty list.
          */
         public Optional<List<TestResult>> getTestResults(TestRunId id) {
-            Optional<HttpResponse> optHttpResponse = sendGET(getTestResultsTemplate, ImmutableMap.of("testRunId", id.toString())).getOptHttpResponse();
+            String testRunId = id == null ? "null" : id.toString();
+            Optional<HttpResponse> optHttpResponse = sendGET(getTestResultsTemplate, ImmutableMap.of("testRunId", testRunId)).getOptHttpResponse();
             if (!optHttpResponse.isPresent()) {
                 return Optional.absent();
             }
@@ -193,8 +211,8 @@ public class TestMgmtClient {
                 String testJson = EntityUtils.toString(optHttpResponse.get().getEntity());
 
                 ObjectMapper mapper = JacksonMapper.getInstance();
-                ApiResult<TestResult[]> testResults = mapper.readValue(testJson, new TypeReference<ApiResult<TestResult[]>>() {});
-                result = Arrays.asList(testResults.value);
+                ApiDataResult<TestResult[]> testResults = mapper.readValue(testJson, new TypeReference<ApiDataResult<TestResult[]>>() {});
+                result = Arrays.asList(testResults.data);
             } catch (IOException e) {
                 throw new WebmateApiClientException("Error reading TestResult data: " + e.getMessage(), e);
             }
@@ -203,7 +221,8 @@ public class TestMgmtClient {
     }
 
     /**
-     * Creates a TestMgmtClient based on a WebmateApiSession
+     * Creates a TestMgmtClient based on a WebmateApiSession.
+     *
      * @param session The WebmateApiSession used by the TestMgmtClient
      */
     public TestMgmtClient(WebmateAPISession session) {
@@ -213,6 +232,7 @@ public class TestMgmtClient {
 
     /**
      * Creates a TestMgmtClient based on a WebmateApiSession and a custom HttpClientBuilder.
+     *
      * @param session The WebmateApiSession used by the TestMgmtClient
      * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection.
      */
@@ -221,17 +241,13 @@ public class TestMgmtClient {
         this.apiClient = new TestMgmtApiClient(session.authInfo, session.environment, httpClientBuilder);
     }
 
-    /**
-     * Retrieve Tests in project with id
-     * @param id Id of Project.
-     * @return Test
-     */
-    public Optional<List<TestInfo>> getTestsInProject(ProjectId id) {
-        return this.apiClient.getTestsInProject(id);
+    public List<TestTemplate> getTestTemplates(ProjectId projectId) {
+        return this.apiClient.getTestTemplates(projectId);
     }
 
     /**
-     * Retrieve Test with id
+     * Retrieve Test with id.
+     *
      * @param id Id of Test.
      * @return Test
      */
@@ -241,6 +257,7 @@ public class TestMgmtClient {
 
     /**
      * Retrieve list of TestResults for given test and test run.
+     *
      * @param id Id of TestRun.
      * @return List of TestResults. Optional.absent if there was no such Test or TestRun.
      */
@@ -251,6 +268,7 @@ public class TestMgmtClient {
 
     /**
      * Get Id of TestRun associated with a Selenium session.
+     *
      * @param opaqueSeleniumSessionIdString selenium session id
      * @return test run id
      */
@@ -258,16 +276,17 @@ public class TestMgmtClient {
         return new TestRunId(UUID.randomUUID());
     }
 
-    public TestRunId startExecution(TestExecutionSpec spec, ProjectId projectId) {
+    public CreateTestExecutionResponse startExecution(TestExecutionSpec spec, ProjectId projectId) {
         CreateTestExecutionResponse executionAndRun = apiClient.createAndStartTestExecution(projectId, spec);
         if (!executionAndRun.optTestRunId.isPresent()) {
             throw new WebmateApiClientException("Got no testrun id for new execution.");
         }
-        return executionAndRun.optTestRunId.get();
+        return executionAndRun;
     }
 
     /**
      * Create and start a TestExecution.
+     *
      * @param specBuilder A builder providing the required information for that test type, e.g. {@code Story}
      * @return
      */
@@ -276,7 +295,12 @@ public class TestMgmtClient {
             throw new WebmateApiClientException("A TestExecution must be associated with a project and none is provided or associated with the API session");
         }
         TestExecutionSpec spec = specBuilder.setApiSession(this.session).build();
-        return new TestRun(startExecution(spec, session.getProjectId().get()), this.session);
+        CreateTestExecutionResponse createTestExecutionResponse = startExecution(spec, session.getProjectId().get());
+        return new TestRun(createTestExecutionResponse.optTestRunId.get(), this.session);
+    }
+
+    public TestExecutionSummary getTestExecutionSummary(TestExecutionId testExecutionId) {
+        return apiClient.getTestExecution(testExecutionId);
     }
 
     /**

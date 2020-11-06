@@ -25,6 +25,10 @@
             <name>Frederic Burgard</name>
             <email>fburgard@testfabrik.com</email>
         </developer>
+        <developer>
+            <name>Timo Gühring</name>
+            <email>tguehring@testfabrik.com</email>
+        </developer>
     </developers>
 
     <properties>

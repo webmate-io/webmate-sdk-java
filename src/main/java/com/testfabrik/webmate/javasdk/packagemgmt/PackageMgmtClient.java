@@ -1,21 +1,13 @@
 package com.testfabrik.webmate.javasdk.packagemgmt;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
 import com.testfabrik.webmate.javasdk.blobs.BlobClient;
 import com.testfabrik.webmate.javasdk.blobs.BlobId;
-import com.testfabrik.webmate.javasdk.devices.DeviceId;
-import com.testfabrik.webmate.javasdk.devices.DeviceTemplate;
-import com.testfabrik.webmate.javasdk.devices.DeviceTemplateId;
-import com.testfabrik.webmate.javasdk.testmgmt.Artifact;
-import com.testfabrik.webmate.javasdk.testmgmt.Test;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -23,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
 
 /**
  * Facade to the webmate Device subsystem.
@@ -134,12 +126,11 @@ public class PackageMgmtClient {
         return this.apiClient.getPackage(packageId);
     }
 
-    public Package uploadApplicationPackage(ProjectId projectId, byte[] appPackage, String packageName, String extension){
-        String contentType = (extension.equals("apk"))? "application/vnd.android.package-archive" : "application/x-ios-app";
+    public Package uploadApplicationPackage(ProjectId projectId, byte[] appPackage, String packageName, String extension) {
+        String contentType = extension.equals("apk") ? "application/vnd.android.package-archive" : "application/x-ios-app";
         BlobClient blobClient = new BlobClient(this.session);
         BlobId blobId = blobClient.putBlob(projectId, appPackage, Optional.of(contentType));
         return this.createPackage(projectId, blobId, packageName, extension);
-
     }
 
 }

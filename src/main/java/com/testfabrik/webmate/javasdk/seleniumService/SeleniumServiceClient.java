@@ -69,7 +69,7 @@ public class SeleniumServiceClient {
 
         private Browser buildBrowserFromJson(JsonNode browserJson) {
             return new Browser(
-                    browserJson.at("/browserType").asText(),
+                    BrowserType.getEnum(browserJson.at("/browserType").asText()),
                     browserJson.at("/version").asText(),
                     browserJson.at("/platform").asText()
             );
@@ -103,7 +103,7 @@ public class SeleniumServiceClient {
 
         private SeleniumCapability buildSeleniumCapabilityFromJson(JsonNode capabilityJson) {
             return new SeleniumCapability(
-                    capabilityJson.at("/browserName").asText(),
+                    BrowserType.getEnum(capabilityJson.at("/browserName").asText()),
                     capabilityJson.at("/version").asText(),
                     capabilityJson.at("/platform").asText(),
                     capabilityJson.at("/supportsProxy").asBoolean(),

@@ -5,6 +5,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public class WMDataType {
 
     public static final WMDataType ExpeditionId = new WMDataType("BrowserSessionRef");
+    public static final WMDataType ExpeditionSpec = new WMDataType("ExpeditionSpec");
+    public static final WMDataType ListExpeditionSpec = new WMDataType("List[ExpeditionSpec]");
+    public static final WMDataType LiveExpeditionSpec = new WMDataType("LiveExpeditionSpec");
+    public static final WMDataType BrowserSpecification = new WMDataType("BrowserSpecification");
+    public static final WMDataType URLListDriverSpecification = new WMDataType("URLListDriverSpecification");
 
     private String tpe;
 

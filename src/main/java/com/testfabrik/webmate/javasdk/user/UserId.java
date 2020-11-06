@@ -1,16 +1,29 @@
 package com.testfabrik.webmate.javasdk.user;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.testfabrik.webmate.javasdk.testmgmt.TestExecutionId;
+
 import java.util.UUID;
 
 public class UserId {
-    private UUID value;
+    private final UUID value;
 
+    @JsonCreator
     public UserId(UUID value) {
         this.value = value;
     }
 
     static UserId FOR_TESTING() {
         return new UserId(new UUID(0, 30 /* TODO */));
+    }
+
+    /**
+     * Create UserId from UUID represented as a String.
+     */
+    @JsonCreator
+    static TestExecutionId of(final String idStr) {
+        return new TestExecutionId(UUID.fromString(idStr));
     }
 
     @Override
@@ -29,6 +42,7 @@ public class UserId {
     }
 
     @Override
+    @JsonValue
     public String toString() {
         return value.toString();
     }

@@ -1,21 +1,33 @@
 package com.testfabrik.webmate.javasdk;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.testfabrik.webmate.javasdk.testmgmt.spec.Platform;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Browser {
-    private String browserType;
+    private BrowserType browserType;
     private String version;
-    private String platform;
+    private Platform platform;
+    private String platformStr;
     private JsonNode properties; // Could be null!
 
-    public Browser(String browserType, String version, String platform){
-        this.browserType = browserType;
-        this.version = version;
-        this.platform = platform;
-        properties = null;
+    public Browser(BrowserType browserType, String version, String platform) {
+        this(browserType, version, platform, null);
     }
 
-    public Browser(String browserType, String version, String platform, JsonNode properties){
+    public Browser(BrowserType browserType, String version, String platform, JsonNode properties) {
+        this.browserType = browserType;
+        this.version = version;
+        this.platformStr = platform;
+        this.properties = properties;
+    }
+
+    public Browser(BrowserType browserType, String version, Platform platform) {
+        this(browserType, version, platform, null);
+    }
+
+    public Browser(BrowserType browserType, String version, Platform platform, JsonNode properties) {
         this.browserType = browserType;
         this.version = version;
         this.platform = platform;
@@ -24,22 +36,27 @@ public class Browser {
 
     @Override
     public String toString() {
-        return "[" + browserType + ", " + version + ", " + platform + "]";
+        String platformStr = platform == null ? this.platformStr : platform.toString();
+        return "[" + browserType.getValue() + ", " + version + ", " + platformStr + "]";
     }
 
-    public String getBrowserType(){
+    public BrowserType getBrowserType() {
         return browserType;
     }
 
-    public String getVersion(){
+    public String getVersion() {
         return version;
     }
 
-    public String getPlatform(){
+    public Platform getPlatform() {
         return platform;
     }
 
-    public Boolean hasProperties(){
+    public String getPlatformStr() {
+        return platformStr;
+    }
+
+    public Boolean hasProperties() {
         return properties != null;
     }
 
