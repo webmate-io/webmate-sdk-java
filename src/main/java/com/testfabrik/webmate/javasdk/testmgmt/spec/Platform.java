@@ -23,23 +23,11 @@ public class Platform {
         return platformType;
     }
 
-    public void setPlatformType(String platformType) {
-        this.platformType = platformType;
-    }
-
     public String getPlatformVersion() {
         return platformVersion;
     }
 
-    public void setPlatformVersion(String platformVersion) {
-        this.platformVersion = platformVersion;
-    }
-
     public String getArchitecture() {
         return architecture;
-    }
-
-    public void setArchitecture(String architecture) {
-        this.architecture = architecture;
     }
 }

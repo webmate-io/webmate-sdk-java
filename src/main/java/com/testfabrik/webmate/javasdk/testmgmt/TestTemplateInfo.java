@@ -31,47 +31,23 @@ public class TestTemplateInfo {
         return testId;
     }
 
-    public void setTestId(TestId testId) {
-        this.testId = testId;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public DateTime getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(DateTime creationTime) {
-        this.creationTime = creationTime;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public int getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
     public boolean isBaseTemplate() {
         return isBaseTemplate;
-    }
-
-    public void setBaseTemplate(boolean baseTemplate) {
-        isBaseTemplate = baseTemplate;
     }
 }

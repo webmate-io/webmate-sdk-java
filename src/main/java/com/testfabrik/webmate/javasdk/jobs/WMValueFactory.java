@@ -21,7 +21,7 @@ public class WMValueFactory {
         return makeBrickValue(WMDataType.ExpeditionId, JsonNodeFactory.instance.textNode(id.toString()));
     }
 
-    private static ObjectNode createJsonNode(BrowserSpecification browserSpecification, List<URI> urls) {
+    private static ObjectNode convertBrowserSpecificationToJson(BrowserSpecification browserSpecification, List<URI> urls) {
         // driverSpec
         ObjectNode driverSpecNode = JsonNodeFactory.instance.objectNode();
         driverSpecNode.put("type", WMDataType.URLListDriverSpecification.getTpe());
@@ -46,14 +46,14 @@ public class WMValueFactory {
     }
 
     public static WMValue makeExpeditionSpec(BrowserSpecification browserSpecification, List<URI> urls) {
-        ObjectNode dataNode = createJsonNode(browserSpecification, urls);
+        ObjectNode dataNode = convertBrowserSpecificationToJson(browserSpecification, urls);
         return makeBrickValue(WMDataType.ExpeditionSpec, dataNode);
     }
 
-    public static WMValue makeExpeditionSpec(List<BrowserSpecification> browserSpecifications, List<URI> urls) {
+    public static WMValue makeExpeditionSpecs(List<BrowserSpecification> browserSpecifications, List<URI> urls) {
         ArrayNode dataNodes = JsonNodeFactory.instance.arrayNode();
         for (BrowserSpecification browserSpecification : browserSpecifications) {
-            ObjectNode dataNode = createJsonNode(browserSpecification, urls);
+            ObjectNode dataNode = convertBrowserSpecificationToJson(browserSpecification, urls);
             dataNodes.add(dataNode);
         }
         return makeBrickValue(WMDataType.ListExpeditionSpec, dataNodes);

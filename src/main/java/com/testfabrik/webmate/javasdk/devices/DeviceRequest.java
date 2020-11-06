@@ -19,16 +19,8 @@ public class DeviceRequest {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public DeviceRequirements getDeviceRequirements() {
         return deviceRequirements;
-    }
-
-    public void setDeviceRequirements(DeviceRequirements deviceRequirements) {
-        this.deviceRequirements = deviceRequirements;
     }
 
     @JsonValue

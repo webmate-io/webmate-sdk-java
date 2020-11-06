@@ -31,47 +31,23 @@ public class TestParameter {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public WMDataType getParameterType() {
         return parameterType;
-    }
-
-    public void setParameterType(WMDataType parameterType) {
-        this.parameterType = parameterType;
     }
 
     public boolean isRequired() {
         return required;
     }
 
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
-
     public Optional<String> getOptDescription() {
         return optDescription;
-    }
-
-    public void setOptDescription(Optional<String> optDescription) {
-        this.optDescription = optDescription;
     }
 
     public Optional<String> getOptDisplayName() {
         return optDisplayName;
     }
 
-    public void setOptDisplayName(Optional<String> optDisplayName) {
-        this.optDisplayName = optDisplayName;
-    }
-
     public Optional<WMValue> getDefaultVal() {
         return defaultVal;
-    }
-
-    public void setDefaultVal(Optional<WMValue> defaultVal) {
-        this.defaultVal = defaultVal;
     }
 }

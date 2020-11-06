@@ -1,35 +1,35 @@
 package com.testfabrik.webmate.javasdk.seleniumService;
 
+import com.testfabrik.webmate.javasdk.BrowserType;
+
 public class SeleniumCapability {
-    private String browserName;
+    private BrowserType browserName;
     private String version;
     private String platform;
     private Boolean supportsProxy;
     private String browserlanguage; // Could be null!
 
-
-    public SeleniumCapability(String browserName, String version, String platform, Boolean supportsProxy, String browserlanguage) {
-        this.browserName = browserName;
+    public SeleniumCapability(BrowserType browser, String version, String platform, Boolean supportsProxy, String browserlanguage) {
+        this.browserName = browser;
         this.version = version;
         this.platform = platform;
         this.supportsProxy = supportsProxy;
         if (browserlanguage.equals("")) {
             this.browserlanguage = null;
-        }
-        else {
+        } else {
             this.browserlanguage = browserlanguage;
         }
     }
 
-    public SeleniumCapability(String browserName, String version, String platform, Boolean supportsProxy) {
-        this.browserName = browserName;
+    public SeleniumCapability(BrowserType browser, String version, String platform, Boolean supportsProxy) {
+        this.browserName = browser;
         this.version = version;
         this.platform = platform;
         this.supportsProxy = supportsProxy;
         this.browserlanguage = null;
     }
 
-    public String getBrowserName() {
+    public BrowserType getBrowserName() {
         return browserName;
     }
 

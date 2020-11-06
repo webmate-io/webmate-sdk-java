@@ -1,33 +1,27 @@
 package com.testfabrik.webmate.javasdk.testmgmt.spec;
 
+import com.testfabrik.webmate.javasdk.Browser;
+
 public class BrowserSpecification extends VehicleSpecification {
 
-    private BrowserSpec browser;
+    private Browser browser;
     private boolean useProxy;
 
-    public BrowserSpecification(BrowserSpec browser) {
+    public BrowserSpecification(Browser browser) {
         this.browser = browser;
         this.useProxy = false;
     }
 
-    public BrowserSpecification(BrowserSpec browser, boolean useProxy) {
+    public BrowserSpecification(Browser browser, boolean useProxy) {
         this.browser = browser;
         this.useProxy = useProxy;
     }
 
-    public BrowserSpec getBrowser() {
+    public Browser getBrowser() {
         return browser;
-    }
-
-    public void setBrowser(BrowserSpec browser) {
-        this.browser = browser;
     }
 
     public boolean isUseProxy() {
         return useProxy;
-    }
-
-    public void setUseProxy(boolean useProxy) {
-        this.useProxy = useProxy;
     }
 }

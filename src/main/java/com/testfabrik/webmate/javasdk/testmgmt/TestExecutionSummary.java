@@ -44,47 +44,24 @@ public class TestExecutionSummary {
         return testId;
     }
 
-    public void setTestId(TestId testId) {
-        this.testId = testId;
-    }
-
     public int getVersion() {
         return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
     }
 
     public UserId getCreator() {
         return creator;
     }
 
-    public void setCreator(UserId creator) {
-        this.creator = creator;
-    }
-
     public TestExecutionExecutionStatus getExecutionStatus() {
         return executionStatus;
-    }
-
-    public void setExecutionStatus(TestExecutionExecutionStatus executionStatus) {
-        this.executionStatus = executionStatus;
     }
 
     public TestExecutionEvaluationStatus getEvaluationStatus() {
         return evaluationStatus;
     }
 
-    public void setEvaluationStatus(TestExecutionEvaluationStatus evaluationStatus) {
-        this.evaluationStatus = evaluationStatus;
-    }
-
     public DateTime getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(DateTime creationTime) {
-        this.creationTime = creationTime;
-    }
 }

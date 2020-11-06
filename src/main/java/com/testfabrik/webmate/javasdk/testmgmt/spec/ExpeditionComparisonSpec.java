@@ -43,7 +43,7 @@ public class ExpeditionComparisonSpec extends TestExecutionSpec {
     public TestMgmtClient.SingleTestRunCreationSpec makeTestRunCreationSpec() {
         return new TestMgmtClient.SingleTestRunCreationSpec(ImmutableMap.of(
                 "referenceExpeditionSpec", WMValueFactory.makeExpeditionSpec(referenceBrowser, urls),
-                "comparisonExpeditionSpecs", WMValueFactory.makeExpeditionSpec(comparisonBrowsers, urls)
+                "comparisonExpeditionSpecs", WMValueFactory.makeExpeditionSpecs(comparisonBrowsers, urls)
         ));
     }
 }

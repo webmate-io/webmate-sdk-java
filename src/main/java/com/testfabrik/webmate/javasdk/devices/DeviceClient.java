@@ -31,7 +31,7 @@ public class DeviceClient {
 
         private final static UriTemplate getDeviceIdsForProject = new UriTemplate("/projects/${projectId}/device/devices");
 
-        private final static UriTemplate requestDeviceByCapabilitiesForProject = new UriTemplate("/projects/${projectId}/device/devices");
+        private final static UriTemplate requestDeviceByRequirementsForProject = new UriTemplate("/projects/${projectId}/device/devices");
 
         private final static UriTemplate synchronizeDevice = new UriTemplate("/device/devices/${deviceId}/sync");
 
@@ -71,9 +71,9 @@ public class DeviceClient {
             return deviceIds;
         }
 
-        public void requestDeviceByCapabilities(ProjectId projectId, DeviceRequest deviceRequest) {
+        public void requestDeviceByRequirements(ProjectId projectId, DeviceRequest deviceRequest) {
             ObjectMapper mapper = new ObjectMapper();
-            sendPOST(requestDeviceByCapabilitiesForProject, ImmutableMap.of("projectId", projectId.toString()), mapper.valueToTree(deviceRequest));
+            sendPOST(requestDeviceByRequirementsForProject, ImmutableMap.of("projectId", projectId.toString()), mapper.valueToTree(deviceRequest));
         }
 
         public void synchronizeDevice(DeviceId deviceId) {
@@ -127,8 +127,8 @@ public class DeviceClient {
      * @param projectId Id of Project (as found in dashboard), for which devices should be retrieved.
      * @param deviceRequest Contains the defined device properties.
      */
-    public void requestDeviceByCapabilities(ProjectId projectId, DeviceRequest deviceRequest) {
-        this.apiClient.requestDeviceByCapabilities(projectId, deviceRequest);
+    public void requestDeviceByRequirements(ProjectId projectId, DeviceRequest deviceRequest) {
+        this.apiClient.requestDeviceByRequirements(projectId, deviceRequest);
     }
 
     /**

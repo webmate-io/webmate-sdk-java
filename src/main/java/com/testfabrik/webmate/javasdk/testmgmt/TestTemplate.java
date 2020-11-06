@@ -25,31 +25,15 @@ public class TestTemplate {
         return info;
     }
 
-    public void setInfo(TestTemplateInfo info) {
-        this.info = info;
-    }
-
     public TestType getTestType() {
         return testType;
-    }
-
-    public void setTestType(TestType testType) {
-        this.testType = testType;
     }
 
     public Collection<ApplicationModelId> getModels() {
         return models;
     }
 
-    public void setModels(Collection<ApplicationModelId> models) {
-        this.models = models;
-    }
-
     public Collection<TestParameter> getParams() {
         return params;
-    }
-
-    public void setParams(Collection<TestParameter> params) {
-        this.params = params;
     }
 }
