@@ -6,17 +6,17 @@ public class Platform {
     private String platformType;
     private String platformVersion;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String architecture;
+    private String platformArchitecture;
 
     public Platform(String platformType, String platformVersion) {
         this.platformType = platformType;
         this.platformVersion = platformVersion;
     }
 
-    public Platform(String platformType, String platformVersion, String architecture) {
+    public Platform(String platformType, String platformVersion, String platformArchitecture) {
         this.platformType = platformType;
         this.platformVersion = platformVersion;
-        this.architecture = architecture;
+        this.platformArchitecture = platformArchitecture;
     }
 
     public String getPlatformType() {
@@ -27,7 +27,7 @@ public class Platform {
         return platformVersion;
     }
 
-    public String getArchitecture() {
-        return architecture;
+    public String getPlatformArchitecture() {
+        return platformArchitecture;
     }
 }
