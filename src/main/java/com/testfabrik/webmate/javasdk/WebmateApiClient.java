@@ -87,7 +87,7 @@ public class WebmateApiClient {
         return httpClientBuilder.build();
     }
 
-    private void checkErrors(HttpResponse httpResponse) {
+    private void checkErrors(HttpResponse httpResponse, Optional<String> endpointName) {
         if (httpResponse.getStatusLine().getStatusCode() != 200) {
             String entityContent;
             try {
@@ -95,7 +95,13 @@ public class WebmateApiClient {
             } catch (IOException e) {
                 entityContent = "n/a";
             }
-            throw new WebmateApiClientException("An error occured during request: " + httpResponse.getStatusLine().getReasonPhrase() + ": " + entityContent);
+            if (endpointName.isPresent()) {
+                throw new WebmateApiClientException("An error occured during '" + endpointName.get() + "' request: " +
+                        httpResponse.getStatusLine().getReasonPhrase() + ": " + entityContent);
+            } else {
+                throw new WebmateApiClientException("An error occured during request: " +
+                        httpResponse.getStatusLine().getReasonPhrase() + ": " + entityContent);
+            }
         }
     }
 
@@ -108,7 +114,7 @@ public class WebmateApiClient {
      */
     public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, JsonNode body) {
         HttpResponse httpResponse = sendPOSTUnchecked(schema, params, body);
-        checkErrors(httpResponse);
+        checkErrors(httpResponse, schema.name);
         return new ApiResponse(httpResponse);
     }
     /**
@@ -119,7 +125,7 @@ public class WebmateApiClient {
      */
     public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params) {
         HttpResponse httpResponse = sendPOSTUnchecked(schema, params);
-        checkErrors(httpResponse);
+        checkErrors(httpResponse, schema.name);
         return new ApiResponse(httpResponse);
     }
 
@@ -132,20 +138,7 @@ public class WebmateApiClient {
      */
     public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, String query) {
         HttpResponse httpResponse = sendPOSTUnchecked(schema, params, query);
-        checkErrors(httpResponse);
-        return new ApiResponse(httpResponse);
-    }
-
-    /**
-     * Sends a Post to the Uri in schema using params to populate the schema. Once the schema is built, the query Params will be appended. The body of the request is empty
-     * @param schema The Uri schema that will become the target of the Post
-     * @param params The params that should be used in the schema
-     * @param urlParams The params that should be appended to the URI
-     * @return The response of the API
-     */
-    public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, List<NameValuePair> urlParams) {
-        HttpResponse httpResponse = sendPOSTUnchecked(schema, params, urlParams);
-        checkErrors(httpResponse);
+        checkErrors(httpResponse, schema.name);
         return new ApiResponse(httpResponse);
     }
 
@@ -158,7 +151,7 @@ public class WebmateApiClient {
      */
     public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, byte[] byteParam, Optional<String> contentType) {
         HttpResponse httpResponse = sendPOSTUnchecked(schema, params, byteParam, contentType);
-        checkErrors(httpResponse);
+        checkErrors(httpResponse, schema.name);
         return new ApiResponse(httpResponse);
     }
 
@@ -205,7 +198,7 @@ public class WebmateApiClient {
      */
     public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, String query, JsonNode body) {
         HttpResponse httpResponse = sendPOSTUnchecked(schema, params, query, body);
-        checkErrors(httpResponse);
+        checkErrors(httpResponse, schema.name);
         return new ApiResponse(httpResponse);
     }
 
@@ -277,13 +270,13 @@ public class WebmateApiClient {
 
     public ApiResponse sendGET(UriTemplate schema, Map<String, String> params) {
         HttpResponse httpResponse =  sendGETUnchecked(schema, params);
-        checkErrors(httpResponse);
+        checkErrors(httpResponse, schema.name);
         return new ApiResponse(httpResponse);
     }
 
     public ApiResponse sendGET(UriTemplate schema, Map<String, String> params, List<NameValuePair> queryParams){
         HttpResponse httpResponse = sendGETUnchecked(schema, params, queryParams);
-        checkErrors(httpResponse);
+        checkErrors(httpResponse, schema.name);
         return new ApiResponse(httpResponse);
     }
 
@@ -330,7 +323,7 @@ public class WebmateApiClient {
         } catch (IOException e) {
             throw new WebmateApiClientException("Error sending DELETE to webmate API", e);
         }
-        checkErrors(httpResponse);
+        checkErrors(httpResponse, schema.name);
         return new ApiResponse(httpResponse);
     }
 
@@ -338,16 +331,28 @@ public class WebmateApiClient {
      * Template for API URI, e.g. "/browsersessions/${browserSessionId}"
      */
     protected static class UriTemplate {
+        public final Optional<String> name;
         public final String schema;
         public final Map<String, String> templateParams;
 
+        public UriTemplate(String name, String schema, Map<String, String> templateParams) {
+            this.name = Optional.fromNullable(name);
+            this.schema = schema;
+            this.templateParams = templateParams;
+        }
+
         public UriTemplate(String schema, Map<String, String> templateParams) {
+            this.name = Optional.absent();
             this.schema = schema;
             this.templateParams = templateParams;
         }
 
         public UriTemplate(String schema) {
             this(schema, new HashMap<String, String>());
+        }
+
+        public UriTemplate(String name, String schema) {
+            this(name, schema, new HashMap<String, String>());
         }
 
         private static String replaceParamsInTemplate(String template, Map<String, String> params) {

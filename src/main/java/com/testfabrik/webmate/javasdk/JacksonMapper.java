@@ -2,6 +2,7 @@ package com.testfabrik.webmate.javasdk;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 /**
@@ -17,6 +18,7 @@ public class JacksonMapper {
         if (JacksonMapper.theInstance == null) {
             JacksonMapper.theInstance = new ObjectMapper();
             JacksonMapper.theInstance.registerModule(new JodaModule());
+            JacksonMapper.theInstance.registerModule(new Jdk8Module().configureAbsentsAsNulls(true));
             JacksonMapper.theInstance.registerModule(new GuavaModule());
 
         }

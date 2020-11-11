@@ -53,28 +53,31 @@ public class TestMgmtClient {
     private static class TestMgmtApiClient extends WebmateApiClient {
 
         private final static UriTemplate getTestTemplatesTemplate =
-                new UriTemplate("/projects/${projectId}/tests");
+                new UriTemplate("GetTestTemplates", "/projects/${projectId}/tests");
 
         private final static UriTemplate getTestTemplate =
-                new UriTemplate("/testmgmt/tests/${testId}");
+                new UriTemplate("GetTestTemplate", "/testmgmt/tests/${testId}");
 
         private final static UriTemplate getTestResultsTemplate =
-                new UriTemplate("/testmgmt/testruns/${testRunId}/results");
+                new UriTemplate("GetTestResults", "/testmgmt/testruns/${testRunId}/results");
 
         private final static UriTemplate createTestSessionTemplate =
-                new UriTemplate("/projects/${projectId}/testsessions");
+                new UriTemplate("CreateTestSession", "/projects/${projectId}/testsessions");
 
         private final static UriTemplate createTestExecutionTemplate =
-                new UriTemplate("/projects/${projectId}/testexecutions");
+                new UriTemplate("CreateTestExecution", "/projects/${projectId}/testexecutions");
 
         private final static UriTemplate startTestExecutionTemplate =
-                new UriTemplate("/testmgmt/testexecutions/${testExecutionId}");
+                new UriTemplate("StartTestExecution", "/testmgmt/testexecutions/${testExecutionId}");
 
         private final static UriTemplate getTestExecutionTemplate =
-                new UriTemplate("/testmgmt/testexecutions/${testExecutionId}");
+                new UriTemplate("GetTestExecution", "/testmgmt/testexecutions/${testExecutionId}");
 
         private final static UriTemplate finishTestRunTemplate =
-                new UriTemplate("/testmgmt/testruns/${testRunId}/finish");
+                new UriTemplate("FinishTestRun", "/testmgmt/testruns/${testRunId}/finish");
+
+        private final static UriTemplate getTestRunTemplate =
+                new UriTemplate("GetTestRun", "/testmgmt/testruns/${testRunId}");
 
         public TestMgmtApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
             super(authInfo, environment);
@@ -143,6 +146,18 @@ public class TestMgmtClient {
             return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), TestExecutionSummary.class);
         }
 
+        public TestRunInfo getTestRun(TestRunId id) {
+            Optional<HttpResponse> optHttpResponse = sendGET(getTestRunTemplate, ImmutableMap.of(
+                    "testRunId", id.toString())).getOptHttpResponse();
+
+            if (!optHttpResponse.isPresent()) {
+                throw new WebmateApiClientException("Could not get TestRun. Got no response");
+            }
+
+            return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), TestRunInfo.class);
+        }
+
+
         public void finishTestRun(TestRunId id, TestRunFinishData data) {
             ObjectMapper mapper = JacksonMapper.getInstance();
             JsonNode dataJson = mapper.valueToTree(data);
@@ -176,7 +191,7 @@ public class TestMgmtClient {
             return testTemplates;
         }
 
-        public Optional<Test> getTest(TestId id) {
+        public Optional<Test> getTest(TestTemplateId id) {
             Optional<HttpResponse> optHttpResponse = sendGET(getTestTemplate, ImmutableMap.of("testId", id.toString())).getOptHttpResponse();
             if (!optHttpResponse.isPresent()) {
                 return Optional.absent();
@@ -200,8 +215,10 @@ public class TestMgmtClient {
          * @return Optional with list of TestResults or Optional.absent if there was no such Test or TestRun. If there were no TestResults, the result is Optional of empty list.
          */
         public Optional<List<TestResult>> getTestResults(TestRunId id) {
-            String testRunId = id == null ? "null" : id.toString();
-            Optional<HttpResponse> optHttpResponse = sendGET(getTestResultsTemplate, ImmutableMap.of("testRunId", testRunId)).getOptHttpResponse();
+            if (id == null) {
+                throw new WebmateApiClientException("TestRun id must not be null");
+            }
+            Optional<HttpResponse> optHttpResponse = sendGET(getTestResultsTemplate, ImmutableMap.of("testRunId", id.toString())).getOptHttpResponse();
             if (!optHttpResponse.isPresent()) {
                 return Optional.absent();
             }
@@ -251,7 +268,7 @@ public class TestMgmtClient {
      * @param id Id of Test.
      * @return Test
      */
-    public Optional<Test> getTest(TestId id) {
+    public Optional<Test> getTest(TestTemplateId id) {
         return this.apiClient.getTest(id);
     }
 
@@ -265,6 +282,16 @@ public class TestMgmtClient {
         return this.apiClient.getTestResults(id);
     }
 
+
+    /**
+     * Retrieve information about TestRun.
+     *
+     * @param testRunId Id of TestRun.
+     * @return TestRun information
+     */
+    public TestRunInfo getTestRun(TestRunId testRunId) {
+        return this.apiClient.getTestRun(testRunId);
+    }
 
     /**
      * Get Id of TestRun associated with a Selenium session.

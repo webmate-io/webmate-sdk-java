@@ -1,0 +1,61 @@
+{
+  "type": "SingleTestRunCreationSpec",
+  "assignmentSpec": {
+    "referenceExpeditionSpec": {
+      "type": "ExpeditionSpec",
+      "data": {
+        "type": "LiveExpeditionSpec",
+        "driverSpec": {
+          "type": "URLListDriverSpecification",
+          "urls": [
+            "http://bla"
+          ]
+        },
+        "vehicleSpec": {
+          "type": "BrowserSpecification",
+          "browser": {
+            "browserType": "CHROME",
+            "version": "83",
+            "platform": {
+              "platformType": "WINDOWS",
+              "platformVersion": "10",
+              "platformArchitecture": "64"
+            }
+          },
+          "useProxy": false
+        }
+      }
+    },
+    "comparisonExpeditionSpecs": {
+      "type": "List[ExpeditionSpec]",
+      "data": [
+        {
+          "type": "ExpeditionSpec",
+          "data": {
+            "type": "LiveExpeditionSpec",
+            "driverSpec": {
+              "type": "URLListDriverSpecification",
+              "urls": [
+                "http://bla"
+              ]
+            },
+            "vehicleSpec": {
+              "type": "BrowserSpecification",
+              "browser": {
+                "browserType": "CHROME",
+                "version": "83",
+                "platform": {
+                  "platformType": "WINDOWS",
+                  "platformVersion": "10",
+                  "platformArchitecture": "64"
+                }
+              },
+              "useProxy": false
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
