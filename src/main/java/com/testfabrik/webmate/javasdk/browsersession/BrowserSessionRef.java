@@ -55,6 +55,35 @@ public class BrowserSessionRef {
     }
 
     /**
+     * Start custom action with given name. If there is another action already active, this action will be a
+     * child action of that one.
+     */
+    public void startAction(String actionName) {
+        session.browserSession.startAction(actionName);
+    }
+
+    /**
+     * Finish the currenty active custom action as a success.
+     */
+    public void finishAction() {
+        session.browserSession.finishAction();
+    }
+
+    /**
+     * Finish the currently active custom action successfully with message.
+     */
+    public void finishAction(String successMessage) {
+        session.browserSession.finishAction(successMessage);
+    }
+
+    /**
+     * Finish the currently active custom action and mark as failed with the given message.
+     */
+    public void finishActionAsFailure(String errorMessage) {
+        session.browserSession.finishActionAsFailure(errorMessage);
+    }
+
+    /**
      * Terminates the BrowserSession
      * @return true if the BrowserSession was successfully terminated
      */
