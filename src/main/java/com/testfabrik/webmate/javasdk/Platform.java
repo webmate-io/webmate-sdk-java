@@ -23,7 +23,11 @@ public class Platform {
         this.platformArchitecture = platformArchitecture;
     }
 
-
+    @Override
+    public String toString() {
+        String suffix = platformArchitecture == null ? "" : "_" + platformArchitecture;
+        return platformType + "_" + platformVersion + suffix;
+    }
 
     /**
      * Create Platform instance from ("legacy") platform string, e.g. WINDOWS_10_64
@@ -40,7 +44,6 @@ public class Platform {
                     .orElseGet(() -> new Platform(m.group(1), m.group(2)));
         } else {
            throw new WebmateApiClientException("Invalid platform string [" + opaqueString + "]. Must look like <platformType>_<version>[_<architecture>].");
-
         }
     }
 
