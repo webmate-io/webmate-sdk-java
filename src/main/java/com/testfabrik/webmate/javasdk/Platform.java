@@ -7,6 +7,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Platform {
+
+    /**
+     * Defines the platform type, like Windows, MacOS, Android, iOS or Ubuntu.
+     * See com.testfabrik.webmate.javasdk.PlatformType for a comprehensive list.
+     */
     private String platformType;
     private String platformVersion;
     @JsonInclude(JsonInclude.Include.NON_NULL)
