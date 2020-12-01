@@ -8,7 +8,10 @@ import com.testfabrik.webmate.javasdk.WebmateAPISession;
 import com.testfabrik.webmate.javasdk.WebmateApiClientException;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
 import com.testfabrik.webmate.javasdk.jobs.WMValueFactory;
-import com.testfabrik.webmate.javasdk.testmgmt.*;
+import com.testfabrik.webmate.javasdk.testmgmt.ApplicationModelId;
+import com.testfabrik.webmate.javasdk.testmgmt.TestExecutionSpecBuilder;
+import com.testfabrik.webmate.javasdk.testmgmt.TestMgmtClient;
+import com.testfabrik.webmate.javasdk.testmgmt.TestSessionId;
 import com.testfabrik.webmate.javasdk.testmgmt.testtypes.StandardTestTypes;
 import com.testfabrik.webmate.javasdk.testmgmt.testtypes.TestType;
 
@@ -29,7 +32,7 @@ public class StoryCheckSpec extends TestExecutionSpec {
 
     private StoryCheckSpec(String executionName, List<Tag> tags, List<ApplicationModelId> models,
                            List<TestSessionId> testSessions, BrowserSessionId expeditionId) {
-        super(executionName, TestType.of(StandardTestTypes.StoryCheck.getTestType()), "Default StoryCheck", tags, models, testSessions);
+        super(executionName, StandardTestTypes.StoryCheck.getTestType(), "Default StoryCheck", tags, models, testSessions);
         this.expeditionId = expeditionId;
     }
 

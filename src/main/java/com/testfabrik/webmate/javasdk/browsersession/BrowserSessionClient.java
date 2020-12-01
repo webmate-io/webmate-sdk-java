@@ -310,7 +310,7 @@ public class BrowserSessionClient {
             throw new WebmateApiClientException("Trying to finish action but none is active.");
         }
         ActionSpanId spanId = this.currentSpanIds.pop();
-        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId ));
+        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId));
     }
 
     public void finishAction(String successMessage) {

@@ -1,19 +1,19 @@
 package com.testfabrik.webmate.javasdk.testmgmt.testtypes;
 
 public enum StandardTestTypes {
-    AdHoc("adhoc"),
-    Selenium("selenium"),
-    LegacyCrossbrowserSingleurlComparison("legacy_crossbrowser_singleurl_comparison"),
-    ExpeditionComparison("expedition_comparison"),
-    StoryCheck("story_check");
+    AdHoc(TestType.of("adhoc")),
+    Selenium(TestType.of("selenium")),
+    LegacyCrossbrowserSingleurlComparison(TestType.of("legacy_crossbrowser_singleurl_comparison")),
+    ExpeditionComparison(TestType.of("expedition_comparison")),
+    StoryCheck(TestType.of("story_check"));
 
-    private final String testType;
+    private final TestType testType;
 
-    public String getTestType() {
+    public TestType getTestType() {
         return testType;
     }
 
-    StandardTestTypes(String testType) {
+    StandardTestTypes(TestType testType) {
         this.testType = testType;
     }
 }

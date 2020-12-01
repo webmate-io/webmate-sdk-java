@@ -8,7 +8,7 @@ import java.util.Objects;
  * Information about a Test.
  */
 public class TestInfo {
-    private TestId id;
+    private TestTemplateId id;
     private String name;
     private DateTime creationTime;
     private String description;
@@ -16,7 +16,7 @@ public class TestInfo {
 
     private TestInfo() {}
 
-    public TestInfo(TestId id, String name, DateTime creationTime, String description, int version) {
+    public TestInfo(TestTemplateId id, String name, DateTime creationTime, String description, int version) {
         this.id = id;
         this.name = name;
         this.creationTime = creationTime;
@@ -28,7 +28,7 @@ public class TestInfo {
      * Id of Test.
      * @return id of Test
      */
-    public TestId getId() {
+    public TestTemplateId getId() {
         return id;
     }
 

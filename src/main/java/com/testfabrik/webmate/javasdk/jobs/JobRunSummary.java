@@ -2,13 +2,13 @@ package com.testfabrik.webmate.javasdk.jobs;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.testfabrik.webmate.javasdk.UserId;
-import com.testfabrik.webmate.javasdk.testmgmt.TestId;
+import com.testfabrik.webmate.javasdk.testmgmt.TestExecutionId;
 import com.testfabrik.webmate.javasdk.testmgmt.TestRunId;
-import com.testfabrik.webmate.javasdk.testmgmt.TestRunInfo;
 import org.joda.time.DateTime;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Represents a concise summary describing the state of a JobRun.
@@ -24,20 +24,22 @@ public class JobRunSummary {
     private DateTime lastUpdateTime;
     private String failureMessage;
     private Map<String, WMValue> inputPorts;
-    private TestId testId;
-    private TestRunId testRunId;
+    private Optional<TestExecutionId> testExecutionId;
+    private Optional<TestRunId> testRunId;
     private Map<String, JsonNode> summaryInformation;
 
-    public JobRunSummary(JobRunId id, JobRunState state, UserId creator, DateTime creationTime, DateTime startTime,
-                         DateTime endTime, DateTime lastUpdateTime, String failureMessage,
-                         Map<String, WMValue> inputPorts, TestId testId, TestRunId testRunId,
-                         Map<String, JsonNode> summaryInformation) {
+    public JobRunSummary(final JobRunId id, final JobRunState state, final UserId creator, final DateTime creationTime,
+                         final DateTime startTime, final DateTime endTime, final DateTime lastUpdateTime, final String failureMessage,
+                         final Map<String, WMValue> inputPorts, final Optional<TestExecutionId> testExecutionId, final Optional<TestRunId> testRunId,
+                         final Map<String, JsonNode> summaryInformation) {
         this.id = id;
         this.state = state;
         this.creator = creator;
         this.creationTime = creationTime;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.testExecutionId = testExecutionId;
+        this.testRunId = testRunId;
         this.lastUpdateTime = lastUpdateTime;
         this.failureMessage = failureMessage;
         this.inputPorts = inputPorts;
@@ -104,24 +106,10 @@ public class JobRunSummary {
     }
 
     /**
-     * @return If this Job was part of a TestRun, this is the associated TestRun information. May be null.
-     */
-    public TestRunInfo getOptTestRunInfo() {
-        return new TestRunInfo(getTestId(), getTestRunId());
-    }
-
-    /**
      * @return Id of TestRun associated with this Job.
      */
-    public TestRunId getTestRunId() {
+    public Optional<TestRunId> getTestRunId() {
         return testRunId;
-    }
-
-    /**
-     * @return Id of Test associated with this Job.
-     */
-    public TestId getTestId() {
-        return testId;
     }
 
     /**
@@ -146,14 +134,13 @@ public class JobRunSummary {
                 Objects.equals(lastUpdateTime, that.lastUpdateTime) &&
                 Objects.equals(failureMessage, that.failureMessage) &&
                 inputPorts.equals(that.inputPorts) &&
-                Objects.equals(testId, that.testId) &&
                 Objects.equals(testRunId, that.testRunId) &&
                 summaryInformation.equals(that.summaryInformation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, state, creator, creationTime, startTime, endTime, lastUpdateTime, failureMessage, inputPorts, testId, testRunId, summaryInformation);
+        return Objects.hash(id, state, creator, creationTime, startTime, endTime, lastUpdateTime, failureMessage, inputPorts, testRunId, summaryInformation);
     }
 
     @Override
@@ -168,7 +155,6 @@ public class JobRunSummary {
                 ", lastUpdateTime=" + lastUpdateTime +
                 ", failureMessage='" + failureMessage + '\'' +
                 ", inputPorts=" + inputPorts +
-                ", testId=" + testId +
                 ", testRunId=" + testRunId +
                 ", summaryInformation=" + summaryInformation +
                 '}';

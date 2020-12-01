@@ -6,7 +6,7 @@ import org.joda.time.DateTime;
 public class TestTemplateInfo {
 
     @JsonProperty("id")
-    private TestId testId;
+    private TestTemplateId testId;
     private String name;
     private DateTime creationTime;
     private String description;
@@ -17,7 +17,7 @@ public class TestTemplateInfo {
     // For jackson
     public TestTemplateInfo() { }
 
-    public TestTemplateInfo(TestId testId, String name, DateTime creationTime, String description, int version,
+    public TestTemplateInfo(TestTemplateId testId, String name, DateTime creationTime, String description, int version,
                             boolean isBaseTemplate) {
         this.testId = testId;
         this.name = name;
@@ -27,7 +27,7 @@ public class TestTemplateInfo {
         this.isBaseTemplate = isBaseTemplate;
     }
 
-    public TestId getTestId() {
+    public TestTemplateId getTestId() {
         return testId;
     }
 

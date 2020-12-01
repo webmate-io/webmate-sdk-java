@@ -2,21 +2,20 @@ package com.testfabrik.webmate.javasdk.testmgmt;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.testfabrik.webmate.javasdk.UserId;
 
 import java.util.UUID;
 
 /**
  * Id of a Test.
  */
-public class TestId {
+public class TestTemplateId {
     private final UUID value;
 
     /**
      * Create new TestId.
      * @param value uuid of TestId
      */
-    public TestId(final UUID value) {
+    public TestTemplateId(final UUID value) {
         this.value = value;
     }
 
@@ -26,8 +25,8 @@ public class TestId {
      * @return new TestId
      */
     @JsonCreator
-    static TestId of(final String idStr) {
-        return new TestId(UUID.fromString(idStr));
+    static TestTemplateId of(final String idStr) {
+        return new TestTemplateId(UUID.fromString(idStr));
     }
 
     @Override
@@ -41,7 +40,7 @@ public class TestId {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TestId testId = (TestId) o;
+        TestTemplateId testId = (TestTemplateId) o;
 
         return value.equals(testId.value);
     }

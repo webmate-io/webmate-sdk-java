@@ -11,7 +11,7 @@ import java.util.Objects;
  * Summary information about a Test Run.
  */
 public class TestRunSummary {
-    private TestId testId;
+    private TestTemplateId testId;
     private TestRunId testRunId;
     private UserId creator;
     private ProjectId projectId;
@@ -22,7 +22,7 @@ public class TestRunSummary {
     private Integer numFilteredIssues;
 
 
-    public TestId getTestId() {
+    public TestTemplateId getTestId() {
         return testId;
     }
 

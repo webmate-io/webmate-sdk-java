@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum BrowserType {
+    Appium("APPIUM"),
     Chrome("CHROME"),
     Firefox("FIREFOX"),
     InternetExplorer("IE"),

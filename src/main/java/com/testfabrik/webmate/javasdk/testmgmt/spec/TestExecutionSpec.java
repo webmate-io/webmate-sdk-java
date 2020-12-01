@@ -26,16 +26,16 @@ public abstract class TestExecutionSpec {
 
     protected List<TestSessionId> associatedTestSessions;
 
-    protected Optional<TestId> testTemplateId;
+    protected Optional<TestTemplateId> testTemplateId;
 
     public TestExecutionSpec(String executionName, TestType testType, String defaultTestTemplateName, List<Tag> tags,
                              List<ApplicationModelId> models, List<TestSessionId> associatedTestSessions) {
-        this(executionName, testType, defaultTestTemplateName, tags, models, associatedTestSessions, Optional.<TestId>absent());
+        this(executionName, testType, defaultTestTemplateName, tags, models, associatedTestSessions, Optional.<TestTemplateId>absent());
     }
 
     public TestExecutionSpec(String executionName, TestType testType, String defaultTestTemplateName, List<Tag> tags,
                              List<ApplicationModelId> models, List<TestSessionId> associatedTestSessions,
-                             Optional<TestId> testTemplateId) {
+                             Optional<TestTemplateId> testTemplateId) {
         this.executionName = executionName;
         this.testType = testType;
         this.defaultTestTemplateName = defaultTestTemplateName;
@@ -49,11 +49,11 @@ public abstract class TestExecutionSpec {
         return this.testType;
     }
 
-    public Optional<TestId> getTestTemplateId() {
+    public Optional<TestTemplateId> getTestTemplateId() {
         return testTemplateId;
     }
 
-    public void setTestTemplateId(Optional<TestId> testTemplateId) {
+    public void setTestTemplateId(Optional<TestTemplateId> testTemplateId) {
         this.testTemplateId = testTemplateId;
     }
 

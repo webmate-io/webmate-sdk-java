@@ -10,7 +10,7 @@ public class TestExecutionSummary {
 
     @JsonProperty("id")
     private TestExecutionId testExecutionId;
-    private TestId testId;
+    private TestTemplateId testId;
     private int version;
     private UserId creator;
     private TestExecutionExecutionStatus executionStatus;
@@ -20,7 +20,7 @@ public class TestExecutionSummary {
     // For jackson
     public TestExecutionSummary() { }
 
-    public TestExecutionSummary(TestExecutionId testExecutionId, TestId testId, int version, UserId creator,
+    public TestExecutionSummary(TestExecutionId testExecutionId, TestTemplateId testId, int version, UserId creator,
                                 TestExecutionExecutionStatus executionStatus,
                                 TestExecutionEvaluationStatus evaluationStatus, DateTime creationTime) {
         this.testExecutionId = testExecutionId;
@@ -40,7 +40,7 @@ public class TestExecutionSummary {
         this.testExecutionId = testExecutionId;
     }
 
-    public TestId getTestId() {
+    public TestTemplateId getTestId() {
         return testId;
     }
 

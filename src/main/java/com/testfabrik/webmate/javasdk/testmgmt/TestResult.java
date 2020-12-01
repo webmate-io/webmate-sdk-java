@@ -13,7 +13,7 @@ public class TestResult {
 
     private TestResultId id;
     private TestRunId testRunId;
-    private TestId testId;
+    private TestTemplateId testId;
     private TestResultType issueType;
     private JsonNode properties;
     private List<ArtifactId> associatedArtifacts;
@@ -22,7 +22,7 @@ public class TestResult {
     // for jackson
     private TestResult() {}
 
-    public TestResult(TestResultId id, TestRunId testRunId, TestId testId, TestResultType issueType, JsonNode properties, List<ArtifactId> associatedArtifacts, List<Tag> tags) {
+    public TestResult(TestResultId id, TestRunId testRunId, TestTemplateId testId, TestResultType issueType, JsonNode properties, List<ArtifactId> associatedArtifacts, List<Tag> tags) {
         this.id = id;
         this.testId = testId;
         this.testRunId = testRunId;
@@ -49,16 +49,8 @@ public class TestResult {
     /**
      * @return Id of Test
      */
-    public TestId getTestId() {
+    public TestTemplateId getTestId() {
         return testId;
-    }
-
-    /**
-     * @return Id of Test and test run index that this TestResult is associated with.
-     * @deprecated Use testId and testRunId instead.
-     */
-    public TestRunInfo getTestRunInfo() {
-        return new TestRunInfo(testId, testRunId);
     }
 
     /**

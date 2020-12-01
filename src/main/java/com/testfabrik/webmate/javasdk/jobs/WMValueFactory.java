@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.testfabrik.webmate.javasdk.JacksonMapper;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
-import com.testfabrik.webmate.javasdk.testmgmt.spec.BrowserSpecification;
+import com.testfabrik.webmate.javasdk.browsersession.BrowserSpecification;
+import com.testfabrik.webmate.javasdk.browsersession.ExpeditionSpec;
 
 import java.net.URI;
 import java.util.List;
@@ -21,41 +23,37 @@ public class WMValueFactory {
         return makeBrickValue(WMDataType.ExpeditionId, JsonNodeFactory.instance.textNode(id.toString()));
     }
 
-    private static ObjectNode convertBrowserSpecificationToJson(BrowserSpecification browserSpecification, List<URI> urls) {
-        // driverSpec
-        ObjectNode driverSpecNode = JsonNodeFactory.instance.objectNode();
-        driverSpecNode.put("type", WMDataType.URLListDriverSpecification.getTpe());
-        ArrayNode urlsNode = driverSpecNode.putArray("urls");
-        // urls
-        for (URI url : urls) {
-            urlsNode.add(url.toString());
-        }
-        // vehicleSpec
-        ObjectNode vehicleSpecNode = JsonNodeFactory.instance.objectNode();
-        vehicleSpecNode.put("type", WMDataType.BrowserSpecification.getTpe());
-        JsonNode browserNode = new ObjectMapper().valueToTree(browserSpecification.getBrowser());
-        vehicleSpecNode.put("browser", browserNode);
-        vehicleSpecNode.put("useProxy", browserSpecification.isUseProxy());
-        // data
-        ObjectNode dataNode = JsonNodeFactory.instance.objectNode();
-        dataNode.put("type", WMDataType.LiveExpeditionSpec.getTpe());
-        dataNode.put("driverSpec", driverSpecNode);
-        dataNode.put("vehicleSpec", vehicleSpecNode);
+//    private static ObjectNode convertBrowserSpecificationToJson(BrowserSpecification browserSpecification, List<URI> urls) {
+//        // driverSpec
+//        ObjectNode driverSpecNode = JsonNodeFactory.instance.objectNode();
+//        driverSpecNode.put("type", WMDataType.URLListDriverSpecification.getTpe());
+//        ArrayNode urlsNode = driverSpecNode.putArray("urls");
+//        // urls
+//        for (URI url : urls) {
+//            urlsNode.add(url.toString());
+//        }
+//        // vehicleSpec
+//        ObjectNode vehicleSpecNode = JsonNodeFactory.instance.objectNode();
+//        vehicleSpecNode.put("type", WMDataType.BrowserSpecification.getTpe());
+//        JsonNode browserNode = new ObjectMapper().valueToTree(browserSpecification.browser);
+//        vehicleSpecNode.put("browser", browserNode);
+//        // data
+//        ObjectNode dataNode = JsonNodeFactory.instance.objectNode();
+//        dataNode.put("type", WMDataType.LiveExpeditionSpec.getTpe());
+//        dataNode.put("driverSpec", driverSpecNode);
+//        dataNode.put("vehicleSpec", vehicleSpecNode);
+//
+//        return dataNode;
+//    }
 
-        return dataNode;
+    public static WMValue makeExpeditionSpec(ExpeditionSpec expeditionSpec) {
+        ObjectMapper om = JacksonMapper.getInstance();
+        return makeBrickValue(WMDataType.ExpeditionSpec, om.valueToTree(expeditionSpec));
     }
 
-    public static WMValue makeExpeditionSpec(BrowserSpecification browserSpecification, List<URI> urls) {
-        ObjectNode dataNode = convertBrowserSpecificationToJson(browserSpecification, urls);
-        return makeBrickValue(WMDataType.ExpeditionSpec, dataNode);
-    }
-
-    public static WMValue makeExpeditionSpecs(List<BrowserSpecification> browserSpecifications, List<URI> urls) {
-        ArrayNode dataNodes = JsonNodeFactory.instance.arrayNode();
-        for (BrowserSpecification browserSpecification : browserSpecifications) {
-            ObjectNode dataNode = convertBrowserSpecificationToJson(browserSpecification, urls);
-            dataNodes.add(dataNode);
-        }
-        return makeBrickValue(WMDataType.ListExpeditionSpec, dataNodes);
+    public static WMValue makeExpeditionSpecList(List<ExpeditionSpec> expeditionSpecs) {
+        ObjectMapper om = JacksonMapper.getInstance();
+        return makeBrickValue(WMDataType.ListExpeditionSpec,
+                om.valueToTree(expeditionSpecs.stream().map(WMValueFactory::makeExpeditionSpec)));
     }
 }

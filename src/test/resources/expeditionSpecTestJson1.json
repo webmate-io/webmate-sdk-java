@@ -1,0 +1,20 @@
+{
+  "type" : "LiveExpeditionSpec",
+  "driverSpec" : {
+    "type" : "URLListDriverSpecification",
+    "urls" : [ "http://test", "http://test2" ]
+  },
+  "vehicleSpec" : {
+    "type" : "BrowserSpecification",
+    "browser" : {
+      "browserType" : "CHROME",
+      "version" : "83",
+      "platform" : {
+        "platformType" : "WINDOWS",
+        "platformVersion" : "10",
+        "platformArchitecture" : "64"
+      }
+    },
+    "useProxy" : false
+  }
+}
