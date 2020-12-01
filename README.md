@@ -21,7 +21,7 @@ This release is also distributed via Maven Central. Just include the following d
 ```xml
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
-    <version>0.29.0</version>
+    <version>0.30.0</version>
 ```
 
 To build the SDK from its sources, simply clone this repository and
