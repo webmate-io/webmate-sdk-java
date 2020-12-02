@@ -48,3 +48,9 @@ Sample code using the webmate Java SDK is available at https://github.com/webmat
 In order to use these samples, you need to have an account at webmate SaaS or a commercial on-premise installation.
 Please contact Testfabrik (info@testfabrik.com) if you are interested in evaluating webmate.
 
+
+## webmate API
+
+Although, the SDK provides a number of features and convenience wrappers it doesn't exhaust the full potential of the webmate API.
+See the REST API [Swagger documentation](https://app.webmate.io/api/swagger) for a comprehensive summary of the webmate functionalities.
+
