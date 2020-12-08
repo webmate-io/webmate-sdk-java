@@ -1,4 +1,4 @@
-package com.testfabrik.webmate.javasdk.seleniumService;
+package com.testfabrik.webmate.javasdk.selenium;
 
 import com.testfabrik.webmate.javasdk.BrowserType;
 

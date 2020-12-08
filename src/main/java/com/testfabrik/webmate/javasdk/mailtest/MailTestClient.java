@@ -83,6 +83,18 @@ public class MailTestClient {
     }
 
     /**
+     * Creates a MailTestApiClient based on a WebmateApiSession
+     * @param session The WebmateApiSession used by the TestMgmtClient
+     * @param artifactClient client for the artifact subsystem (comes from webmate session)
+     * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection.
+     */
+    public MailTestClient(WebmateAPISession session, ArtifactClient artifactClient,  HttpClientBuilder httpClientBuilder) {
+        this.session = session;
+        this.apiClient = new MailTestApiClient(session.authInfo, session.environment, httpClientBuilder);
+        this.artifactClient = artifactClient;
+    }
+
+    /**
      * Creates a TestMgmtClient based on a WebmateApiSession and a custom HttpClientBuilder.
      * @param session The WebmateApiSession used by the TestMgmtClient
      * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection.

@@ -11,6 +11,8 @@ public class Browser {
     private Platform platform;
     private JsonNode properties; // Could be null!
 
+    private Browser() {} // Jackson
+
     public Browser(BrowserType browserType, String version, String platform) {
         this(browserType, version, platform, null);
     }

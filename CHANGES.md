@@ -2,6 +2,17 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.31.0] - 2020-12-07
+
+###New
+- Added helper for finishing Selenium tests with a result
+
+## [0.29.0] - 2020-10-15
+
+###New 
+- TestMgmt subsystem added
+- Artifact subsystem added
+
 ## [0.28.0] - 2020-02-10
 
 ###New

@@ -8,6 +8,8 @@ import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
 import com.testfabrik.webmate.javasdk.devices.DeviceClient;
 import com.testfabrik.webmate.javasdk.jobs.JobEngine;
 import com.testfabrik.webmate.javasdk.mailtest.MailTestClient;
+import com.testfabrik.webmate.javasdk.selenium.SeleniumServiceClient;
+import com.testfabrik.webmate.javasdk.selenium.WebmateSeleniumSession;
 import com.testfabrik.webmate.javasdk.testmgmt.ApplicationModelId;
 import com.testfabrik.webmate.javasdk.testmgmt.TestMgmtClient;
 import com.testfabrik.webmate.javasdk.testmgmt.TestSessionId;
@@ -54,6 +56,12 @@ public class WebmateAPISession {
      * Facade to webmate's Artifact subsystem.
      */
     public final ArtifactClient artifact;
+
+    /**
+     * Facade to webmate's Selenium subsystem.
+     */
+    public final SeleniumServiceClient selenium;
+
 
 
     //////////////////////////////
@@ -119,6 +127,7 @@ public class WebmateAPISession {
         this.testMgmt = new TestMgmtClient(this);
         this.artifact = new ArtifactClient(this);
         this.mailTest = new MailTestClient(this, artifact);
+        this.selenium = new SeleniumServiceClient(this);
     }
 
     /**
@@ -138,6 +147,7 @@ public class WebmateAPISession {
         this.testMgmt = new TestMgmtClient(this);
         this.artifact = new ArtifactClient(this);
         this.mailTest = new MailTestClient(this, artifact);
+        this.selenium = new SeleniumServiceClient(this);
     }
 
     /**
@@ -156,8 +166,32 @@ public class WebmateAPISession {
         this.browserSession = new BrowserSessionClient(this, httpClientBuilder);
         this.device = new DeviceClient(this, httpClientBuilder);
         this.testMgmt = new TestMgmtClient(this, httpClientBuilder);
-        this.artifact = new ArtifactClient(this);
-        this.mailTest = new MailTestClient(this, artifact);
+        this.artifact = new ArtifactClient(this, httpClientBuilder);
+        this.mailTest = new MailTestClient(this, artifact, httpClientBuilder);
+        this.selenium = new SeleniumServiceClient(this, httpClientBuilder);
+    }
+
+    /**
+     * Constructor to create a new WebmateAPISession.
+     * The session is used to access all functionality of webmate.
+     *
+     * @param authInfo an instance of WebmateAuthInfo which contains the users credentials
+     * @param environment an instance of WebmateEnvironment which contains the url of webmate
+     * @param httpClientBuilder client builder used to create HTTP connections
+     */
+    public WebmateAPISession(WebmateAuthInfo authInfo, WebmateEnvironment environment, ProjectId projectId,
+                             HttpClientBuilder httpClientBuilder) {
+        this.authInfo = authInfo;
+        this.environment = environment;
+        this.projectId = Optional.of(projectId);
+
+        this.jobEngine = new JobEngine(this, httpClientBuilder);
+        this.browserSession = new BrowserSessionClient(this, httpClientBuilder);
+        this.device = new DeviceClient(this, httpClientBuilder);
+        this.testMgmt = new TestMgmtClient(this, httpClientBuilder);
+        this.artifact = new ArtifactClient(this, httpClientBuilder);
+        this.mailTest = new MailTestClient(this, artifact, httpClientBuilder);
+        this.selenium = new SeleniumServiceClient(this, httpClientBuilder);
     }
 
     /**
@@ -170,10 +204,12 @@ public class WebmateAPISession {
     /**
      * Associate Selenium session with API session.
      */
-    public void addSeleniumSession(String opaqueSeleniumSessionIdString) {
+    public WebmateSeleniumSession addSeleniumSession(String opaqueSeleniumSessionIdString) {
         // currently the browsersession id is equivalent to the selenium session id (which is scary but comes
         // quite handy)
-        addBrowserSession(new BrowserSessionId(UUID.fromString(opaqueSeleniumSessionIdString)));
+        BrowserSessionId browserSessionId = new BrowserSessionId(UUID.fromString(opaqueSeleniumSessionIdString));
+        addBrowserSession(browserSessionId);
+        return new WebmateSeleniumSession(this, browserSessionId);
     }
 
     /**

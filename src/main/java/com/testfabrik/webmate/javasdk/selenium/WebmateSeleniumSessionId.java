@@ -1,5 +1,6 @@
-package com.testfabrik.webmate.javasdk.seleniumService;
+package com.testfabrik.webmate.javasdk.selenium;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Objects;
@@ -10,6 +11,7 @@ public class WebmateSeleniumSessionId {
     private UUID value;
 
 
+    @JsonCreator
     public WebmateSeleniumSessionId(UUID value) {
         this.value = value;
     }

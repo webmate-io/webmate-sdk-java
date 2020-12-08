@@ -2,8 +2,8 @@ package com.testfabrik.webmate.javasdk.testUtils;
 
 import com.testfabrik.webmate.javasdk.Browser;
 import com.testfabrik.webmate.javasdk.ProjectId;
-import com.testfabrik.webmate.javasdk.seleniumService.SeleniumCapability;
-import com.testfabrik.webmate.javasdk.seleniumService.SeleniumServiceClient;
+import com.testfabrik.webmate.javasdk.selenium.SeleniumCapability;
+import com.testfabrik.webmate.javasdk.selenium.SeleniumServiceClient;
 
 import java.util.*;
 

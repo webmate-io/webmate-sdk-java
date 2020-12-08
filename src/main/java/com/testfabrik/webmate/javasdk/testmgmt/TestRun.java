@@ -14,7 +14,7 @@ public class TestRun {
 
     private TestRunId id;
 
-    TestRun(TestRunId id, WebmateAPISession session) {
+    public TestRun(TestRunId id, WebmateAPISession session) {
         this.id = id;
         this.session = session;
     }

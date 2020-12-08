@@ -16,7 +16,7 @@ public enum BrowserType {
 
     @JsonCreator
     BrowserType(String value) {
-        this.value = value;
+        this.value = value.toUpperCase();
     }
 
     @JsonValue

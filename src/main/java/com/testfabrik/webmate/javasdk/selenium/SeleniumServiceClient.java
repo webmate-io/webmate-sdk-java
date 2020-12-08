@@ -1,10 +1,14 @@
-package com.testfabrik.webmate.javasdk.seleniumService;
+package com.testfabrik.webmate.javasdk.selenium;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
+import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
+import com.testfabrik.webmate.javasdk.testmgmt.Test;
 import com.testfabrik.webmate.javasdk.user.UserId;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -26,6 +30,7 @@ public class SeleniumServiceClient {
 
     private static class SeleniumServiceApiClient extends WebmateApiClient {
         private static final UriTemplate getSeleniumsessionTemplate = new UriTemplate("/seleniumsession/${sessionId}");
+        private static final UriTemplate getSeleniumsessionForBrowserSessionTemplate = new UriTemplate("/seleniumsession/");
         private static final UriTemplate getSeleniumCapabilitiesForProjectTemplate = new UriTemplate("/projects/${projectId}/selenium/capabilities");
         private static final UriTemplate getSeleniumsessionsForProjectTemplate = new UriTemplate("/projects/${projectId}/seleniumsession");
         private static final UriTemplate getSeleniumsessionIdsForProjectTemplate = new UriTemplate("/projects/${projectId}/seleniumsession/id");
@@ -57,14 +62,33 @@ public class SeleniumServiceClient {
             }
         }
 
+        public SeleniumSession getSeleniumsessionForBrowserSession(BrowserSessionId browserSessionId) {
+            ApiResponse response = sendGET(getSeleniumsessionForBrowserSessionTemplate,
+                    ImmutableMap.of(),
+                    ImmutableList.of(new BasicNameValuePair("expeditionId", browserSessionId.toString())));
+            Optional<HttpResponse> optHttpResponse = response.getOptHttpResponse();
+            if (!optHttpResponse.isPresent()) {
+                throw new WebmateApiClientException("There is no Seleniumsession associated with browsersession " + browserSessionId);
+            }
+
+            ObjectMapper mapper = JacksonMapper.getInstance();
+            SeleniumSession session;
+            try {
+                String testJson = EntityUtils.toString(optHttpResponse.get().getEntity());
+                session = mapper.readValue(testJson, SeleniumSession.class);
+            } catch (IOException e) {
+                throw new WebmateApiClientException("Error reading Selenium session: " + e.getMessage(), e);
+            }
+            return session;
+        }
+
         private SeleniumSession buildSeleniumSessionFromJson(JsonNode sessionJson) {
-            return new SeleniumSession(
-                    new WebmateSeleniumSessionId(UUID.fromString(sessionJson.at("/id").asText())),
-                    new UserId(UUID.fromString(sessionJson.at("/userId").asText())),
-                    buildBrowserFromJson(sessionJson.at("/browser")),
-                    sessionJson.at("/usingProxy").asBoolean(),
-                    sessionJson.at("/state").asText()
-            );
+            ObjectMapper om = new ObjectMapper();
+            try {
+                return om.treeToValue(sessionJson, SeleniumSession.class);
+            } catch (JsonProcessingException e) {
+                throw new WebmateApiClientException("Error deserializing SeleniumSession data: " + e.getMessage());
+            }
         }
 
         private Browser buildBrowserFromJson(JsonNode browserJson) {
@@ -230,6 +254,16 @@ public class SeleniumServiceClient {
      */
     public SeleniumSession getSeleniumsession(WebmateSeleniumSessionId sessionId) throws WebmateApiClientException {
         return this.apiClient.getSeleniumsession(sessionId);
+    }
+
+    /**
+     * Get a Selenium session for browser session.
+     * @param browserSessionId ID of the browser session that is associated with the Selenium session to be returned.
+     * @return SeleniumSession with the requested session ID
+     * @throws WebmateApiClientException if a HTTP error occurred or the session could not be found/retrieved
+     */
+    public SeleniumSession getSeleniumSessionForBrowserSession(BrowserSessionId browserSessionId) throws WebmateApiClientException {
+        return this.apiClient.getSeleniumsessionForBrowserSession(browserSessionId);
     }
 
     /**
