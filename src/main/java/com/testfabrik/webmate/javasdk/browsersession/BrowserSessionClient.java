@@ -3,14 +3,10 @@ package com.testfabrik.webmate.javasdk.browsersession;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
 import com.testfabrik.webmate.javasdk.commonutils.HttpHelpers;
-import com.testfabrik.webmate.javasdk.testmgmt.Artifact;
-import com.testfabrik.webmate.javasdk.testmgmt.ArtifactId;
-import com.testfabrik.webmate.javasdk.testmgmt.TestRunId;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -36,7 +32,37 @@ public class BrowserSessionClient {
 
     // Sane default Config, extracting DOM and taking non fullpage Screenshots. Otherwise take Webmate Defaults.
     private static final BrowserSessionStateExtractionConfig DefaultStateExtractionConfig = new BrowserSessionStateExtractionConfig(null, null, null, null, null, true,
-                                                                                                                                      new BrowserSessionScreenshotExtractionConfig(false, false), null);
+                                                                                                                                       new BrowserSessionScreenshotExtractionConfig(false, false), null);
+    public interface ActionFunc<T> {
+        T op(ActionDelegate action);
+    }
+
+    public interface ActionFuncVoid {
+        void op(ActionDelegate action);
+    }
+
+    public static class ActionDelegate {
+
+        private final BrowserSessionClient client;
+
+        public ActionDelegate(BrowserSessionClient client) {
+            this.client = client;
+        }
+
+        /**
+         * Finish current action successfully.
+         */
+        public void finishAction() {
+            this.client.finishAction();
+        }
+
+        /**
+         * Finish current action as failure.
+         */
+        public void finishActionAsFailure(String errorMessage) {
+            this.client.finishActionAsFailure(errorMessage);
+        }
+    }
 
     private static class BrowserSessionApiClient extends WebmateApiClient {
 
@@ -293,7 +319,53 @@ public class BrowserSessionClient {
         apiClient.createState(browserSessionId, matchingId, DefaultBrowserSessionTimeoutMillis, DefaultStateExtractionConfig);
     }
 
+    /**
+     * Wrap the given action (lambda) in an Action with the given name. The action can be
+     * closed explicitly with the ActionDelegate argument provided to the lambda. It also
+     * implicitly finishes as successful or an error if an exception is throws within the lambda.
+     *
+     * @param actionName Name of action
+     * @param actionFunc function executed within action.
+     * @param <T> Return value of inner code.
+     * @return Returned value of lambda
+     */
+    public <T> T withAction(String actionName, ActionFunc<T> actionFunc) {
+        this.startAction(actionName);
+        ActionDelegate actionDelegate = new ActionDelegate(this);
+        T result = null;
+        try {
+            result = actionFunc.op(actionDelegate);
+        } catch (Throwable e) {
+            this.finishActionAsFailureIgnoreNoneActive("Exception in '" + actionName + "': " + e.getMessage());
+        } finally {
+            this.finishActionAsSuccessIgnoreNoneActive();
+        }
+        return result;
+    }
 
+    /**
+     * Wrap the given action (lambda) in an Action with the given name. The action can be
+     * closed explicitly with the ActionDelegate argument provided to the lambda. It also
+     * implicitly finishes as successful or an error if an exception is throws within the lambda.
+     *
+     * @param actionName Name of action
+     * @param actionFunc function executed within action.
+     */
+    public void withAction(String actionName, ActionFuncVoid actionFunc) {
+        this.startAction(actionName);
+        ActionDelegate actionDelegate = new ActionDelegate(this);
+        try {
+            actionFunc.op(actionDelegate);
+        } catch (Throwable e) {
+            this.finishActionAsFailureIgnoreNoneActive("Exception in '" + actionName + "': " + e.getMessage());
+        } finally {
+            this.finishActionAsSuccessIgnoreNoneActive();
+        }
+    }
+
+    /**
+     * Start action with the given name.
+     */
     public void startAction(String actionName) {
         LOG.debug("Start action " + actionName);
         BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
@@ -313,6 +385,38 @@ public class BrowserSessionClient {
         apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId));
     }
 
+    /**
+     * Finish the currently active Action. Do nothing if there is no active action.
+     */
+    public void finishActionAsSuccessIgnoreNoneActive() {
+        BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
+        if (this.currentSpanIds.isEmpty()) {
+            // we don't care
+            return;
+        }
+        ActionSpanId spanId = this.currentSpanIds.pop();
+        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId));
+    }
+
+    /**
+     * Finish the currently active Action and mark is as failed. Do nothing if there is no active action.
+     * @param errorMessage Error message indicating why this action has failed.
+     */
+    public void finishActionAsFailureIgnoreNoneActive(String errorMessage) {
+        BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
+        if (this.currentSpanIds.isEmpty()) {
+            // we don't care
+            return;
+        }
+        ActionSpanId spanId = this.currentSpanIds.pop();
+        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.failure(spanId, errorMessage, Optional.<JsonNode>absent()));
+    }
+
+    /**
+     * Finish the currently active Action and provide a success message.
+     * @param successMessage message that should be added to the action
+     * @throws WebmateApiClientException if no action is active
+     */
     public void finishAction(String successMessage) {
         BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
         if (this.currentSpanIds.isEmpty()) {
@@ -322,6 +426,11 @@ public class BrowserSessionClient {
         apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId, successMessage));
     }
 
+    /**
+     * Finish the currently active Action and mark it as failure.
+     * @param errorMessage Error message indicating why this action has failed.
+     * @throws WebmateApiClientException if no action is active
+     */
     public void finishActionAsFailure(String errorMessage) {
         BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
         if (this.currentSpanIds.isEmpty()) {

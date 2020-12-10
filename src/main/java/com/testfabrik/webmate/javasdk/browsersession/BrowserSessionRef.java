@@ -63,6 +63,32 @@ public class BrowserSessionRef {
     }
 
     /**
+     * Wrap the given action (lambda) in an Action with the given name. The action can be
+     * closed explicitly with the ActionDelegate argument provided to the lambda. It also
+     * implicitly finishes as successful or an error if an exception is throws within the lambda.
+     *
+     * @param actionName Name of action
+     * @param actionFunc function executed within action.
+     * @param <T> Return value of inner code.
+     * @return Returned value of lambda
+     */
+    public <T> T withAction(String actionName, BrowserSessionClient.ActionFunc<T> actionFunc) {
+        return session.browserSession.withAction(actionName, actionFunc);
+    }
+
+    /**
+     * Wrap the given action (lambda) in an Action with the given name. The action can be
+     * closed explicitly with the ActionDelegate argument provided to the lambda. It also
+     * implicitly finishes as successful or an error if an exception is throws within the lambda.
+     *
+     * @param actionName Name of action
+     * @param actionFunc function executed within action.
+     */
+    public void withAction(String actionName, BrowserSessionClient.ActionFuncVoid actionFunc) {
+        session.browserSession.withAction(actionName, actionFunc);
+    }
+
+    /**
      * Finish the currenty active custom action as a success.
      */
     public void finishAction() {
