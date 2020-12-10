@@ -21,7 +21,7 @@ This release is also distributed via Maven Central. Just include the following d
 ```xml
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
-    <version>0.31.0</version>
+    <version>0.33.0</version>
 ```
 
 To build the SDK from its sources, simply clone this repository and
@@ -36,7 +36,7 @@ After that, you can include the SDK as a Maven dependency to your project, i.e. 
 ```xml
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
-    <version>0.31.0-SNAPSHOT</version>
+    <version>0.34.0-SNAPSHOT</version>
 ```
 
 or using the equivalent statement in a build tool of your choice. 

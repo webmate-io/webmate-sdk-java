@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
+import com.testfabrik.webmate.javasdk.packagemgmt.PackageId;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -38,6 +39,8 @@ public class DeviceClient {
         private final static UriTemplate releaseDevice = new UriTemplate("/device/devices/${deviceId}");
 
         private final static UriTemplate redeployDevice = new UriTemplate("/device/devices/${deviceId}/redeploy");
+
+        private final static UriTemplate installAppOnDevice = new UriTemplate("/device/${deviceId}/appinstall/${packageId}");
 
 
         public DeviceApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
@@ -88,6 +91,9 @@ public class DeviceClient {
             sendDELETE(releaseDevice, ImmutableMap.of("deviceId", deviceId.toString()));
         }
 
+        public void installAppOnDevice(DeviceId deviceId, PackageId appId, Boolean instrumented) {
+            sendPOST(installAppOnDevice, ImmutableMap.of("deviceId", deviceId.toString(), "packageId", appId.toString()), "wait=true&instrumented=" + instrumented.toString());
+        }
     }
 
     /**
@@ -156,6 +162,28 @@ public class DeviceClient {
      */
     public void redeployDevice(DeviceId deviceId) {
         this.apiClient.redeployDevice(deviceId);
+    }
+
+    /**
+     * Install the app wit the given Id on a device. If instrumented is set to true, the instrumented version will be
+     * used if available.
+     *
+     * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
+     * @param appId Id of app to be installed. Can be found in App management of the webmate device overview.
+     * @param instrumented If true, the instrumented version of the app will be installed, if available.
+     */
+    public void installAppOnDevice(DeviceId deviceId, PackageId appId, Boolean instrumented) {
+        this.apiClient.installAppOnDevice(deviceId, appId, instrumented);
+    }
+
+    /**
+     * Install the app wit the given Id on a device. The non-instrumented version of the App will be installed.
+     *
+     * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
+     * @param appId Id of app to be installed. Can be found in App management of the webmate device overview.
+     */
+    public void installAppOnDevice(DeviceId deviceId, PackageId appId) {
+        this.apiClient.installAppOnDevice(deviceId, appId, false);
     }
 
 }
