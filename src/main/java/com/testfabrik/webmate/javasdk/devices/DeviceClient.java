@@ -5,13 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
+import com.testfabrik.webmate.javasdk.commonutils.HttpHelpers;
 import com.testfabrik.webmate.javasdk.packagemgmt.PackageId;
+import com.testfabrik.webmate.javasdk.testmgmt.TestSessionId;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.beans.PropertyEditor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +34,8 @@ public class DeviceClient {
     private static class DeviceApiClient extends WebmateApiClient {
 
         private final static UriTemplate getDeviceIdsForProject = new UriTemplate("/projects/${projectId}/device/devices");
+
+        private final static UriTemplate getDevice = new UriTemplate("/device/devices/${deviceId}");
 
         private final static UriTemplate requestDeviceByRequirementsForProject = new UriTemplate("/projects/${projectId}/device/devices");
 
@@ -63,7 +68,7 @@ public class DeviceClient {
             List<DeviceId> deviceIds = new ArrayList<>();
             try {
                 String deviceIdsJson = EntityUtils.toString(optHttpResponse.get().getEntity());
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = JacksonMapper.getInstance();
                 List<String> deviceIdList = mapper.readValue(deviceIdsJson, new TypeReference<List<String>>(){});
                 for (String deviceIdStr : deviceIdList) {
                    deviceIds.add(new DeviceId(UUID.fromString(deviceIdStr)));
@@ -74,9 +79,25 @@ public class DeviceClient {
             return deviceIds;
         }
 
-        public void requestDeviceByRequirements(ProjectId projectId, DeviceRequest deviceRequest) {
-            ObjectMapper mapper = new ObjectMapper();
-            sendPOST(requestDeviceByRequirementsForProject, ImmutableMap.of("projectId", projectId.toString()), mapper.valueToTree(deviceRequest));
+        public DeviceDTO requestDeviceByRequirements(ProjectId projectId, DeviceRequest deviceRequest) {
+            ObjectMapper mapper = JacksonMapper.getInstance();
+            Optional<HttpResponse> optHttpResponse = sendPOST(requestDeviceByRequirementsForProject, ImmutableMap.of("projectId", projectId.toString()), mapper.valueToTree(deviceRequest)).getOptHttpResponse();
+
+            if (!optHttpResponse.isPresent()) {
+                throw new WebmateApiClientException("Could not request device. Got no response");
+            }
+
+            return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), DeviceDTO.class);
+        }
+
+        public DeviceDTO getDevice(DeviceId deviceId) {
+            Optional<HttpResponse> optHttpResponse = sendGET(getDevice, ImmutableMap.of("deviceId", deviceId.toString())).getOptHttpResponse();
+
+            if (!optHttpResponse.isPresent()) {
+                throw new WebmateApiClientException("Could not request device. Got no response");
+            }
+
+            return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), DeviceDTO.class);
         }
 
         public void synchronizeDevice(DeviceId deviceId) {
@@ -127,14 +148,38 @@ public class DeviceClient {
         return this.apiClient.getDeviceIdsForProject(projectId);
     }
 
+
+    /**
+     * Get Information about running device.
+     *
+     * @param deviceId Id of running device (as found in device details on device overview page)
+     * @return information about device
+     */
+    public DeviceDTO getDeviceInfo(DeviceId deviceId) {
+        return this.apiClient.getDevice(deviceId);
+    }
+
     /**
      * Request a device deployment by the specified device request.
      *
      * @param projectId Id of Project (as found in dashboard), for which devices should be retrieved.
      * @param deviceRequest Contains the defined device properties.
      */
-    public void requestDeviceByRequirements(ProjectId projectId, DeviceRequest deviceRequest) {
-        this.apiClient.requestDeviceByRequirements(projectId, deviceRequest);
+    public DeviceDTO requestDeviceByRequirements(ProjectId projectId, DeviceRequest deviceRequest) {
+        return this.apiClient.requestDeviceByRequirements(projectId, deviceRequest);
+    }
+
+    /**
+     * Request a device deployment by the specified device request in the currently active project.
+     *
+     * @param deviceRequest Contains the defined device properties.
+     */
+    public DeviceDTO requestDeviceByRequirements(DeviceRequest deviceRequest) {
+        Optional<ProjectId> projectId = this.session.getProjectId();
+        if (!projectId.isPresent()) {
+            throw new WebmateApiClientException("No project id associated with webmate session.");
+        }
+        return this.requestDeviceByRequirements(projectId.get(), deviceRequest);
     }
 
     /**

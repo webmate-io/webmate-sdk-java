@@ -9,6 +9,7 @@ public enum DevicePropertyName {
     SlotId("webmate.slotId"),
     ProviderType("webmate.providerType"),
     Locale("os.locale"),
+    Model("machine.model"),
     Platform("machine.platform"),
     ManufacturerName("machine.manufacturer");
 

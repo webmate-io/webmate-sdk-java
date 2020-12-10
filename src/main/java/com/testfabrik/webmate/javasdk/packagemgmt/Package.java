@@ -1,5 +1,6 @@
 package com.testfabrik.webmate.javasdk.packagemgmt;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.testfabrik.webmate.javasdk.JacksonMapper;
@@ -13,8 +14,9 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * Result of a Test, e.g. a defect that has been found.
+ * Information about a Package, e.g. a mobile App.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Package {
 
     private PackageId id;
@@ -32,8 +34,7 @@ public class Package {
     private JsonNode origMetaData;
     private JsonNode origProperties;
 
-
-
+    private JsonNode provenanceInfo;
     private Optional<PackageId> instrumentedPackageId;
     private Optional<String> instrumentedPackageType;
     private Optional<BlobId> instrumentedBlobId;
@@ -44,6 +45,7 @@ public class Package {
     public Package(PackageId id, ProjectId projectId, UserId creator, DateTime creationTime, String name,
                    String description, String versionComment, int index, int amountOfVersions, PackageId origPackageId,
                    String origPackageType, BlobId origBlobId, JsonNode origMetaData, JsonNode origProperties,
+                   JsonNode provenanceInfo,
                    Optional<PackageId> instrumentedPackageId, Optional<String> instrumentedPackageType,
                    Optional<BlobId> instrumentedBlobId) {
         this.id = id;
@@ -60,77 +62,9 @@ public class Package {
         this.origBlobId = origBlobId;
         this.origMetaData = origMetaData;
         this.origProperties = origProperties;
+        this.provenanceInfo = provenanceInfo;
         this.instrumentedPackageId = instrumentedPackageId;
         this.instrumentedPackageType = instrumentedPackageType;
-        this.instrumentedBlobId = instrumentedBlobId;
-    }
-
-
-    public void setId(PackageId id) {
-        this.id = id;
-    }
-
-    public void setProjectId(ProjectId projectId) {
-        this.projectId = projectId;
-    }
-
-    public void setCreator(UserId creator) {
-        this.creator = creator;
-    }
-
-    public void setCreationTime(DateTime creationTime) {
-        this.creationTime = creationTime;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setVersionComment(String versionComment) {
-        this.versionComment = versionComment;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public void setAmountOfVersions(int amountOfVersions) {
-        this.amountOfVersions = amountOfVersions;
-    }
-
-    public void setOrigPackageId(PackageId origPackageId) {
-        this.origPackageId = origPackageId;
-    }
-
-    public void setOrigPackageType(String origPackageType) {
-        this.origPackageType = origPackageType;
-    }
-
-    public void setOrigBlobId(BlobId origBlobId) {
-        this.origBlobId = origBlobId;
-    }
-
-    public void setOrigMetaData(JsonNode origMetaData) {
-        this.origMetaData = origMetaData;
-    }
-
-    public void setOrigProperties(JsonNode origProperties) {
-        this.origProperties = origProperties;
-    }
-
-    public void setInstrumentedPackageId(Optional<PackageId> instrumentedPackageId) {
-        this.instrumentedPackageId = instrumentedPackageId;
-    }
-
-    public void setInstrumentedPackageType(Optional<String> instrumentedPackageType) {
-        this.instrumentedPackageType = instrumentedPackageType;
-    }
-
-    public void setInstrumentedBlobId(Optional<BlobId> instrumentedBlobId) {
         this.instrumentedBlobId = instrumentedBlobId;
     }
 

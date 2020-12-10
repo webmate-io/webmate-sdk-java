@@ -3,11 +3,13 @@ package com.testfabrik.webmate.javasdk;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.testfabrik.webmate.javasdk.artifacts.ArtifactClient;
+import com.testfabrik.webmate.javasdk.blobs.BlobClient;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionClient;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
 import com.testfabrik.webmate.javasdk.devices.DeviceClient;
 import com.testfabrik.webmate.javasdk.jobs.JobEngine;
 import com.testfabrik.webmate.javasdk.mailtest.MailTestClient;
+import com.testfabrik.webmate.javasdk.packagemgmt.PackageMgmtClient;
 import com.testfabrik.webmate.javasdk.selenium.SeleniumServiceClient;
 import com.testfabrik.webmate.javasdk.selenium.WebmateSeleniumSession;
 import com.testfabrik.webmate.javasdk.testmgmt.ApplicationModelId;
@@ -62,6 +64,15 @@ public class WebmateAPISession {
      */
     public final SeleniumServiceClient selenium;
 
+    /**
+     * Facade to webmate's Blob subsystem.
+     */
+    public final BlobClient blob;
+
+    /**
+     * Facade to webmate's Package Management (e.g. App) subsystem.
+     */
+    public final PackageMgmtClient packages;
 
 
     //////////////////////////////
@@ -128,6 +139,8 @@ public class WebmateAPISession {
         this.artifact = new ArtifactClient(this);
         this.mailTest = new MailTestClient(this, artifact);
         this.selenium = new SeleniumServiceClient(this);
+        this.packages = new PackageMgmtClient(this);
+        this.blob = new BlobClient(this);
     }
 
     /**
@@ -148,6 +161,8 @@ public class WebmateAPISession {
         this.artifact = new ArtifactClient(this);
         this.mailTest = new MailTestClient(this, artifact);
         this.selenium = new SeleniumServiceClient(this);
+        this.packages = new PackageMgmtClient(this);
+        this.blob = new BlobClient(this);
     }
 
     /**
@@ -169,6 +184,8 @@ public class WebmateAPISession {
         this.artifact = new ArtifactClient(this, httpClientBuilder);
         this.mailTest = new MailTestClient(this, artifact, httpClientBuilder);
         this.selenium = new SeleniumServiceClient(this, httpClientBuilder);
+        this.packages = new PackageMgmtClient(this, httpClientBuilder);
+        this.blob = new BlobClient(this);
     }
 
     /**
@@ -192,6 +209,8 @@ public class WebmateAPISession {
         this.artifact = new ArtifactClient(this, httpClientBuilder);
         this.mailTest = new MailTestClient(this, artifact, httpClientBuilder);
         this.selenium = new SeleniumServiceClient(this, httpClientBuilder);
+        this.packages = new PackageMgmtClient(this, httpClientBuilder);
+        this.blob = new BlobClient(this);
     }
 
     /**

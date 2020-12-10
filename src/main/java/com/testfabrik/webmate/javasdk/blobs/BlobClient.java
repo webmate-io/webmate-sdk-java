@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.UUID;
 
+/**
+ * Facade for webmate Blob subsystem.
+ */
 public class BlobClient {
 
     private WebmateAPISession session;

@@ -6,12 +6,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Objects;
 import java.util.UUID;
 
-public class DeviceId {
+public class DeviceSlotId {
 
     private UUID value;
 
-    @JsonCreator
-    public DeviceId(UUID value) {
+    public DeviceSlotId(UUID value) {
         this.value = value;
     }
 
@@ -20,8 +19,13 @@ public class DeviceId {
         return value.toString();
     }
 
-    public static DeviceId FOR_TESTING() {
-        return new DeviceId(new UUID(0, 43));
+    public static DeviceSlotId FOR_TESTING() {
+        return new DeviceSlotId(new UUID(0, 43));
+    }
+
+    @JsonCreator
+    public static DeviceSlotId fromString(String str) {
+        return new DeviceSlotId(UUID.fromString(str));
     }
 
     @Override
@@ -36,6 +40,6 @@ public class DeviceId {
 
     @Override
     public boolean equals(final Object obj) {
-        return obj == this || obj instanceof DeviceId && Objects.equals(value, ((DeviceId) obj).value);
+        return obj == this || obj instanceof DeviceSlotId && Objects.equals(value, ((DeviceSlotId) obj).value);
     }
 }

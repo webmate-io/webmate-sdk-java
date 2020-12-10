@@ -107,30 +107,54 @@ public class PackageMgmtClient {
 
 
     /**
-     * Creates a new package in a Project with the given ProjectId and packageData.
-     * @param projectId Project where the new device will be deployed in.
-     * @param blobid Blob where the data is saved.
+     * Creates a new package in a Project from an existing webmate Blob.
+     * @param projectId Project where the new device will be deployed in
+     * @param blobid Blob where the data is saved
      * @param packageName The name of the package
-     * @param extension The package file format
+     * @param extension The package file format, e.g. ipa or apk
      */
     public Package createPackage(ProjectId projectId, BlobId blobid, String packageName, String extension) {
         return this.apiClient.createPackage(projectId, blobid, packageName, extension);
     }
 
     /**
-     * Get the package for a given PackageId
+     * Get package information for a given PackageId.
      * @param packageId  Id of the package
-     * @return The package as Json
+     * @return Package information
      */
     public Package getPackage(PackageId packageId){
         return this.apiClient.getPackage(packageId);
     }
 
+    /**
+     * Upload a package to webmate.
+     * @param projectId ProjectId where the package is uploaded to
+     * @param appPackage Package to be uploaded as byte array
+     * @param packageName Name of the package
+     * @param extension file extension, e.g. apk or ipa
+     * @return Package information for new package
+     */
     public Package uploadApplicationPackage(ProjectId projectId, byte[] appPackage, String packageName, String extension) {
         String contentType = extension.equals("apk") ? "application/vnd.android.package-archive" : "application/x-ios-app";
         BlobClient blobClient = new BlobClient(this.session);
         BlobId blobId = blobClient.putBlob(projectId, appPackage, Optional.of(contentType));
         return this.createPackage(projectId, blobId, packageName, extension);
+    }
+
+    /**
+     * Upload a package to webmate.
+     * @param appPackage Package to be uploaded as byte array
+     * @param packageName Name of the package
+     * @param extension file extension, e.g. apk or ipa
+     * @return Package information for new package
+     */
+    public Package uploadApplicationPackage(byte[] appPackage, String packageName, String extension) {
+        Optional<ProjectId> projectId = this.session.getProjectId();
+        if (!projectId.isPresent()) {
+            throw new WebmateApiClientException("No project id associated with webmate session.");
+        }
+
+        return this.uploadApplicationPackage(projectId.get(), appPackage, packageName, extension);
     }
 
 }
