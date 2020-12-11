@@ -30,7 +30,7 @@ public class BrowserSessionClient {
 
     // Sane default Config, extracting DOM and taking non fullpage Screenshots. Otherwise take Webmate Defaults.
     private static final BrowserSessionStateExtractionConfig DefaultStateExtractionConfig = new BrowserSessionStateExtractionConfig(null, null, null, null, null, true,
-                                                                                                                                       new BrowserSessionScreenshotExtractionConfig(false, false), null);
+                                                                                                                                       new BrowserSessionScreenshotExtractionConfig(true, false), null);
     public interface ActionFunc<T> {
         T op(ActionDelegate action);
     }
