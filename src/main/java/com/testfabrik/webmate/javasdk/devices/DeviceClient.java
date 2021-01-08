@@ -2,24 +2,26 @@ package com.testfabrik.webmate.javasdk.devices;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
 import com.testfabrik.webmate.javasdk.commonutils.HttpHelpers;
+import com.testfabrik.webmate.javasdk.packagemgmt.ImageId;
+import com.testfabrik.webmate.javasdk.packagemgmt.ImagePool;
+import com.testfabrik.webmate.javasdk.packagemgmt.ImageType;
 import com.testfabrik.webmate.javasdk.packagemgmt.PackageId;
-import com.testfabrik.webmate.javasdk.testmgmt.TestSessionId;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.beans.PropertyEditor;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Facade to the webmate Device subsystem.
@@ -47,13 +49,18 @@ public class DeviceClient {
 
         private final static UriTemplate installAppOnDevice = new UriTemplate("/device/${deviceId}/appinstall/${packageId}");
 
+        private final static UriTemplate uploadImage = new UriTemplate("/projects/${projectId}/images");
+
+        private final static UriTemplate uploadImageToDevice = new UriTemplate("/device/${deviceId}/image/${imageId}");
+
+        private final static UriTemplate setCameraSimulation = new UriTemplate("/device/devices/${deviceId}/capabilities");
 
         public DeviceApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
             super(authInfo, environment);
         }
 
         public DeviceApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
-            super (authInfo, environment, httpClientBuilder);
+            super(authInfo, environment, httpClientBuilder);
         }
 
         public Collection<DeviceId> getDeviceIdsForProject(ProjectId projectId) {
@@ -115,6 +122,47 @@ public class DeviceClient {
         public void installAppOnDevice(DeviceId deviceId, PackageId appId, Boolean instrumented) {
             sendPOST(installAppOnDevice, ImmutableMap.of("deviceId", deviceId.toString(), "packageId", appId.toString()), "wait=true&instrumented=" + instrumented.toString());
         }
+
+        public ImageId uploadImage(ProjectId projectId, byte[] image, String imageName, ImageType imageType) {
+            Optional<String> contentType = Optional.of("image/" + imageType.getValue());
+            List<NameValuePair> queryParams = new ArrayList<>();
+            queryParams.add(new BasicNameValuePair("name", imageName));
+
+            Optional<HttpResponse> r = sendPOST(uploadImage, ImmutableMap.of("projectId", projectId.toString()), image, contentType, queryParams).getOptHttpResponse();
+
+            if (!r.isPresent()) {
+                throw new WebmateApiClientException("Could not upload image. Got no response");
+            }
+            try {
+                return new ImageId(readUUIDFromResponse(r.get()));
+            } catch (IOException e) {
+                throw new WebmateApiClientException("Error sending image data: " + e.getMessage(), e);
+            }
+        }
+
+        public void uploadImageToDevice(DeviceId deviceId, ImageId imageId) {
+            sendPOST(uploadImageToDevice, ImmutableMap.of("deviceId", deviceId.toString(), "imageId", imageId.toString()));
+        }
+
+        public ImageId uploadImageToDevice(ProjectId projectId, byte[] image, String imageName, ImageType imageType, DeviceId deviceId) {
+            ImageId imageId = uploadImage(projectId, image, imageName, imageType);
+            uploadImageToDevice(deviceId, imageId);
+            return imageId;
+        }
+
+        public void setCameraSimulation(DeviceId deviceId, ImageId imageId, boolean simulate, ImagePool imagePool) {
+            if (!imagePool.contains(imageId)) {
+                throw new IllegalArgumentException("The given image pool must contain the passed image id.");
+            }
+            ObjectNode simulateCameraNode = JsonNodeFactory.instance.objectNode();
+            simulateCameraNode.put("enabled", simulate);
+            String selectedImageId = imageId == null ? null : imageId.toString();
+            simulateCameraNode.put("selectedImage", selectedImageId);
+            Map<String, Object> params = ImmutableMap.of(CapabilityConstants.SIMULATE_CAMERA, simulateCameraNode, CapabilityConstants.MEDIA_SETTINGS, imagePool.toJson());
+            ObjectMapper mapper = new ObjectMapper();
+            sendPOST(setCameraSimulation, ImmutableMap.of("deviceId", deviceId.toString()), mapper.valueToTree(params));
+        }
+
     }
 
     /**
@@ -229,6 +277,94 @@ public class DeviceClient {
      */
     public void installAppOnDevice(DeviceId deviceId, PackageId appId) {
         this.apiClient.installAppOnDevice(deviceId, appId, false);
+    }
+
+    /**
+     * Uploads am image to webmate. The image is defined by the given byte array and specified by the imageType. The
+     * uploaded image can be referenced by the returned image id.
+     *
+     * @param projectId Id of Project (as found in dashboard), for which devices should be retrieved.
+     * @param image Image data.
+     * @param imageName Desired name of the image.
+     * @param imageType Image format type.
+     * @return Id of the uploaded image.
+     */
+    public ImageId uploadImage(ProjectId projectId, byte[] image, String imageName, ImageType imageType) {
+        return this.apiClient.uploadImage(projectId, image, imageName, imageType);
+    }
+
+    /**
+     * Uploads an image to a device. The image is identified by the given image id. The image must have been uploaded
+     * to webmate before
+     *
+     * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
+     * @param imageId Id of the image to be pushed to device.
+     */
+    public void uploadImageToDevice(DeviceId deviceId, ImageId imageId) {
+        this.apiClient.uploadImageToDevice(deviceId, imageId);
+    }
+
+    /**
+     * Uploads an image to webmate and pushes it to a device. The image is defined by the given byte array and specified
+     * by the imageType. The uploaded image can be referenced by the returned image id.
+     *
+     * @param projectId Id of Project (as found in dashboard), for which devices should be retrieved.
+     * @param image Image data.
+     * @param imageName Desired name of the image.
+     * @param imageType Image format type.
+     * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
+     * @return Id of the uploaded image.
+     */
+    public ImageId uploadImageToDevice(ProjectId projectId, byte[] image, String imageName, ImageType imageType,
+                                       DeviceId deviceId) {
+        return this.apiClient.uploadImageToDevice(projectId, image, imageName, imageType, deviceId);
+    }
+
+    /**
+     * Configure the camera simulation to use the given selectedImageId. The simulation can be enabled or disabled. The
+     * imagePool includes all images that should be pushed to the device. Note that the imagePool must contain the
+     * given selectedImageId.
+     *
+     * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
+     * @param selectedImageId Image id of an already uploaded image. The parameter sets the image that is to be used for
+     *                        the camera simulation. It can also be null to reset the selected image.
+     * @param simulate Disables or enables the camera simulation.
+     * @param imagePool All images that are supposed to be pushed to the device. The parameter must contain the given
+     *                  selectedImageId.
+     */
+    public void setCameraSimulation(DeviceId deviceId, ImageId selectedImageId, boolean simulate, ImagePool imagePool) {
+        this.apiClient.setCameraSimulation(deviceId, selectedImageId, simulate, imagePool);
+    }
+
+    /**
+     * Configure the camera simulation to use the given selectedImageId. The simulation can be enabled or disabled.
+     *
+     * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
+     * @param selectedImageId Image id of an already uploaded image. The parameter sets the image that is to be used for
+     *                        the camera simulation. It can also be null to reset the selected image.
+     * @param simulate Disables or enables the camera simulation.
+     */
+    public void setCameraSimulation(DeviceId deviceId, ImageId selectedImageId, boolean simulate) {
+        setCameraSimulation(deviceId, selectedImageId, simulate, new ImagePool(selectedImageId));
+    }
+
+    /**
+     * Uploads an image to webmate, pushes it to a device and configures the camera simulation to use the image. The
+     * image is defined by the given byte array and specified by the imageType. The uploaded image can be referenced by
+     * the returned image id. The camera simulation will be enabled.
+     *
+     * @param projectId Id of Project (as found in dashboard), for which devices should be retrieved.
+     * @param image Image data.
+     * @param imageName Desired name of the image.
+     * @param imageType Image format type.
+     * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
+     * @return Id of the uploaded image.
+     */
+    public ImageId uploadImageToDeviceAndSetForCameraSimulation(ProjectId projectId, byte[] image, String imageName,
+                                                                ImageType imageType, DeviceId deviceId) {
+        ImageId imageId = uploadImageToDevice(projectId, image, imageName, imageType, deviceId);
+        setCameraSimulation(deviceId, imageId, true);
+        return imageId;
     }
 
 }

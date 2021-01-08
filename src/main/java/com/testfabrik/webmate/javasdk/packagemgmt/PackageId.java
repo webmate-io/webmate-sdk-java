@@ -9,7 +9,6 @@ public class PackageId {
 
     private UUID value;
 
-
     public PackageId(UUID value) {
         this.value = value;
     }

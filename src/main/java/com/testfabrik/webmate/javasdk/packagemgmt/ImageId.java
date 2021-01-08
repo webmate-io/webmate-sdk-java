@@ -1,27 +1,27 @@
-package com.testfabrik.webmate.javasdk.blobs;
+package com.testfabrik.webmate.javasdk.packagemgmt;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Objects;
 import java.util.UUID;
 
-public class BlobId {
+public class ImageId {
 
     private UUID value;
 
-    public BlobId(UUID value) {
+    public ImageId(UUID value) {
         this.value = value;
     }
 
-    public BlobId(String value) { this.value = UUID.fromString(value); }
+    public ImageId(String value) { this.value = UUID.fromString(value);}
 
     @JsonValue
     public String getValueAsString() {
         return value.toString();
     }
 
-    public static BlobId FOR_TESTING() {
-        return new BlobId(new UUID(0, 43));
+    public static PackageId FOR_TESTING() {
+        return new PackageId(new UUID(0, 43));
     }
 
     @Override
@@ -36,6 +36,6 @@ public class BlobId {
 
     @Override
     public boolean equals(final Object obj) {
-        return obj == this || obj instanceof BlobId && Objects.equals(value, ((BlobId) obj).value);
+        return obj == this || obj instanceof PackageId && Objects.equals(value, ((ImageId) obj).value);
     }
 }
