@@ -1,18 +1,14 @@
 package com.testfabrik.webmate.javasdk.blobs;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * Facade for webmate Blob subsystem.
@@ -45,16 +41,11 @@ public class BlobClient {
             if (!r.isPresent()) {
                 throw new WebmateApiClientException("Could not put blob. Got no response");
             }
-            BlobId blobId;
             try {
-                String blobJson = EntityUtils.toString(r.get().getEntity());
-                ObjectMapper mapper = new ObjectMapper();
-                String blob = mapper.readValue(blobJson, new TypeReference<String>(){});
-                blobId = new BlobId(UUID.fromString(blob));
+                return new BlobId(readUUIDFromResponse(r.get()));
             } catch (IOException e) {
                 throw new WebmateApiClientException("Error sending blob data: " + e.getMessage(), e);
             }
-            return blobId;
         }
 
         public void deleteBlob(BlobId blobId) {
