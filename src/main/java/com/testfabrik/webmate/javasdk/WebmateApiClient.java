@@ -77,35 +77,38 @@ public class WebmateApiClient {
 
     /**
      * Creates a new HttpClient with the given content type header as default header.
+     * There is no easy mechanism to replace or override a default header. Therefore, we instantiate a
+     * new http client with the passed content type header. Another solution would be to create a
+     * custom HttpRequestInterceptor that handles http headers.
      *
      * @param contentType Content type header set as default header.
      * @return New HttpClient to be used by Service clients.
      */
-    private HttpClient getHttpClient(Header contentType) {
+    private HttpClient getHttpClientAndOverrideContentHeader(Header contentType) {
         return makeHttpClient(this.authInfo, this.environment, this.httpClientBuilder, contentType);
     }
 
     /**
      * Creates new HttpClient for interacting with webmate API.
      *
-     * @param authInfo authentication information (email address + token)
+     * @param authInfo Authentication information (email address + token)
      * @param environment API endpoint address
      * @return New HttpClient to be used by Service clients.
      */
-    private static HttpClient makeHttpClient(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
-        return makeHttpClient(authInfo, environment, httpClientBuilder, new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"));
+    private static HttpClient makeHttpClient(WebmateAuthInfo authInfo, WebmateEnvironment environment,
+                                             HttpClientBuilder httpClientBuilder) {
+        return makeHttpClient(authInfo, environment, httpClientBuilder, new BasicHeader(HttpHeaders.CONTENT_TYPE,
+                "application/json"));
     }
 
-    private static HttpClient makeHttpClient(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder, Header contentType) {
-
-        httpClientBuilder.setUserAgent(WEBMATE_JAVASDK_USERAGENT);
-
+    private static HttpClient makeHttpClient(WebmateAuthInfo authInfo, WebmateEnvironment environment,
+                                             HttpClientBuilder httpClientBuilder, Header contentType) {
         List<Header> headers = new ArrayList<>();
-
         headers.add(new BasicHeader(WEBMATE_USER_HEADERKEY, authInfo.emailAddress));
         headers.add(new BasicHeader(WEBMATE_APITOKEN_HEADERKEY, authInfo.apiKey));
         headers.add(contentType);
 
+        httpClientBuilder.setUserAgent(WEBMATE_JAVASDK_USERAGENT);
         httpClientBuilder.setDefaultHeaders(headers);
         return httpClientBuilder.build();
     }
@@ -258,7 +261,7 @@ public class WebmateApiClient {
 
         if (contentType.isPresent()) {
             req.setEntity(new ByteArrayEntity(byteParam, ContentType.create(contentType.get())));
-            httpClient = this.getHttpClient(new BasicHeader(HttpHeaders.CONTENT_TYPE, contentType.get()));
+            httpClient = this.getHttpClientAndOverrideContentHeader(new BasicHeader(HttpHeaders.CONTENT_TYPE, contentType.get()));
         } else {
             req.setEntity(new ByteArrayEntity(byteParam));
             httpClient = this.getHttpClient();
@@ -274,7 +277,7 @@ public class WebmateApiClient {
 
         if (contentType.isPresent()) {
             req.setEntity(new ByteArrayEntity(byteParam, ContentType.create(contentType.get())));
-            httpClient = this.getHttpClient(new BasicHeader(HttpHeaders.CONTENT_TYPE, contentType.get()));
+            httpClient = this.getHttpClientAndOverrideContentHeader(new BasicHeader(HttpHeaders.CONTENT_TYPE, contentType.get()));
         } else {
             req.setEntity(new ByteArrayEntity(byteParam));
             httpClient = this.getHttpClient();
@@ -324,8 +327,7 @@ public class WebmateApiClient {
             HttpGet req;
             if (queryParams != null) {
                 req = new HttpGet(schema.buildUri(environment.baseURI, params, queryParams));
-            }
-            else {
+            } else {
                 req = new HttpGet(schema.buildUri(environment.baseURI, params));
             }
             httpResponse = this.getHttpClient().execute(req);
