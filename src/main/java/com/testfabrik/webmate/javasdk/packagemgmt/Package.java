@@ -124,11 +124,11 @@ public class Package {
         return origProperties;
     }
 
-    public Optional<PackageId> getInstrumentedPackage() {
+    public Optional<PackageId> getInstrumentedPackageId() {
         return instrumentedPackageId;
     }
 
-    public Optional<BlobId> getInstrumentedBlob() {
+    public Optional<BlobId> getInstrumentedBlobId() {
         return instrumentedBlobId;
     }
 
