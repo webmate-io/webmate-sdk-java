@@ -311,7 +311,7 @@ public class WebmateApiClient {
         return new ApiResponse(httpResponse);
     }
 
-    public ApiResponse sendGET(UriTemplate schema, Map<String, String> params, List<NameValuePair> queryParams){
+    public ApiResponse sendGET(UriTemplate schema, Map<String, String> params, List<NameValuePair> queryParams) {
         HttpResponse httpResponse = sendGETUnchecked(schema, params, queryParams);
         checkErrors(httpResponse, schema.name);
         return new ApiResponse(httpResponse);

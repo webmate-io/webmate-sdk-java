@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Facade to the webmate SeleniumService subsystem.
+ * Facade to webmate's Selenium subsystem.
  */
 public class SeleniumServiceClient {
     private SeleniumServiceApiClient apiClient;
@@ -44,6 +44,38 @@ public class SeleniumServiceClient {
             super(authInfo, environment, httpClientBuilder);
         }
 
+        /**
+         * Helper method to build a selenium session from json.
+         */
+        private SeleniumSession buildSeleniumSessionFromJson(JsonNode sessionJson) {
+            ObjectMapper om = new ObjectMapper();
+            try {
+                return om.treeToValue(sessionJson, SeleniumSession.class);
+            } catch (JsonProcessingException e) {
+                throw new WebmateApiClientException("Error deserializing SeleniumSession data: " + e.getMessage());
+            }
+        }
+
+        /**
+         * Helper method to build a selenium capability from json.
+         */
+        private SeleniumCapability buildSeleniumCapabilityFromJson(JsonNode capabilityJson) {
+            return new SeleniumCapability(
+                    BrowserType.getEnum(capabilityJson.at("/browserName").asText()),
+                    capabilityJson.at("/version").asText(),
+                    capabilityJson.at("/platform").asText(),
+                    capabilityJson.at("/supportsProxy").asBoolean(),
+                    capabilityJson.at("/browserlanguage").asText()
+            );
+        }
+
+        private Browser buildBrowserFromJson(JsonNode browserJson) {
+            return new Browser(
+                    BrowserType.getEnum(browserJson.at("/browserType").asText()),
+                    browserJson.at("/version").asText(),
+                    browserJson.at("/platform").asText()
+            );
+        }
 
         public SeleniumSession getSeleniumsession(WebmateSeleniumSessionId sessionId) {
             ApiResponse response = sendGET(getSeleniumsessionTemplate, ImmutableMap.of("sessionId", sessionId.toString()));
@@ -82,24 +114,6 @@ public class SeleniumServiceClient {
             return session;
         }
 
-        private SeleniumSession buildSeleniumSessionFromJson(JsonNode sessionJson) {
-            ObjectMapper om = new ObjectMapper();
-            try {
-                return om.treeToValue(sessionJson, SeleniumSession.class);
-            } catch (JsonProcessingException e) {
-                throw new WebmateApiClientException("Error deserializing SeleniumSession data: " + e.getMessage());
-            }
-        }
-
-        private Browser buildBrowserFromJson(JsonNode browserJson) {
-            return new Browser(
-                    BrowserType.getEnum(browserJson.at("/browserType").asText()),
-                    browserJson.at("/version").asText(),
-                    browserJson.at("/platform").asText()
-            );
-        }
-
-
         public Collection<SeleniumCapability> getSeleniumCapabilitiesForProject(ProjectId projectId) {
             Map<String, String> params = ImmutableMap.of("projectId", projectId.toString());
             ApiResponse apiResponse = sendGET(getSeleniumCapabilitiesForProjectTemplate, params);
@@ -124,17 +138,6 @@ public class SeleniumServiceClient {
 
             return capabilities;
         }
-
-        private SeleniumCapability buildSeleniumCapabilityFromJson(JsonNode capabilityJson) {
-            return new SeleniumCapability(
-                    BrowserType.getEnum(capabilityJson.at("/browserName").asText()),
-                    capabilityJson.at("/version").asText(),
-                    capabilityJson.at("/platform").asText(),
-                    capabilityJson.at("/supportsProxy").asBoolean(),
-                    capabilityJson.at("/browserlanguage").asText()
-            );
-        }
-
 
         public Collection<SeleniumSession> getSeleniumsessionsForProject(ProjectId projectId, WebmateSeleniumSessionId after, Integer count, String state) {
             ArrayList<NameValuePair> queryParams = new ArrayList<>();
@@ -230,7 +233,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Create a SeleniumServiceClient from a WebmateAPISession
+     * Create a SeleniumServiceClient from a WebmateAPISession.
+     *
      * @param session The WebmateApiSession the DeviceClient is supposed to be based on.
      */
     public SeleniumServiceClient(WebmateAPISession session) {
@@ -238,7 +242,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Create a SeleniumServiceClient from a WebmateAPISession and a HttpClientBuilder
+     * Create a SeleniumServiceClient from a WebmateAPISession and a HttpClientBuilder.
+     *
      * @param session The WebmateApiSession the DeviceClient is supposed to be based on.
      * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection.
      */
@@ -247,7 +252,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get a Selenium session by ID
+     * Get a Selenium session by ID.
+     *
      * @param sessionId ID of the selenium session to retrieve
      * @return SeleniumSession with the requested session ID
      * @throws WebmateApiClientException if a HTTP error occurred or the session could not be found/retrieved
@@ -258,6 +264,7 @@ public class SeleniumServiceClient {
 
     /**
      * Get a Selenium session for browser session.
+     *
      * @param browserSessionId ID of the browser session that is associated with the Selenium session to be returned.
      * @return SeleniumSession with the requested session ID
      * @throws WebmateApiClientException if a HTTP error occurred or the session could not be found/retrieved
@@ -267,7 +274,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium capabilities for a project by project ID
+     * Get all Selenium capabilities for a project by project ID.
+     *
      * @param projectId ID of the project of which the capabilities should be retrieved
      * @return List of all Selenium capabilities in the given project (Actual type: ArrayList)
      * @throws WebmateApiClientException if a HTTP error occurred or the Selenium capabilities could not be retrieved (e.g. due to missing permissions)
@@ -277,7 +285,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium sessions for a project by project ID
+     * Get all Selenium sessions for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium sessions shall be retrieved
      * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given Id.
      * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
@@ -290,7 +299,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium sessions for a project by project ID
+     * Get all Selenium sessions for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium sessions shall be retrieved
      * @return (Filtered) List of Selenium sessions in the given project (Actual type: ArrayList)
      * @throws WebmateApiClientException if a HTTP error occurred or the Selenium sessions could not be retrieved (e.g. due to missing permissions)
@@ -300,7 +310,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium sessions for a project by project ID
+     * Get all Selenium sessions for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium sessions shall be retrieved
      * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given Id.
      * @return (Filtered) List of Selenium sessions in the given project (Actual type: ArrayList)
@@ -311,7 +322,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium sessions for a project by project ID
+     * Get all Selenium sessions for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium sessions shall be retrieved
      * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
      * @return (Filtered) List of Selenium sessions in the given project (Actual type: ArrayList)
@@ -322,7 +334,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium sessions for a project by project ID
+     * Get all Selenium sessions for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium sessions shall be retrieved
      * @param state (optional) Only SeleniumSessions in the given state are considered and returned by the call, all other Sessions are filtered out.
      * @return (Filtered) List of Selenium sessions in the given project (Actual type: ArrayList)
@@ -333,7 +346,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium sessions for a project by project ID
+     * Get all Selenium sessions for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium sessions shall be retrieved
      * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given Id.
      * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
@@ -345,7 +359,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium sessions for a project by project ID
+     * Get all Selenium sessions for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium sessions shall be retrieved
      * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given Id.
      * @param state (optional) Only SeleniumSessions in the given state are considered and returned by the call, all other Sessions are filtered out.
@@ -357,7 +372,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium sessions for a project by project ID
+     * Get all Selenium sessions for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium sessions shall be retrieved
      * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
      * @param state (optional) Only SeleniumSessions in the given state are considered and returned by the call, all other Sessions are filtered out.
@@ -369,7 +385,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium session IDs for a project by project ID
+     * Get all Selenium session IDs for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
      * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given ID.
      * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
@@ -382,7 +399,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium session IDs for a project by project ID
+     * Get all Selenium session IDs for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
      * @return (Filtered) List of Selenium session IDs in the given project (Actual type: ArrayList)
      * @throws WebmateApiClientException if a HTTP error occurred or the Selenium session IDs could not be retrieved (e.g. due to missing permissions)
@@ -392,7 +410,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium session IDs for a project by project ID
+     * Get all Selenium session IDs for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
      * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given ID.
      * @return (Filtered) List of Selenium session IDs in the given project (Actual type: ArrayList)
@@ -403,7 +422,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium session IDs for a project by project ID
+     * Get all Selenium session IDs for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
      * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
      * @return (Filtered) List of Selenium session IDs in the given project (Actual type: ArrayList)
@@ -414,7 +434,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium session IDs for a project by project ID
+     * Get all Selenium session IDs for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
      * @param state (optional) Only SeleniumSessions in the given state are considered and returned by the call, all other Sessions are filtered out.
      * @return (Filtered) List of Selenium session IDs in the given project (Actual type: ArrayList)
@@ -425,7 +446,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium session IDs for a project by project ID
+     * Get all Selenium session IDs for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
      * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given ID.
      * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
@@ -437,7 +459,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium session IDs for a project by project ID
+     * Get all Selenium session IDs for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
      * @param after (optional) An ID of a SeleniumSession, the call (and all of its other query parameters) will only take Sessions into account that were created after the Session with the given ID.
      * @param state (optional) Only SeleniumSessions in the given state are considered and returned by the call, all other Sessions are filtered out.
@@ -449,7 +472,8 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Get all Selenium session IDs for a project by project ID
+     * Get all Selenium session IDs for a project by project ID.
+     *
      * @param projectId The ID of the project of which Selenium session IDs shall be retrieved
      * @param count (optional) The length of the output is restricted to the given integer, remaining (aka older) Sessions are not returned. Use of this parameter is highly recommended to avoid a gigantic result that needs to be send over the network.
      * @param state (optional) Only SeleniumSessions in the given state are considered and returned by the call, all other Sessions are filtered out.
@@ -461,9 +485,10 @@ public class SeleniumServiceClient {
     }
 
     /**
-     * Stop a Selenium session by ID
+     * Stop a Selenium session by ID.
+     *
      * @param sessionId ID of the Selenium session to be stopped
-     * @throws WebmateApiClientException if an HTTP error occured or the Selenium session could not be found (e.g. due to missing permissions, or wrong ID)
+     * @throws WebmateApiClientException if an HTTP error occurred or the Selenium session could not be found (e.g. due to missing permissions, or wrong ID)
      */
     public void stopSeleniumsession(WebmateSeleniumSessionId sessionId) throws WebmateApiClientException{
         this.apiClient.stopSeleniumsession(sessionId);

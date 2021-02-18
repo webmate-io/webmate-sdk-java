@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Facade of TestMgmt subsystem.
+ * Facade to webmate's TestMgmt subsystem.
  */
 public class TestMgmtClient {
 
@@ -211,6 +211,7 @@ public class TestMgmtClient {
 
         /**
          * Get TestResults of Test with given id and testrun index.
+         *
          * @param id Id of TestRun.
          * @return Optional with list of TestResults or Optional.absent if there was no such Test or TestRun. If there were no TestResults, the result is Optional of empty list.
          */

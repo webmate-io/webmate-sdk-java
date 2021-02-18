@@ -10,7 +10,6 @@ public class WebmateSeleniumSessionId {
 
     private UUID value;
 
-
     @JsonCreator
     public WebmateSeleniumSessionId(UUID value) {
         this.value = value;

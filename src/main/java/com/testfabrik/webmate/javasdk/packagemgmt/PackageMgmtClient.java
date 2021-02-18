@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Facade to the webmate Device subsystem.
+ * Facade to webmate's Package Management (e.g. App) subsystem.
  */
 public class PackageMgmtClient {
 
@@ -88,6 +88,7 @@ public class PackageMgmtClient {
 
     /**
      * Creates a PackageMgmtClient based on a WebmateApiSession.
+     *
      * @param session The WebmateApiSession the PackageMgmtClient is supposed to be based on.
      */
     public PackageMgmtClient(WebmateAPISession session) {
@@ -97,6 +98,7 @@ public class PackageMgmtClient {
 
     /**
      * Creates a PackageMgmtClient based on a WebmateApiSession and a custom HttpClientBuilder.
+     *
      * @param session The WebmateApiSession the PackageMgmtClient is supposed to be based on.
      * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection.
      */
@@ -108,6 +110,7 @@ public class PackageMgmtClient {
 
     /**
      * Creates a new package in a Project from an existing webmate Blob.
+     *
      * @param projectId Project where the new device will be deployed in
      * @param blobid Blob where the data is saved
      * @param packageName The name of the package
@@ -119,6 +122,7 @@ public class PackageMgmtClient {
 
     /**
      * Get package information for a given PackageId.
+     *
      * @param packageId  Id of the package
      * @return Package information
      */
@@ -128,6 +132,7 @@ public class PackageMgmtClient {
 
     /**
      * Upload a package to webmate.
+     *
      * @param projectId ProjectId where the package is uploaded to
      * @param appPackage Package to be uploaded as byte array
      * @param packageName Name of the package
@@ -143,6 +148,7 @@ public class PackageMgmtClient {
 
     /**
      * Upload a package to webmate.
+     *
      * @param appPackage Package to be uploaded as byte array
      * @param packageName Name of the package
      * @param extension file extension, e.g. apk or ipa

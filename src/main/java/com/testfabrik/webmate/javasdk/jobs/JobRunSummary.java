@@ -92,7 +92,8 @@ public class JobRunSummary {
 
     /**
      * Get a readable failure message if the JobRun failed.
-     * @return a String describing the error that occured during the execution of this test. If this test did not fail (yet) an empty String is returned.
+     *
+     * @return a String describing the error that occurred during the execution of this test. If this test did not fail (yet) an empty String is returned.
      */
     public String getFailureMessage() {
         return failureMessage;
@@ -114,6 +115,7 @@ public class JobRunSummary {
 
     /**
      * Get a summary of this JobRuns result data if there is any.
+     *
      * @return a JsonNode containing a short summary of this JobRuns result data (for example the number of issues detected per browser or the list of urls which could not be accessed). If this test is still running a JsonNode representing empty result data will be returned.
      */
     public Map<String, JsonNode> getSummaryInformation() {

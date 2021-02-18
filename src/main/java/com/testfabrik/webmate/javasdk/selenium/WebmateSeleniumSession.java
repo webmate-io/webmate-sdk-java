@@ -60,7 +60,7 @@ public class WebmateSeleniumSession {
     private SeleniumSession cachedValue;
 
     /**
-     * Factory that creates Selenium Sesson from its browserSessionId (caveat: there may also be browsersessions
+     * Factory that creates Selenium Session from its browserSessionId (caveat: there may also be browsersessions
      * that are not associated with a Selenium session. In these cases, null is returned)
      */
     public WebmateSeleniumSession(WebmateAPISession apiSession, BrowserSessionId browserSessionId) {

@@ -57,7 +57,7 @@ public abstract class TestExecutionSpecBuilder<T extends TestExecutionSpecBuilde
     }
 
     public TestExecutionSpecBuilder<T> withModel(String modelId) {
-        this.models.add(ApplicationModelId.of(modelId));
+        this.models.add(new ApplicationModelId(modelId));
         return this;
     }
 

@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-/*
- * Facade of MailTest subsystem.
+/**
+ * Facade to webmate's MailTest subsystem.
  */
 public class MailTestClient {
 
@@ -72,7 +72,8 @@ public class MailTestClient {
     }
 
     /**
-     * Creates a MailTestApiClient based on a WebmateApiSession
+     * Creates a MailTestApiClient based on a WebmateApiSession.
+     *
      * @param session The WebmateApiSession used by the TestMgmtClient
      * @param artifactClient client for the artifact subsystem (comes from webmate session)
      */
@@ -84,6 +85,7 @@ public class MailTestClient {
 
     /**
      * Creates a MailTestApiClient based on a WebmateApiSession
+     *
      * @param session The WebmateApiSession used by the TestMgmtClient
      * @param artifactClient client for the artifact subsystem (comes from webmate session)
      * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection.
@@ -96,6 +98,7 @@ public class MailTestClient {
 
     /**
      * Creates a TestMgmtClient based on a WebmateApiSession and a custom HttpClientBuilder.
+     *
      * @param session The WebmateApiSession used by the TestMgmtClient
      * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection.
      */
@@ -106,19 +109,20 @@ public class MailTestClient {
 
     /**
      * Create a TestMail that can be used in a TestRun.
+     *
      * @param projectId Id of Project.
      * @param testRunId Id of TestRun.
      * @return email address associated with project and testrun.
      */
     public TestMailAddress createTestMailAddress(ProjectId projectId, TestRunId testRunId) {
-
         TestMailAddress result = this.apiClient.createTestMailAddressInProject(projectId, testRunId);
         this.mailAddress = result.getAddress();
         return result;
     }
 
     /**
-     * Get emails for the test mail adress in the given TestRun and project
+     * Get emails for the test mail address in the given TestRun and project.
+     *
      * @param projectId Project id.
      * @param testRunId Id of TestRun.
      * @return list of TestMails

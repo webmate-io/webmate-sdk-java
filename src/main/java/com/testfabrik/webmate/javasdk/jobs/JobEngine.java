@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Facade that provides access to the webmate JobEngine service.
+ * Facade to webmate's JobEngine subsystem.
  */
 public class JobEngine {
 
@@ -222,6 +222,7 @@ public class JobEngine {
 
     /**
      * Start a Job which already exists. (i.e. to run a Job again)
+     *
      * @param id Id of the Job to run.
      * @return The id of the JobRun that was created
      */
@@ -231,6 +232,7 @@ public class JobEngine {
 
     /**
      * Return list of JobRunIds for the given JobId.
+     *
      * @param jobId Id of Job, for which JobRuns should be retrieved.
      * @return List of JobRun ids
      */
@@ -239,7 +241,8 @@ public class JobEngine {
     }
 
     /**
-     * Get the current state summary of the JobRun with the given JobRunId
+     * Get the current state summary of the JobRun with the given JobRunId.
+     *
      * @param jobRunId Id of the JobRun for which the current state should be retrieved.
      * @return Summary of the current state of the JobRun
      */
@@ -249,6 +252,7 @@ public class JobEngine {
 
     /**
      * Get all existing jobs in the specified project.
+     *
      * @param projectId id of the project that jobs should be retrieved for.
      * @return List of Job ids
      */

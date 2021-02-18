@@ -5,24 +5,15 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.UUID;
 
-/**
- * Id of a Test.
- */
 public class TestSessionId {
+
     private final UUID value;
 
-    /**
-     * Create new TestRunId.
-     * @param value uuid of test run id
-     */
     @JsonCreator
     public TestSessionId(final UUID value) {
         this.value = value;
     }
 
-    /**
-     * Create TestId from UUID represented as a String.
-     */
     @JsonCreator
     static TestSessionId of(final String idStr) {
         return new TestSessionId(UUID.fromString(idStr));

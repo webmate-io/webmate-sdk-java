@@ -1,44 +1,37 @@
 package com.testfabrik.webmate.javasdk.testmgmt;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-/**
- * Type of Test.
- */
+import java.util.Objects;
+import java.util.UUID;
+
 public class ApplicationModelId {
-    private final String name;
 
-    private ApplicationModelId(final String name) {
-        this.name = name;
+    private UUID value;
+
+    public ApplicationModelId(UUID value) {
+        this.value = value;
     }
 
-    /**
-     * Create TestType from name.
-     */
-    @JsonCreator
-    public static ApplicationModelId of(final String name) {
-        return new ApplicationModelId(name);
-    }
+    public ApplicationModelId(String value) { this.value = UUID.fromString(value);}
 
-    @Override
     @JsonValue
-    public String toString() {
-        return this.name;
+    public String getValueAsString() {
+        return value.toString();
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ApplicationModelId otherType = (ApplicationModelId) o;
-
-        return name.equals(otherType.name);
+    public String toString() {
+        return value.toString();
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return value.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return obj == this || obj instanceof ApplicationModelId && Objects.equals(value, ((ApplicationModelId) obj).value);
     }
 }

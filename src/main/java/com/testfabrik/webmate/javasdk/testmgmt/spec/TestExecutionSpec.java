@@ -59,7 +59,9 @@ public abstract class TestExecutionSpec {
 
     public abstract TestMgmtClient.SingleTestRunCreationSpec makeTestRunCreationSpec();
 
-    // name of default test template in project
+    /**
+     * Name of default test template in project.
+     */
     public String getDefaultTestTemplateName() {
         return this.defaultTestTemplateName;
     }

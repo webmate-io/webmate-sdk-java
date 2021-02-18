@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Facade of TestMgmt subsystem.
+ * Facade to webmate's Artifact subsystem.
  */
 public class ArtifactClient {
 
@@ -51,6 +51,7 @@ public class ArtifactClient {
 
         /**
          * Retrieve matching artifacts in a project.
+         *
          * @param id Id of project to retrieve artifacts from
          * @param associatedTestRun Id of test run associated with artifacts.
          * @param associatedBrowserSession Id of browser session associated with artifacts
@@ -107,7 +108,8 @@ public class ArtifactClient {
     }
 
     /**
-     * Creates an ArtifactClient based on a WebmateApiSession
+     * Creates an ArtifactClient based on a WebmateApiSession.
+     *
      * @param session The WebmateApiSession used by the ArtifactClient
      */
     public ArtifactClient(WebmateAPISession session) {
@@ -117,6 +119,7 @@ public class ArtifactClient {
 
     /**
      * Creates an ArtifactClient based on a WebmateApiSession and a custom HttpClientBuilder.
+     *
      * @param session The WebmateApiSession used by the ArtifactClient
      * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection.
      */
@@ -126,7 +129,7 @@ public class ArtifactClient {
     }
 
     /**
-     * Retrieve Artifact infos associated with test run in project
+     * Retrieve Artifact infos associated with test run in project.
      *
      * @param projectId project id
      * @param associatedTestRun testRunId associated with artifacts.
@@ -138,7 +141,7 @@ public class ArtifactClient {
     }
 
     /**
-     * Retrieve Artifact infos associated with browser session in project
+     * Retrieve Artifact infos associated with browser session in project.
      *
      * @param projectId project id
      * @param associatedBrowserSession browserSessionId associated with artifacts.
@@ -150,7 +153,7 @@ public class ArtifactClient {
     }
 
     /**
-     * Retrieve Artifact infos associated with test run and browser session in project
+     * Retrieve Artifact infos associated with test run and browser session in project.
      *
      * @param projectId project id
      * @param associatedTestRun testRunId associated with artifacts.
@@ -163,7 +166,8 @@ public class ArtifactClient {
     }
 
     /**
-     * Retrieve Artifact with id
+     * Retrieve Artifact with id.
+     *
      * @param id Id of Artifact.
      * @return Artifact
      */

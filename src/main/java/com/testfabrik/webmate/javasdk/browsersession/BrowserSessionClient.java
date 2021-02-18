@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Facade for webmate BrowserSession service.
+ * Facade to webmate's BrowserSession subsystem.
  */
 public class BrowserSessionClient {
 
@@ -373,7 +373,6 @@ public class BrowserSessionClient {
         StartStoryActionAddArtifactData artifactData = new StartStoryActionAddArtifactData(actionName, spanId);
         apiClient.startAction(expeditionId, artifactData);
         this.currentSpanIds.push(spanId);
-        return;
     }
 
     public void finishAction() {
@@ -400,6 +399,7 @@ public class BrowserSessionClient {
 
     /**
      * Finish the currently active Action and mark is as failed. Do nothing if there is no active action.
+     *
      * @param errorMessage Error message indicating why this action has failed.
      */
     public void finishActionAsFailureIgnoreNoneActive(String errorMessage) {
@@ -414,6 +414,7 @@ public class BrowserSessionClient {
 
     /**
      * Finish the currently active Action and provide a success message.
+     *
      * @param successMessage message that should be added to the action
      * @throws WebmateApiClientException if no action is active
      */
@@ -428,6 +429,7 @@ public class BrowserSessionClient {
 
     /**
      * Finish the currently active Action and mark it as failure.
+     *
      * @param errorMessage Error message indicating why this action has failed.
      * @throws WebmateApiClientException if no action is active
      */

@@ -14,4 +14,3 @@ public interface WellKnownJobInput {
      */
     Map<PortName, WMValue> makeInputValues();
 }
-

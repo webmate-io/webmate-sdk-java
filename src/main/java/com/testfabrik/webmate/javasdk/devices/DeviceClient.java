@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Facade to the webmate Device subsystem.
+ * Facade to webmate's Device subsystem.
  */
 public class DeviceClient {
 

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Facade for webmate Blob subsystem.
+ * Facade to webmate's Blob subsystem.
  */
 public class BlobClient {
 
@@ -55,6 +55,7 @@ public class BlobClient {
 
     /**
      * Creates a BlobClient based on a WebmateApiSession.
+     *
      * @param session The WebmateApiSession the BlobClient is supposed to be based on.
      */
     public BlobClient(WebmateAPISession session) {
@@ -64,6 +65,7 @@ public class BlobClient {
 
     /**
      * Creates a BlobClient based on a WebmateApiSession and a custom HttpClientBuilder.
+     *
      * @param session The WebmateApiSession the BlobClient is supposed to be based on.
      * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection.
      */
@@ -73,7 +75,8 @@ public class BlobClient {
     }
 
     /**
-     * uploads a blob to webmate.
+     * Uploads a blob to webmate.
+     *
      * @param projectId ProjectId of device. Can be found in "Details" dialog of an item in webmate project overview.
      * @param blob the Blob that should be uploaded to webmate
      * @return BlobId of the uploaded blob
@@ -83,7 +86,8 @@ public class BlobClient {
     }
 
     /**
-     * Deletes the Blob with the given Id
+     * Deletes the Blob with the given Id.
+     *
      * @param blobId The Id of the Blob
      */
     public void deleteBlob(BlobId blobId) {
