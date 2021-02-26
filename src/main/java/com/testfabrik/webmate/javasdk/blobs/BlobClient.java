@@ -32,7 +32,7 @@ public class BlobClient {
         }
 
         public BlobApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
-            super (authInfo, environment, httpClientBuilder);
+            super(authInfo, environment, httpClientBuilder);
         }
 
         public BlobId putBlob(ProjectId projectId, byte[] uploadingBlob, Optional<String> contentType) {

@@ -23,8 +23,8 @@ public class BrowserSessionRef {
      *
      * @param matchingId The Id for the state. Used for matching.
      */
-    public void createState(String matchingId) {
-        session.browserSession.createState(browserSessionId, matchingId);
+    public BrowserSessionStateId createState(String matchingId) {
+        return session.browserSession.createState(browserSessionId, matchingId);
     }
 
     /**
@@ -33,27 +33,8 @@ public class BrowserSessionRef {
      * @param matchingId The Id for the state. Used for matching.
      * @param browserSessionStateExtractionConfig The custom config that is supposed to be used.
      */
-    public void createState(String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
-        session.browserSession.createState(browserSessionId, matchingId, browserSessionStateExtractionConfig);
-    }
-
-    /**
-     * Creates a State for a Browsersession with a matching id using a custom config.
-     * @param matchingId The Id for the state. Used for matching.
-     * @param browserSessionStateExtractionConfig The custom config that is supposed to be used.
-     * @param timeout The timeout for the state extraction in milliseconds.
-     */
-    public void createState(String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig, long timeout) {
-        session.browserSession.createState(browserSessionId, matchingId, timeout, browserSessionStateExtractionConfig);
-    }
-
-    /**
-     * Creates a State for a Browsersession with a matching id using a custom config.
-     * @param matchingId The Id for the state. Used for matching.
-     * @param timeout The timeout for the state extraction in milliseconds.
-     */
-    public void createState(String matchingId, long timeout) {
-        session.browserSession.createState(browserSessionId, matchingId, timeout);
+    public BrowserSessionStateId createState(String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
+        return session.browserSession.createState(browserSessionId, matchingId, browserSessionStateExtractionConfig);
     }
 
     /**
