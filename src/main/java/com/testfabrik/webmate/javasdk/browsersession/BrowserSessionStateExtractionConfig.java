@@ -3,9 +3,10 @@ package com.testfabrik.webmate.javasdk.browsersession;
 import com.testfabrik.webmate.javasdk.commonutils.Dimension;
 
 /**
- * A Wrapper class for proper state extraction Configuration. The different parameters determine the behaviour during state extraction. If parameters are
- * set to null, the default value will be taken. NOTE: In some cases, this means thah specific operations are not done, e.g if the warmUpConfig parameter is
- * set to null, the state extraction will not perform a warmup before extracting the state. For further Information, please refer to the online documentation
+ * A Wrapper class for proper state extraction Configuration. The different parameters determine the behaviour during
+ * state extraction. If parameters are set to null, the default value will be taken. NOTE: In some cases, this means
+ * that specific operations are not done, e.g if the warmUpConfig parameter is set to null, the state extraction will
+ * not perform a warmup before extracting the state. For further information, please refer to the online documentation.
  */
 public class BrowserSessionStateExtractionConfig {
 
@@ -30,7 +31,6 @@ public class BrowserSessionStateExtractionConfig {
      * @param screenShotConfig The configuration for the screenshot extraction. If set to null, the default behaviour is chosen (Take no screenshot)
      * @param warmUpConfig The configuration for the warmup. If set to null, the default behaviour is chosen (Do not warm up)
      */
-
     public BrowserSessionStateExtractionConfig(BrowserSessionStateId stateId, Integer extractionDelay, Integer extractionCooldown, Dimension optViewportDimension, Integer maxAdditionWaitingTimeForStateExtraction, Boolean extractDomStateData, BrowserSessionScreenshotExtractionConfig screenShotConfig, BrowserSessionWarmUpConfig warmUpConfig) {
         this.stateId = stateId;
         this.extractionDelay = extractionDelay;
@@ -45,7 +45,6 @@ public class BrowserSessionStateExtractionConfig {
     /**
      * Creates a BrowserSessionStateExtractionConfig with all parameters set to null, i.e the choice of parameters is the webmate default.
      */
-
     public BrowserSessionStateExtractionConfig(){
         this.stateId = null;
         this.extractionDelay = null;

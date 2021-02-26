@@ -19,7 +19,7 @@ public class ExpeditionSpecTest {
     public void testIfExpeditionSpecSerializesCorrectly() throws URISyntaxException, IOException {
         ExpeditionSpec expeditionSpec = ExpeditionSpecFactory.makeUrlListExpeditionSpec(
                 ImmutableList.of(new URI("http://test"), new URI("http://test2")),
-                new Browser(BrowserType.Chrome, "83", "WINDOWS_10_64"));
+                new Browser(BrowserType.CHROME, "83", "WINDOWS_10_64"));
 
         ObjectMapper om = JacksonMapper.getInstance();
         JsonNode json = om.valueToTree(expeditionSpec);

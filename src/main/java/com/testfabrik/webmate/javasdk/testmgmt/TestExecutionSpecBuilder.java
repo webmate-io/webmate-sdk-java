@@ -24,17 +24,17 @@ public abstract class TestExecutionSpecBuilder<T extends TestExecutionSpecBuilde
         this.testSessionIds = new ArrayList<>();
     }
 
-   public TestExecutionSpecBuilder<T> withTag(Tag tag) {
-       this.tags.add(tag);
-       return this;
-   }
-
     /**
      * Add a Tag corresponding to the current date, e.g. "2020-11-10".
      */
     public TestExecutionSpecBuilder<T> withCurrentDateAsTag() {
         DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd");
         this.tags.add(new Tag(DateTime.now().toString(dtf)));
+        return this;
+    }
+
+    public TestExecutionSpecBuilder<T> withTag(Tag tag) {
+        this.tags.add(tag);
         return this;
     }
 

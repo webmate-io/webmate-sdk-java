@@ -123,7 +123,6 @@ public class TestMgmtClient {
             return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), TestSessionId.class);
         }
 
-
         public TestRunId startTestExecution(TestExecutionId id) {
             Optional<HttpResponse> optHttpResponse = sendPOST(startTestExecutionTemplate, ImmutableMap.of(
                     "testExecutionId", id.toString())).getOptHttpResponse();
@@ -156,7 +155,6 @@ public class TestMgmtClient {
 
             return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), TestRunInfo.class);
         }
-
 
         public void finishTestRun(TestRunId id, TestRunFinishData data) {
             ObjectMapper mapper = JacksonMapper.getInstance();
@@ -213,7 +211,8 @@ public class TestMgmtClient {
          * Get TestResults of Test with given id and testrun index.
          *
          * @param id Id of TestRun.
-         * @return Optional with list of TestResults or Optional.absent if there was no such Test or TestRun. If there were no TestResults, the result is Optional of empty list.
+         * @return Optional with list of TestResults or Optional.absent if there was no such Test or TestRun. If there
+         * were no TestResults, the result is Optional of empty list.
          */
         public Optional<List<TestResult>> getTestResults(TestRunId id) {
             if (id == null) {
@@ -283,7 +282,6 @@ public class TestMgmtClient {
         return this.apiClient.getTestResults(id);
     }
 
-
     /**
      * Retrieve information about TestRun.
      *
@@ -316,7 +314,6 @@ public class TestMgmtClient {
      * Create and start a TestExecution.
      *
      * @param specBuilder A builder providing the required information for that test type, e.g. {@code Story}
-     * @return
      */
     public TestRun startExecution(TestExecutionSpecBuilder specBuilder) {
         if (!session.getProjectId().isPresent()) {

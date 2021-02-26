@@ -10,8 +10,13 @@ public class BrowserTest {
 
     @Test
     public void testIfBrowserSerializesCorrectly() {
-        Browser browser = new Browser(BrowserType.Chrome, "83", "WINDOWS_10_64");
         ObjectMapper om = JacksonMapper.getInstance();
-        assertEquals("Serialization correct", EXPECTED_SERIALIZATION, om.valueToTree(browser).toString());
+
+        Browser browserWPlatformStr = new Browser(BrowserType.CHROME, "83", "WINDOWS_10_64");
+        assertEquals("Serialization correct", EXPECTED_SERIALIZATION, om.valueToTree(browserWPlatformStr).toString());
+
+        Platform platform = new Platform(PlatformType.WINDOWS, "10", "64");
+        Browser browserWPlatform = new Browser(BrowserType.CHROME, "83", platform);
+        assertEquals("Serialization correct", EXPECTED_SERIALIZATION, om.valueToTree(browserWPlatform).toString());
     }
 }

@@ -26,7 +26,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 /**
- * Creates a new API client for interacting with the webmate API.
+ * API client for interacting with the webmate API.
  */
 public class WebmateApiClient {
 

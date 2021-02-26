@@ -32,6 +32,7 @@ public class TestRun {
 
     /**
      * Finish TestRun.
+     *
      * @param msg Short message explaining the result of the test run.
      * @param detail Detailed information, e.g. stack trace.
      */
@@ -41,6 +42,7 @@ public class TestRun {
 
     /**
      * Finish TestRun.
+     *
      * @param msg Short message explaining the result of the test run.
      */
     public void finish(TestRunEvaluationStatus status, String msg) {
@@ -56,6 +58,7 @@ public class TestRun {
 
     /**
      * Block, until the TestRun goes into a finished state (completed or failed).
+     *
      * @return returns the TestRun info of the finished TestRun.
      */
     public TestRunInfo waitForCompletion() {

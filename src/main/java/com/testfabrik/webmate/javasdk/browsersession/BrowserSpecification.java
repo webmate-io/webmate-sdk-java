@@ -20,7 +20,7 @@ public class BrowserSpecification implements VehicleSpecification {
     public final boolean useProxy = false;
 
     /**
-     * @param browser Specfication of the requested Browser, i.e. browser type, version etc.
+     * @param browser Specification of the requested Browser, i.e. browser type, version etc.
      * @param viewportDimensions The browser's view port size.
      */
     public BrowserSpecification(final Browser browser, final Dimension viewportDimensions) {

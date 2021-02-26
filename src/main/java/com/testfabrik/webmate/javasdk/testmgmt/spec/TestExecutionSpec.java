@@ -15,17 +15,11 @@ import java.util.List;
 public abstract class TestExecutionSpec {
 
     protected String executionName;
-
     protected TestType testType;
-
     protected String defaultTestTemplateName;
-
     protected List<Tag> tags;
-
     protected List<ApplicationModelId> models;
-
     protected List<TestSessionId> associatedTestSessions;
-
     protected Optional<TestTemplateId> testTemplateId;
 
     public TestExecutionSpec(String executionName, TestType testType, String defaultTestTemplateName, List<Tag> tags,
