@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * that are controlled in an expedition to perform tests. Vehicles are controlled by "Expedition Drivers", e.g.
  * URL lists, a Selenium script, or a crawler.
  */
-
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,

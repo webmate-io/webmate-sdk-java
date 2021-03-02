@@ -99,21 +99,8 @@ public class BrowserSessionClient {
          * @param environment The environment the client should be used in, i.e which urls to use for communication
          * @param httpClientBuilder The HttpClientBuilder that is used for the underlying connection.
          */
-        public BrowserSessionApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {super (authInfo, environment, httpClientBuilder); }
-
-        /**
-         * Creates a State for a Browsersession with a matching id. The extraction parameters are set to default.
-         *
-         * @param browserSessionId The Browsersession Id the state should be created for
-         * @param matchingId The Id for the state. Used for matching
-         * @param timeoutMillis The timeout for the statecreation in milliseconds
-         */
-        public BrowserSessionStateId createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis) {
-            Map<String, Object>  params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", DefaultStateExtractionConfig);
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            Optional<HttpResponse> optHttpResponse = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
-            return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), BrowserSessionStateId.class);
+        public BrowserSessionApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
+            super(authInfo, environment, httpClientBuilder);
         }
 
         /**
@@ -139,18 +126,17 @@ public class BrowserSessionClient {
         }
 
         /**
-         * Create new state artifact associated with browser session.
+         * Creates a State for a Browsersession with a matching id. The extraction parameters are set to default.
          *
-         * @param browserSessionId id of browser session
-         * @param matchingId "Name" of state
-         * @param timeoutMillis time to wait for completion of operation (may still be successful after timeout)
-         * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionScreenshotExtractionConfig}.
+         * @param browserSessionId The Browsersession Id for which the state should be associated with.
+         * @param matchingId The Id for the state. Used for matching.
          */
-        public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
+        public BrowserSessionStateId createState(BrowserSessionId browserSessionId, String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
             Map<String, Object>  params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", browserSessionStateExtractionConfig);
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
+            Optional<HttpResponse> optHttpResponse = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
+            return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), BrowserSessionStateId.class);
         }
 
         public void startAction(BrowserSessionId expeditionId, StartStoryActionAddArtifactData art) {
@@ -202,65 +188,13 @@ public class BrowserSessionClient {
     }
 
     /**
-     * Create a new State for the given BrowserSession with a default timeout of 5 minutes.
-     *
-     * @param browserSessionId BrowserSession, in which the state should be extracted.
-     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
-     * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
-     */
-    public void createState(BrowserSessionId browserSessionId, String matchingId) {
-        createState(browserSessionId, matchingId, DefaultBrowserSessionTimeoutMillis);
-    }
-
-    /**
-     * Create a new State for the given BrowserSession with a default timeout of 5 minutes.
-     *
-     * @param browserSessionId BrowserSession, in which the state should be extracted.
-     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
-     * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionScreenshotExtractionConfig}.
-     * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
-     */
-    public void createState(BrowserSessionId browserSessionId, String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
-        createState(browserSessionId, matchingId, DefaultBrowserSessionTimeoutMillis, browserSessionStateExtractionConfig);
-    }
-
-
-    /**
-     * Create a new State for the given BrowserSession.
-     *
-     * @param browserSessionId BrowserSession, in which the state should be extracted.
-     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
-     * @param timeoutMillis Maximal amount of time to wait for the state extraction to complete in milliseconds.
-     * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
-     */
-    public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis) {
-        LOG.debug("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
-        apiClient.createState(browserSessionId, matchingId, timeoutMillis);
-    }
-
-    /**
-     * Create a new State for the given BrowserSession.
-     *
-     * @param browserSessionId BrowserSession, in which the state should be extracted.
-     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
-     * @param timeoutMillis Maximal amount of time to wait for the state extraction to complete in milliseconds.
-     * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
-     * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
-     */
-    public void createState(BrowserSessionId browserSessionId, String matchingId, long timeoutMillis, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
-        LOG.debug("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
-        apiClient.createState(browserSessionId, matchingId, timeoutMillis, browserSessionStateExtractionConfig);
-    }
-
-    /**
      * Create a new State for the BrowserSession registered in webmate session (there must be only one).
      *
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
-     * @param timeoutMillis Maximal amount of time to wait for the state extraction to complete in milliseconds.
      * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
-    public void createState(String matchingId, long timeoutMillis, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
+    public BrowserSessionStateId createState(String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
         List<BrowserSessionId> associatedExpeditions = session.getAssociatedExpeditions();
         if (associatedExpeditions.size() != 1) {
             throw new WebmateApiClientException("If createState is called without browsersession id, there must be only one " +
@@ -271,30 +205,7 @@ public class BrowserSessionClient {
         BrowserSessionId browserSessionId = associatedExpeditions.get(0);
         LOG.info("Creating state for browsersession " + browserSessionId);
 
-        LOG.debug("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
-        apiClient.createState(browserSessionId, matchingId, timeoutMillis, browserSessionStateExtractionConfig);
-    }
-
-    /**
-     * Create a new State for the BrowserSession registered in webmate session (there must be only one).
-     *
-     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
-     * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
-     * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
-     */
-    public void createState(String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
-        List<BrowserSessionId> associatedExpeditions = session.getAssociatedExpeditions();
-        if (associatedExpeditions.size() != 1) {
-            throw new WebmateApiClientException("If createState is called without browsersession id, there must be only one " +
-                    "BrowserSession associated with the API session (to be able to identify the correct one) " +
-                    "but currently there are " + associatedExpeditions.size());
-        }
-
-        BrowserSessionId browserSessionId = associatedExpeditions.get(0);
-        LOG.info("Creating state for browsersession " + browserSessionId);
-
-        LOG.debug("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
-        apiClient.createState(browserSessionId, matchingId, DefaultBrowserSessionTimeoutMillis, browserSessionStateExtractionConfig);
+        return createState(browserSessionId, matchingId, browserSessionStateExtractionConfig);
     }
 
     /**
@@ -304,7 +215,7 @@ public class BrowserSessionClient {
      * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
-    public void createState(String matchingId) {
+    public BrowserSessionStateId createState(String matchingId) {
         List<BrowserSessionId> associatedExpeditions = session.getAssociatedExpeditions();
         if (associatedExpeditions.size() != 1) {
             throw new WebmateApiClientException("If createState is called without browsersession id, there must be only one " +
@@ -315,8 +226,31 @@ public class BrowserSessionClient {
         BrowserSessionId browserSessionId = associatedExpeditions.get(0);
         LOG.info("Creating state for browsersession " + browserSessionId);
 
+        return createState(browserSessionId, matchingId);
+    }
+
+    /**
+     * Create a new State for the given BrowserSession.
+     *
+     * @param browserSessionId BrowserSession, in which the state should be extracted.
+     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
+     * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
+     */
+    public BrowserSessionStateId createState(BrowserSessionId browserSessionId, String matchingId) {
+        return createState(browserSessionId, matchingId, DefaultStateExtractionConfig);
+    }
+
+    /**
+     * Create a new State for the given BrowserSession.
+     *
+     * @param browserSessionId BrowserSession, in which the state should be extracted.
+     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
+     * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
+     * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
+     */
+    public BrowserSessionStateId createState(BrowserSessionId browserSessionId, String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
         LOG.debug("Creating state with matching id [" + matchingId + "] for browsersession [" + browserSessionId + "]");
-        apiClient.createState(browserSessionId, matchingId, DefaultBrowserSessionTimeoutMillis, DefaultStateExtractionConfig);
+        return apiClient.createState(browserSessionId, matchingId, browserSessionStateExtractionConfig);
     }
 
     /**

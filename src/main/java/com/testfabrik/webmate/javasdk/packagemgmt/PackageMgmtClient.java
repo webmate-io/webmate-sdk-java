@@ -40,7 +40,7 @@ public class PackageMgmtClient {
         }
 
         public PackageMgmtApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
-            super (authInfo, environment, httpClientBuilder);
+            super(authInfo, environment, httpClientBuilder);
         }
 
 

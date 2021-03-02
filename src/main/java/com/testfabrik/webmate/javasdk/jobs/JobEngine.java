@@ -131,7 +131,7 @@ public class JobEngine {
         }
 
         /**
-         *  Get JobRunSummary jor JobRun
+         * Get JobRunSummary jor JobRun.
          */
         public JobRunSummary getSummaryOfJobRun(JobRunId jobRunId) {
             ApiResponse response = this.sendGET(jobRunSummaryTemplate, ImmutableMap.of("jobRunId", jobRunId.toString()));

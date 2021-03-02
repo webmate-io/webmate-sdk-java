@@ -111,12 +111,12 @@ public class DeviceClient {
             sendPOST(synchronizeDevice, ImmutableMap.of("deviceId", deviceId.toString()));
         }
 
-        public void redeployDevice(DeviceId deviceId) {
-            sendPOST(redeployDevice, ImmutableMap.of("deviceId", deviceId.toString()));
-        }
-
         public void releaseDevice(DeviceId deviceId) {
             sendDELETE(releaseDevice, ImmutableMap.of("deviceId", deviceId.toString()));
+        }
+
+        public void redeployDevice(DeviceId deviceId) {
+            sendPOST(redeployDevice, ImmutableMap.of("deviceId", deviceId.toString()));
         }
 
         public void installAppOnDevice(DeviceId deviceId, PackageId appId, Boolean instrumented) {

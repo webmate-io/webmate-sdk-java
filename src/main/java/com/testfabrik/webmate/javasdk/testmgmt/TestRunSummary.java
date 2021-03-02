@@ -6,7 +6,6 @@ import org.joda.time.DateTime;
 
 import java.util.Objects;
 
-
 /**
  * Summary information about a Test Run.
  */

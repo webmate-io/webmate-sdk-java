@@ -1,8 +1,5 @@
 package com.testfabrik.webmate.javasdk.browsersession;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.util.Objects;
 
 /**

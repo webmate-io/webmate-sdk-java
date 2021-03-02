@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import com.testfabrik.webmate.javasdk.Tag;
 import com.testfabrik.webmate.javasdk.WebmateAPISession;
 import com.testfabrik.webmate.javasdk.WebmateApiClientException;
-import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
 import com.testfabrik.webmate.javasdk.browsersession.ExpeditionSpec;
 import com.testfabrik.webmate.javasdk.jobs.WMValueFactory;
 import com.testfabrik.webmate.javasdk.testmgmt.ApplicationModelId;
@@ -15,7 +14,6 @@ import com.testfabrik.webmate.javasdk.testmgmt.TestExecutionSpecBuilder;
 import com.testfabrik.webmate.javasdk.testmgmt.TestMgmtClient;
 import com.testfabrik.webmate.javasdk.testmgmt.TestSessionId;
 import com.testfabrik.webmate.javasdk.testmgmt.testtypes.StandardTestTypes;
-import com.testfabrik.webmate.javasdk.testmgmt.testtypes.TestType;
 
 import java.util.List;
 
@@ -23,11 +21,13 @@ import java.util.List;
  * A TestRun specification for a Test of type "ExpeditionComparison".
  */
 public class ExpeditionComparisonSpec extends TestExecutionSpec {
+
     private ExpeditionSpec referenceSpec;
     private List<ExpeditionSpec> compareSpecs;
 
     private ExpeditionComparisonSpec(String executionName, List<Tag> tags, List<ApplicationModelId> models,
-                               List<TestSessionId> testSessions, ExpeditionSpec referenceSpec, List<ExpeditionSpec> compareSpecs) {
+                                     List<TestSessionId> testSessions, ExpeditionSpec referenceSpec,
+                                     List<ExpeditionSpec> compareSpecs) {
             super(executionName, StandardTestTypes.ExpeditionComparison.getTestType(),
                     "Default Expedition Comparison Test", tags, models, testSessions);
 

@@ -42,9 +42,12 @@ After that, you can include the SDK as a Maven dependency to your project, i.e. 
 or using the equivalent statement in a build tool of your choice. 
 
 
-## Sample Code (Java)
+## Sample Code
 
-Sample code using the webmate Java SDK is available at https://github.com/webmate-io/webmate-sdk-samples.
+See the following sample projects:
+* [Java Samples](https://github.com/webmate-io/webmate-sdk-samples)
+* [JavaScript And TypeScript Samples](https://github.com/webmate-io/webmate-sdk-js-samples)
+
 In order to use these samples, you need to have an account at webmate SaaS or a commercial on-premise installation.
 Please contact Testfabrik (info@testfabrik.com) if you are interested in evaluating webmate.
 

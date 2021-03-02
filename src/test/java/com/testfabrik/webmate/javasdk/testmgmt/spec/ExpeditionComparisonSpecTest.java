@@ -1,7 +1,7 @@
 package com.testfabrik.webmate.javasdk.testmgmt.spec;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.testfabrik.webmate.javasdk.*;
 import com.testfabrik.webmate.javasdk.browsersession.ExpeditionSpecFactory;
 import com.testfabrik.webmate.javasdk.testmgmt.testtypes.StandardTestTypes;
@@ -24,28 +24,27 @@ public class ExpeditionComparisonSpecTest {
             "test name",
             ExpeditionSpecFactory.makeUrlListExpeditionSpec(
                     ImmutableList.of(new URI("http://bla")),
-                    new Browser(BrowserType.Chrome, "83", "WINDOWS_10_64")),
+                    new Browser(BrowserType.CHROME, "83", "WINDOWS_10_64")),
             ImmutableList.of(
                     ExpeditionSpecFactory.makeUrlListExpeditionSpec(
                             ImmutableList.of(new URI("http://bla")),
-                            new Browser(BrowserType.Chrome, "83", "WINDOWS_10_64"))
+                            new Browser(BrowserType.CHROME, "83", "WINDOWS_10_64"))
             )).setApiSession(session).build();
     }
 
-    public ExpeditionComparisonSpecTest() throws URISyntaxException {}
-
     @Test
     public void testIfSpecCanBeCreatedWithBuilder() throws URISyntaxException {
-
         TestExecutionSpec spec = makeTestSpec();
         assertEquals(StandardTestTypes.ExpeditionComparison.getTestType(), spec.testType);
-        assertEquals(Lists.newArrayList(), spec.associatedTestSessions);
         assertEquals("test name", spec.executionName);
+        assertEquals(Optional.absent(), spec.testTemplateId);
+        assertEquals(0, spec.associatedTestSessions.size());
+        assertEquals(0, spec.tags.size());
+        assertEquals(0, spec.models.size());
     }
 
     @Test
     public void testIfSingleTestRunSpecIsCorrect() throws URISyntaxException, IOException {
-
         TestExecutionSpec spec = makeTestSpec();
 
         String expected = IOUtils.toString(this.getClass().getResourceAsStream("/expeditionComparisonSingleTestRunSpec.json"));
