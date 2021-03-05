@@ -1,4 +1,4 @@
-# webmate Java SDK
+# webmate Java SDK [![Build Status](https://travis-ci.com/webmate-io/webmate-sdk-java.svg?branch=master)](https://travis-ci.com/webmate-io/webmate-sdk-java)
 
 The webmate SaaS test automation platform provides testing services for testers and developers of web applications.
 This SDK contains wrapper code used to call the webmate API from Java applications.
