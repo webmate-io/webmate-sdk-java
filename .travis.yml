@@ -1,6 +1,7 @@
 language: java
+dist: focal
 jdk:
-  - oraclejdk9
+  - openjdk8
 script:
   - java --version
   - mvn clean install
