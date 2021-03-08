@@ -35,8 +35,7 @@ public class FinishStoryActionAddArtifactData {
     }
 
     public static FinishStoryActionAddArtifactData failure(ActionSpanId spanId, String errorMsg, Optional<JsonNode> detail) {
-        ObjectMapper om = JacksonMapper.getInstance();
-        return new FinishStoryActionAddArtifactData(spanId, errorMsg, Optional.absent());
+        return new FinishStoryActionAddArtifactData(spanId, errorMsg, detail);
     }
 
     private FinishStoryActionAddArtifactData(ActionSpanId spanId, JsonNode result) {

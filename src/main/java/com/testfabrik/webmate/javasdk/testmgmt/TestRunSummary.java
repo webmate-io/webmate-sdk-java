@@ -31,6 +31,7 @@ public class TestRunSummary {
 
     /**
      * User who started the test run.
+     *
      * @return id of user who has started test run.
      */
     public UserId getCreator() {
@@ -39,6 +40,7 @@ public class TestRunSummary {
 
     /**
      * Project, where the test run was started in.
+     *
      * @return project id
      */
     public ProjectId getProjectId() {

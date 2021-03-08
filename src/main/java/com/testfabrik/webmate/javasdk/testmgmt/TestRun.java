@@ -8,7 +8,7 @@ import com.testfabrik.webmate.javasdk.WebmateAPISession;
 public class TestRun {
 
     private static final long MAX_WAITING_TIME_MILLIS = 300_000; // 300 seconds
-    private static final long WAITING_POLLINTERVAL_MILLIS = 2_000; // 2 seconds
+    private static final long WAITING_POLLINTERVAL_MILLIS = 3_000; // 3 seconds
 
     private WebmateAPISession session;
 

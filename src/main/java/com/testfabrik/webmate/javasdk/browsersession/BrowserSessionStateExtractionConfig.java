@@ -20,6 +20,13 @@ public class BrowserSessionStateExtractionConfig {
     private BrowserSessionWarmUpConfig warmUpConfig;
 
     /**
+     * Creates a BrowserSessionStateExtractionConfig with all parameters set to null, i.e the choice of parameters is the webmate default.
+     */
+    public BrowserSessionStateExtractionConfig() {
+        this(null, null, null, null, null, null, null, null);
+    }
+
+    /**
      * Creates a new StateExtractionConfig.
      *
      * @param stateId The Session Id the state should belong to.
@@ -31,7 +38,12 @@ public class BrowserSessionStateExtractionConfig {
      * @param screenShotConfig The configuration for the screenshot extraction. If set to null, the default behaviour is chosen (Take no screenshot)
      * @param warmUpConfig The configuration for the warmup. If set to null, the default behaviour is chosen (Do not warm up)
      */
-    public BrowserSessionStateExtractionConfig(BrowserSessionStateId stateId, Integer extractionDelay, Integer extractionCooldown, Dimension optViewportDimension, Integer maxAdditionWaitingTimeForStateExtraction, Boolean extractDomStateData, BrowserSessionScreenshotExtractionConfig screenShotConfig, BrowserSessionWarmUpConfig warmUpConfig) {
+    public BrowserSessionStateExtractionConfig(BrowserSessionStateId stateId, Integer extractionDelay,
+                                               Integer extractionCooldown, Dimension optViewportDimension,
+                                               Integer maxAdditionWaitingTimeForStateExtraction,
+                                               Boolean extractDomStateData,
+                                               BrowserSessionScreenshotExtractionConfig screenShotConfig,
+                                               BrowserSessionWarmUpConfig warmUpConfig) {
         this.stateId = stateId;
         this.extractionDelay = extractionDelay;
         this.extractionCooldown = extractionCooldown;
@@ -40,20 +52,6 @@ public class BrowserSessionStateExtractionConfig {
         this.extractDomStateData = extractDomStateData;
         this.screenShotConfig = screenShotConfig;
         this.warmUpConfig = warmUpConfig;
-    }
-
-    /**
-     * Creates a BrowserSessionStateExtractionConfig with all parameters set to null, i.e the choice of parameters is the webmate default.
-     */
-    public BrowserSessionStateExtractionConfig(){
-        this.stateId = null;
-        this.extractionDelay = null;
-        this.extractionCooldown = null;
-        optViewportDimension = null;
-        this.maxAdditionWaitingTimeForStateExtraction = null;
-        this.extractDomStateData = null;
-        this.screenShotConfig = null;
-        this.warmUpConfig = null;
     }
 
     public BrowserSessionStateId getStateId() {
@@ -131,7 +129,6 @@ public class BrowserSessionStateExtractionConfig {
     }
 
     public void setExtractDomStateData(Boolean extractDomStateData) {
-
         this.extractDomStateData = extractDomStateData;
     }
 

@@ -188,6 +188,7 @@ public class WebmateSeleniumSession {
 
     /**
      * Finish TestRun associated with Selenium session.
+     *
      * @param msg Short message explaining the result of the test run.
      * @param detail Detailed information, e.g. stack trace.
      */
@@ -197,6 +198,7 @@ public class WebmateSeleniumSession {
 
     /**
      * Finish TestRun associated with Selenium session.
+     *
      * @param msg Short message explaining the result of the test run.
      */
     public void finishTestRun(TestRunEvaluationStatus status, String msg) {

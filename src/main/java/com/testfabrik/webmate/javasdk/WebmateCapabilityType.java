@@ -1,9 +1,7 @@
 package com.testfabrik.webmate.javasdk;
 
 /**
- * WebmateCapabilityType defines the capabilities that a user needs to use when creating
- * a session. The capabilities need to be added to the desired capabilities, analogously to
- * org.openqa.selenium.remote.CapabilityType.
+ * WebmateCapabilityType defines custom webmate capabilities, analogously to org.openqa.selenium.remote.CapabilityType.
  */
 public interface WebmateCapabilityType {
 
@@ -22,4 +20,21 @@ public interface WebmateCapabilityType {
      * The project id of a project that is created for the passed email.
      */
     String PROJECT = "project";
+
+    /**
+     * Enable video recording.
+     */
+    String ENABLE_VIDEO_RECORDING = "wm:video";
+
+    /**
+     * Disable video recording.
+     */
+    String PREVENT_VIDEO_RECORDING = "wm:noVideo";
+
+    String AUTOMATION_SCREENSHOTS = "wm:autoScreenshots";
+
+    String TAGS = "wm:tags";
+
+    String NAME = "wm:name";
+
 }
