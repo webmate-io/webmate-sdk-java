@@ -315,7 +315,7 @@ public class TestMgmtClient {
      *
      * @param specBuilder A builder providing the required information for that test type, e.g. {@code Story}
      */
-    public TestRun startExecution(TestExecutionSpecBuilder specBuilder) {
+    public TestRun startExecutionWithBuilder(TestExecutionSpecBuilder specBuilder) {
         if (!session.getProjectId().isPresent()) {
             throw new WebmateApiClientException("A TestExecution must be associated with a project and none is provided or associated with the API session");
         }

@@ -169,7 +169,7 @@ public class BrowserSessionClient {
      * @param session The WebmateApiSession the BrowserSessionClient is supposed to be based on
      * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection
      */
-    public BrowserSessionClient(WebmateAPISession session,  HttpClientBuilder httpClientBuilder) {
+    public BrowserSessionClient(WebmateAPISession session, HttpClientBuilder httpClientBuilder) {
         this.session = session;
         this.apiClient = new BrowserSessionApiClient(session.authInfo, session.environment, httpClientBuilder);
     }
@@ -309,6 +309,21 @@ public class BrowserSessionClient {
         this.currentSpanIds.push(spanId);
     }
 
+    /**
+     * Finish the currently active Action and provide a success message.
+     *
+     * @param successMessage message that should be added to the action
+     * @throws WebmateApiClientException if no action is active
+     */
+    public void finishAction(String successMessage) {
+        BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
+        if (this.currentSpanIds.isEmpty()) {
+            throw new WebmateApiClientException("Trying to finish action but none is active.");
+        }
+        ActionSpanId spanId = this.currentSpanIds.pop();
+        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId, successMessage));
+    }
+
     public void finishAction() {
         BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
         if (this.currentSpanIds.isEmpty()) {
@@ -347,21 +362,6 @@ public class BrowserSessionClient {
     }
 
     /**
-     * Finish the currently active Action and provide a success message.
-     *
-     * @param successMessage message that should be added to the action
-     * @throws WebmateApiClientException if no action is active
-     */
-    public void finishAction(String successMessage) {
-        BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
-        if (this.currentSpanIds.isEmpty()) {
-            throw new WebmateApiClientException("Trying to finish action but none is active.");
-        }
-        ActionSpanId spanId = this.currentSpanIds.pop();
-        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId, successMessage));
-    }
-
-    /**
      * Finish the currently active Action and mark it as failure.
      *
      * @param errorMessage Error message indicating why this action has failed.
@@ -375,7 +375,6 @@ public class BrowserSessionClient {
         ActionSpanId spanId = this.currentSpanIds.pop();
         apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.failure(spanId, errorMessage, Optional.<JsonNode>absent()));
     }
-
 
     /**
      * Terminate the given BrowserSession

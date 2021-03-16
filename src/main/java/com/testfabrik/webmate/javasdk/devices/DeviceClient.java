@@ -158,9 +158,9 @@ public class DeviceClient {
             simulateCameraNode.put("enabled", simulate);
             String selectedImageId = imageId == null ? null : imageId.toString();
             simulateCameraNode.put("selectedImage", selectedImageId);
-            Map<String, Object> params = ImmutableMap.of(CapabilityConstants.SIMULATE_CAMERA, simulateCameraNode, CapabilityConstants.MEDIA_SETTINGS, imagePool.toJson());
+            Map<String, Object> body = ImmutableMap.of(CapabilityConstants.SIMULATE_CAMERA, simulateCameraNode, CapabilityConstants.MEDIA_SETTINGS, imagePool.toJson());
             ObjectMapper mapper = new ObjectMapper();
-            sendPOST(setCameraSimulation, ImmutableMap.of("deviceId", deviceId.toString()), mapper.valueToTree(params));
+            sendPOST(setCameraSimulation, ImmutableMap.of("deviceId", deviceId.toString()), mapper.valueToTree(body));
         }
 
     }

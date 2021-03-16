@@ -55,6 +55,7 @@ public class JobRunSummary {
 
     /**
      * Get the JobRunState of this JobRun.
+     *
      * @return the JobRunState.
      */
     public JobRunState getState() {

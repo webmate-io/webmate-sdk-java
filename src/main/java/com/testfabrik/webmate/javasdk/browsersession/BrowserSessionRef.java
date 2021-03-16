@@ -97,7 +97,7 @@ public class BrowserSessionRef {
      *
      * @return true if the BrowserSession was successfully terminated
      */
-    public boolean terminateSession(){
+    public boolean terminateSession() {
         return session.browserSession.terminateBrowsersession(browserSessionId);
     }
 
