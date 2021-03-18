@@ -1,4 +1,4 @@
-# webmate Java SDK [![Build Status](https://travis-ci.com/webmate-io/webmate-sdk-java.svg?branch=master)](https://travis-ci.com/webmate-io/webmate-sdk-java)
+# webmate Java SDK <img src="https://avatars.githubusercontent.com/u/13346605" alt="webmate logo" width="28"/> [![Build Status](https://travis-ci.com/webmate-io/webmate-sdk-java.svg?branch=master)](https://travis-ci.com/webmate-io/webmate-sdk-java) ![Maven Central](https://img.shields.io/maven-central/v/com.testfabrik.webmate.sdk/java-sdk)
 
 The webmate SaaS test automation platform provides testing services for testers and developers of web applications.
 This SDK contains wrapper code used to call the webmate API from Java applications.
@@ -19,9 +19,11 @@ For a complete list of recent changes, please refer to the [changelog](CHANGES.m
 This release is also distributed via Maven Central. Just include the following dependency to your Maven pom.xml (or another Maven based build tool):
 
 ```xml
+<dependency>
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
     <version>0.36.0</version>
+</dependency>
 ```
 
 To build the SDK from its sources, simply clone this repository and
@@ -34,9 +36,11 @@ $ mvn install
 After that, you can include the SDK as a Maven dependency to your project, i.e. either using
 
 ```xml
+<dependency>
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
     <version>0.37.0-SNAPSHOT</version>
+</dependency>
 ```
 
 or using the equivalent statement in a build tool of your choice. 
@@ -56,4 +60,3 @@ Please contact Testfabrik (info@testfabrik.com) if you are interested in evaluat
 
 Although, the SDK provides a number of features and convenience wrappers it doesn't exhaust the full potential of the webmate API.
 See the REST API [Swagger documentation](https://app.webmate.io/api/swagger) for a comprehensive summary of the webmate functionalities.
-
