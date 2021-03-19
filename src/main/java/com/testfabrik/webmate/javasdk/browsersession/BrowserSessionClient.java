@@ -2,11 +2,11 @@ package com.testfabrik.webmate.javasdk.browsersession;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.testfabrik.webmate.javasdk.*;
 import com.testfabrik.webmate.javasdk.commonutils.HttpHelpers;
+import com.testfabrik.webmate.javasdk.utils.JsonUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -27,8 +27,6 @@ public class BrowserSessionClient {
     private Stack<ActionSpanId> currentSpanIds = new Stack<>();
 
     private static final Logger LOG = LoggerFactory.getLogger(BrowserSessionClient.class);
-
-    private static final Integer DefaultBrowserSessionTimeoutMillis = 5 * 60 * 1000; // Default timeout: 5 minutes
 
     // Sane default Config, extracting DOM and taking non fullpage Screenshots. Otherwise take Webmate Defaults.
     private static final BrowserSessionStateExtractionConfig DefaultStateExtractionConfig = new BrowserSessionStateExtractionConfig(null, null, null, null, null, true,
@@ -133,23 +131,19 @@ public class BrowserSessionClient {
          */
         public BrowserSessionStateId createState(BrowserSessionId browserSessionId, String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
             Map<String, Object>  params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", browserSessionStateExtractionConfig);
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            Optional<HttpResponse> optHttpResponse = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), mapper.valueToTree(params)).getOptHttpResponse();
+            JsonNode body = JsonUtils.getJsonFromData(params, JsonInclude.Include.NON_NULL);
+            Optional<HttpResponse> optHttpResponse = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), body).getOptHttpResponse();
             return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), BrowserSessionStateId.class);
         }
 
         public void startAction(BrowserSessionId expeditionId, StartStoryActionAddArtifactData art) {
-            ObjectMapper mapper = new ObjectMapper();
             Map<String, String>  params = ImmutableMap.of("expeditionId", expeditionId.getValueAsString());
-
-            sendPOST(addArtifactTemplate, params, mapper.valueToTree(art)).getOptHttpResponse();
+            sendPOST(addArtifactTemplate, params, JsonUtils.getJsonFromData(params)).getOptHttpResponse();
         }
 
         public void finishAction(BrowserSessionId expeditionId, FinishStoryActionAddArtifactData art) {
-            ObjectMapper mapper = new ObjectMapper();
             Map<String, String>  params = ImmutableMap.of("expeditionId", expeditionId.getValueAsString());
-            sendPOST(addArtifactTemplate, params, mapper.valueToTree(art)).getOptHttpResponse();
+            sendPOST(addArtifactTemplate, params, JsonUtils.getJsonFromData(params)).getOptHttpResponse();
         }
     }
 

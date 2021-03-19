@@ -12,6 +12,7 @@ import com.testfabrik.webmate.javasdk.packagemgmt.ImageId;
 import com.testfabrik.webmate.javasdk.packagemgmt.ImagePool;
 import com.testfabrik.webmate.javasdk.packagemgmt.ImageType;
 import com.testfabrik.webmate.javasdk.packagemgmt.PackageId;
+import com.testfabrik.webmate.javasdk.utils.JsonUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -158,9 +159,8 @@ public class DeviceClient {
             simulateCameraNode.put("enabled", simulate);
             String selectedImageId = imageId == null ? null : imageId.toString();
             simulateCameraNode.put("selectedImage", selectedImageId);
-            Map<String, Object> body = ImmutableMap.of(CapabilityConstants.SIMULATE_CAMERA, simulateCameraNode, CapabilityConstants.MEDIA_SETTINGS, imagePool.toJson());
-            ObjectMapper mapper = new ObjectMapper();
-            sendPOST(setCameraSimulation, ImmutableMap.of("deviceId", deviceId.toString()), mapper.valueToTree(body));
+            Map<String, Object> params = ImmutableMap.of(CapabilityConstants.SIMULATE_CAMERA, simulateCameraNode, CapabilityConstants.MEDIA_SETTINGS, imagePool.toJson());
+            sendPOST(setCameraSimulation, ImmutableMap.of("deviceId", deviceId.toString()), JsonUtils.getJsonFromData(params));
         }
 
     }

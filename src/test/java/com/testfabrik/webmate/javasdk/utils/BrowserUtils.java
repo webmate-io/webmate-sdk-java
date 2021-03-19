@@ -1,4 +1,4 @@
-package com.testfabrik.webmate.javasdk.testUtils;
+package com.testfabrik.webmate.javasdk.utils;
 
 import com.testfabrik.webmate.javasdk.Browser;
 import com.testfabrik.webmate.javasdk.ProjectId;
@@ -7,7 +7,8 @@ import com.testfabrik.webmate.javasdk.selenium.SeleniumServiceClient;
 
 import java.util.*;
 
-public class browserUtils {
+public class BrowserUtils {
+
     /**
      * Get the newest browsers of a project as List of Selenium capabilities
      * @param seleniumServiceClient an API Client for Selenium specific methods

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.testfabrik.webmate.javasdk.commonutils.HttpHelpers;
 import com.testfabrik.webmate.javasdk.jobs.WMValue;
 import com.testfabrik.webmate.javasdk.testmgmt.spec.TestExecutionSpec;
+import com.testfabrik.webmate.javasdk.utils.JsonUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -75,6 +76,9 @@ public class TestMgmtClient {
 
         private final static UriTemplate finishTestRunTemplate =
                 new UriTemplate("FinishTestRun", "/testmgmt/testruns/${testRunId}/finish");
+
+        private final static UriTemplate setTestRunNameTemplate =
+                new UriTemplate("SetTestRunName", "/testmgmt/testruns/${testRunId}/name");
 
         private final static UriTemplate getTestRunTemplate =
                 new UriTemplate("GetTestRun", "/testmgmt/testruns/${testRunId}");
@@ -156,9 +160,18 @@ public class TestMgmtClient {
             return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), TestRunInfo.class);
         }
 
+        public void setTestRunName(TestRunId id, String name) {
+            Map<String, Object>  params = ImmutableMap.of("name", name);
+            Optional<HttpResponse> optHttpResponse = sendPOST(setTestRunNameTemplate, ImmutableMap.of(
+                    "testRunId", id.toString()), JsonUtils.getJsonFromData(params)).getOptHttpResponse();
+
+            if (!optHttpResponse.isPresent()) {
+                throw new WebmateApiClientException("Could not finish TestRun. Got no response");
+            }
+        }
+
         public void finishTestRun(TestRunId id, TestRunFinishData data) {
-            ObjectMapper mapper = JacksonMapper.getInstance();
-            JsonNode dataJson = mapper.valueToTree(data);
+            JsonNode dataJson = JsonUtils.getJsonFromData(data);
 
             Optional<HttpResponse> optHttpResponse = sendPOST(finishTestRunTemplate, ImmutableMap.of(
                     "testRunId", id.toString()), dataJson).getOptHttpResponse();
@@ -293,14 +306,24 @@ public class TestMgmtClient {
     }
 
     /**
-     * Get Id of TestRun associated with a Selenium session.
+     * Set the name for a given test run.
      *
-     * @param opaqueSeleniumSessionIdString selenium session id
-     * @return test run id
+     * @param testRunId Id of TestRun.
+     * @param name New TestRun name.
      */
-    public TestRunId getTestRunIdForSessionId(String opaqueSeleniumSessionIdString) {
-        return new TestRunId(UUID.randomUUID());
+    public void setTestRunName(TestRunId testRunId, String name) {
+        this.apiClient.setTestRunName(testRunId, name);
     }
+
+//    /**
+//     * Get Id of TestRun associated with a Selenium session.
+//     *
+//     * @param opaqueSeleniumSessionIdString selenium session id
+//     * @return test run id
+//     */
+//    public TestRunId getTestRunIdForSessionId(String opaqueSeleniumSessionIdString) {
+//        return new TestRunId(UUID.randomUUID());
+//    }
 
     public CreateTestExecutionResponse startExecution(TestExecutionSpec spec, ProjectId projectId) {
         CreateTestExecutionResponse executionAndRun = apiClient.createAndStartTestExecution(projectId, spec);
