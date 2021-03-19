@@ -28,8 +28,6 @@ public class BrowserSessionClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(BrowserSessionClient.class);
 
-    private static final Integer DefaultBrowserSessionTimeoutMillis = 5 * 60 * 1000; // Default timeout: 5 minutes
-
     // Sane default Config, extracting DOM and taking non fullpage Screenshots. Otherwise take Webmate Defaults.
     private static final BrowserSessionStateExtractionConfig DefaultStateExtractionConfig = new BrowserSessionStateExtractionConfig(null, null, null, null, null, true,
                                                                                                                                        new BrowserSessionScreenshotExtractionConfig(false, false), null);

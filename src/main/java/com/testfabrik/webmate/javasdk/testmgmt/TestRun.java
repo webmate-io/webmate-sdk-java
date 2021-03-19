@@ -31,6 +31,15 @@ public class TestRun {
     }
 
     /**
+     * Set the name for a given test run.
+     *
+     * @param name New TestRun name.
+     */
+    public void setName(String name) {
+        this.session.testMgmt.setTestRunName(id, name);
+    }
+
+    /**
      * Finish TestRun.
      *
      * @param msg Short message explaining the result of the test run.
@@ -76,4 +85,5 @@ public class TestRun {
         }
         return info;
     }
+
 }
