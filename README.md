@@ -22,7 +22,7 @@ This release is also distributed via Maven Central. Just include the following d
 <dependency>
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
-    <version>0.37</version>
+    <version>0.38</version>
 </dependency>
 ```
 
@@ -39,7 +39,7 @@ After that, you can include the SDK as a Maven dependency to your project, i.e. 
 <dependency>
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
-    <version>0.38-SNAPSHOT</version>
+    <version>0.39-SNAPSHOT</version>
 </dependency>
 ```
 
