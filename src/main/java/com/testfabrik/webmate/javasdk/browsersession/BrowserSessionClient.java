@@ -76,8 +76,6 @@ public class BrowserSessionClient {
         private final static UriTemplate terminateBrowsersessionTemplate =
                 new UriTemplate("/browsersession/${browserSessionId}");
 
-        private static final int millisToWait = 8000;
-
 
         /**
          * Creates an webmate api client.
@@ -138,12 +136,12 @@ public class BrowserSessionClient {
 
         public void startAction(BrowserSessionId expeditionId, StartStoryActionAddArtifactData art) {
             Map<String, String>  params = ImmutableMap.of("expeditionId", expeditionId.getValueAsString());
-            sendPOST(addArtifactTemplate, params, JsonUtils.getJsonFromData(params)).getOptHttpResponse();
+            sendPOST(addArtifactTemplate, params, JsonUtils.getJsonFromData(art)).getOptHttpResponse();
         }
 
         public void finishAction(BrowserSessionId expeditionId, FinishStoryActionAddArtifactData art) {
             Map<String, String>  params = ImmutableMap.of("expeditionId", expeditionId.getValueAsString());
-            sendPOST(addArtifactTemplate, params, JsonUtils.getJsonFromData(params)).getOptHttpResponse();
+            sendPOST(addArtifactTemplate, params, JsonUtils.getJsonFromData(art)).getOptHttpResponse();
         }
     }
 
