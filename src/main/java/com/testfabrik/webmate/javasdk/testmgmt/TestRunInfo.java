@@ -1,6 +1,7 @@
 package com.testfabrik.webmate.javasdk.testmgmt;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.testfabrik.webmate.javasdk.ProjectId;
@@ -17,6 +18,7 @@ import java.util.Optional;
 /**
  * Identifies TestRun in a Test.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TestRunInfo {
 
     private TestRunId testRunId;
