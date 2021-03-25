@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.testfabrik.webmate.javasdk.ProjectId;
 import com.testfabrik.webmate.javasdk.UserId;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
+import com.testfabrik.webmate.javasdk.devices.DeviceId;
 import com.testfabrik.webmate.javasdk.testmgmt.testtypes.TestType;
 import org.joda.time.DateTime;
 
@@ -34,6 +35,7 @@ public class TestRunInfo {
     private List<BrowserSessionId> expeditions;
     private JsonNode failure;
     private List<ApplicationModelId> models;
+    private List<DeviceId> devices;
 
     // for jackson
     private TestRunInfo() {}
@@ -103,6 +105,10 @@ public class TestRunInfo {
 
     public List<ApplicationModelId> getModels() {
         return models;
+    }
+
+    public List<DeviceId> getDevices() {
+        return devices;
     }
 
     @Override
