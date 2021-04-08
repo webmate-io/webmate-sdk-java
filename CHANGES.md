@@ -2,6 +2,15 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.39.0] - 2020-12-07
+
+Fix for breaking change in Test Run API.
+
+## [0.32.0] - [0.38.0] 
+
+Major extension of the SDK with new facades. Covers most important API use cases, by now.
+
+
 ## [0.31.0] - 2020-12-07
 
 ###New
