@@ -48,6 +48,8 @@ public class DeviceClient {
 
         private final static UriTemplate redeployDevice = new UriTemplate("/device/devices/${deviceId}/redeploy");
 
+        private final static UriTemplate resetDevice = new UriTemplate("/device/devices/${deviceId}/reset");
+
         private final static UriTemplate installAppOnDevice = new UriTemplate("/device/${deviceId}/appinstall/${packageId}");
 
         private final static UriTemplate uploadImage = new UriTemplate("/projects/${projectId}/images");
@@ -118,6 +120,10 @@ public class DeviceClient {
 
         public void redeployDevice(DeviceId deviceId) {
             sendPOST(redeployDevice, ImmutableMap.of("deviceId", deviceId.toString()));
+        }
+
+        public void resetDevice(DeviceId deviceId) {
+            sendPOST(resetDevice, ImmutableMap.of("deviceId", deviceId.toString()));
         }
 
         public void installAppOnDevice(DeviceId deviceId, PackageId appId, Boolean instrumented) {
@@ -255,6 +261,16 @@ public class DeviceClient {
      */
     public void redeployDevice(DeviceId deviceId) {
         this.apiClient.redeployDevice(deviceId);
+    }
+
+    /**
+     * Reset device. For the device, an automatic cleanup procedure will be conducted. The operation blocks until the operation
+     * has completed.
+     *
+     * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
+     */
+    public void resetDevice(DeviceId deviceId) {
+        this.apiClient.resetDevice(deviceId);
     }
 
     /**
