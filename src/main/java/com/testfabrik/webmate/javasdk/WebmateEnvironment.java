@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
  */
 public class WebmateEnvironment {
 
-    private final static String WEBMATE_DEFAULT_BASEURI = "https://api.webmate.io/v1";
+    private final static String WEBMATE_DEFAULT_BASEURI = "https://app.webmate.io/api/v1";
 
     public final URI baseURI;
 
