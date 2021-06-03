@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5</version>
+            <version>4.5.3</version>
         </dependency>
 
         <!-- Logging Framework, using the SDK will require to provide an Implementation for slf4j-nop.jar! -->
