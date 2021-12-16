@@ -37,6 +37,9 @@ public class ArtifactClient {
         private final static UriTemplate queryArtifactsTemplate =
                 new UriTemplate("/projects/${projectId}/artifacts");
 
+        private final static UriTemplate queryArtifactsForBrowserSessionTemplate =
+                new UriTemplate("/browsersession/${browsersessionId}/artifacts");
+
         private final static UriTemplate getArtifactTemplate =
                 new UriTemplate("/artifact/artifacts/${artifactId}");
 
@@ -74,6 +77,31 @@ public class ArtifactClient {
                 params.add(new BasicNameValuePair("types", typesParam.toString()));
             }
             Optional<HttpResponse> optHttpResponse = sendGET(queryArtifactsTemplate, ImmutableMap.of("projectId", id.toString()), params).getOptHttpResponse();
+            if (!optHttpResponse.isPresent()) {
+                return Optional.absent();
+            }
+
+            ArtifactInfo[] artifactInfos;
+            try {
+                String testInfosJson = EntityUtils.toString(optHttpResponse.get().getEntity());
+                ObjectMapper mapper = JacksonMapper.getInstance();
+                mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+                artifactInfos = mapper.readValue(testInfosJson, ArtifactInfo[].class);
+            } catch (IOException e) {
+                throw new WebmateApiClientException("Error reading data: " + e.getMessage(), e);
+            }
+            return Optional.of(Arrays.asList(artifactInfos));
+        }
+
+        /**
+         * Retrieve matching artifacts for a browsersession.
+         *
+         * @param associatedBrowserSession Id of browser session associated with artifacts
+         * @return list of matching artifact infos
+         */
+        public Optional<List<ArtifactInfo>> queryArtifacts(BrowserSessionId associatedBrowserSession) {
+
+            Optional<HttpResponse> optHttpResponse = sendGET(queryArtifactsForBrowserSessionTemplate, ImmutableMap.of("browsersessionId", associatedBrowserSession.toString())).getOptHttpResponse();
             if (!optHttpResponse.isPresent()) {
                 return Optional.absent();
             }
@@ -150,6 +178,16 @@ public class ArtifactClient {
      */
     public List<ArtifactInfo> queryArtifacts(ProjectId projectId, BrowserSessionId associatedBrowserSession, Set<ArtifactType> types) {
         return this.apiClient.queryArtifacts(projectId,  null, associatedBrowserSession, types).get();
+    }
+
+    /**
+     * Retrieve Artifact infos associated with browser session.
+     *
+     * @param associatedBrowserSession browserSessionId associated with artifacts.
+     * @return artifactInfo list
+     */
+    public List<ArtifactInfo> queryArtifacts(BrowserSessionId associatedBrowserSession) {
+        return this.apiClient.queryArtifacts(associatedBrowserSession).get();
     }
 
     /**
