@@ -2,6 +2,9 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.41] - 2021-12-17
+- Added support for retrieving screenshot artifacts
+
 ## [0.39.0] - 2020-12-07
 
 Fix for breaking change in Test Run API.
