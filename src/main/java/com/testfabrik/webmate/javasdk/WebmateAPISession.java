@@ -7,6 +7,7 @@ import com.testfabrik.webmate.javasdk.blobs.BlobClient;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionClient;
 import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
 import com.testfabrik.webmate.javasdk.devices.DeviceClient;
+import com.testfabrik.webmate.javasdk.images.ImageClient;
 import com.testfabrik.webmate.javasdk.jobs.JobEngine;
 import com.testfabrik.webmate.javasdk.mailtest.MailTestClient;
 import com.testfabrik.webmate.javasdk.packagemgmt.PackageMgmtClient;
@@ -58,6 +59,11 @@ public class WebmateAPISession {
      * Facade to webmate's Artifact subsystem.
      */
     public final ArtifactClient artifact;
+
+    /**
+     * Facade to webmate's Image subsystem.
+     */
+    public final ImageClient image;
 
     /**
      * Facade to webmate's Selenium subsystem.
@@ -137,6 +143,7 @@ public class WebmateAPISession {
         this.device = new DeviceClient(this);
         this.testMgmt = new TestMgmtClient(this);
         this.artifact = new ArtifactClient(this);
+        this.image = new ImageClient(this);
         this.mailTest = new MailTestClient(this, artifact);
         this.selenium = new SeleniumServiceClient(this);
         this.packages = new PackageMgmtClient(this);
@@ -159,6 +166,7 @@ public class WebmateAPISession {
         this.device = new DeviceClient(this);
         this.testMgmt = new TestMgmtClient(this);
         this.artifact = new ArtifactClient(this);
+        this.image = new ImageClient(this);
         this.mailTest = new MailTestClient(this, artifact);
         this.selenium = new SeleniumServiceClient(this);
         this.packages = new PackageMgmtClient(this);
@@ -182,6 +190,7 @@ public class WebmateAPISession {
         this.device = new DeviceClient(this, httpClientBuilder);
         this.testMgmt = new TestMgmtClient(this, httpClientBuilder);
         this.artifact = new ArtifactClient(this, httpClientBuilder);
+        this.image = new ImageClient(this, httpClientBuilder);
         this.mailTest = new MailTestClient(this, artifact, httpClientBuilder);
         this.selenium = new SeleniumServiceClient(this, httpClientBuilder);
         this.packages = new PackageMgmtClient(this, httpClientBuilder);
@@ -207,6 +216,7 @@ public class WebmateAPISession {
         this.device = new DeviceClient(this, httpClientBuilder);
         this.testMgmt = new TestMgmtClient(this, httpClientBuilder);
         this.artifact = new ArtifactClient(this, httpClientBuilder);
+        this.image = new ImageClient(this, httpClientBuilder);
         this.mailTest = new MailTestClient(this, artifact, httpClientBuilder);
         this.selenium = new SeleniumServiceClient(this, httpClientBuilder);
         this.packages = new PackageMgmtClient(this, httpClientBuilder);
