@@ -221,9 +221,9 @@ public class WebmateApiClient {
     protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, JsonNode body) {
         try {
             HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params));
-            req.setEntity(new StringEntity(body.toString()));
+            req.setEntity(new StringEntity(body.toString(), "UTF-8"));
             return sendPOSTUnchecked(this.getHttpClient(), req);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new WebmateApiClientException("Error sending POST to webmate API", e);
         }
     }
@@ -231,9 +231,9 @@ public class WebmateApiClient {
     protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, String query, JsonNode body) {
         try {
             HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params, query));
-            req.setEntity(new StringEntity(body.toString()));
+            req.setEntity(new StringEntity(body.toString(), "UTF-8"));
             return sendPOSTUnchecked(this.getHttpClient(), req);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new WebmateApiClientException("Error sending POST to webmate API", e);
         }
     }
