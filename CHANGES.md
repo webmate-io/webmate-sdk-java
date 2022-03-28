@@ -2,6 +2,9 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.42] - 2022-03-18
+- Fix encoding issues in certain API calls
+
 ## [0.41] - 2021-12-17
 - Added support for retrieving screenshot artifacts
 
