@@ -2,6 +2,9 @@
 
 All notable changes to the webmate Java SDK will be documented in this file.
 
+## [0.43] - 2022-04-12
+- Fix dependencies for selenium 4
+
 ## [0.42] - 2022-03-18
 - Fix encoding issues in certain API calls
 
