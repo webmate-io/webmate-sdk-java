@@ -29,10 +29,7 @@
 
     <properties>
         <version.guava>24.1.1-jre</version.guava>
-        <version.jackson_databind>2.13.4.1</version.jackson_databind>
-        <version.jackson_core>2.13.4</version.jackson_core>
-        <version.jackson_datatype_joda>2.13.3</version.jackson_datatype_joda>
-        <version.jackson_datatype_guava>2.12.3</version.jackson_datatype_guava>
+        <version.jackson>2.12.3</version.jackson>
         <version.slf4j>1.7.25</version.slf4j>
         <version.joda>2.10.1</version.joda>
         <maven.compiler.source>1.7</maven.compiler.source>
@@ -77,27 +74,27 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>${version.jackson_core}</version>
+            <version>${version.jackson}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-joda</artifactId>
-            <version>${version.jackson_datatype_joda}</version>
+            <version>${version.jackson}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jdk8</artifactId>
-            <version>${version.jackson_core}</version>
+            <version>${version.jackson}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${version.jackson_databind}</version>
+            <version>${version.jackson}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-guava</artifactId>
-            <version>${version.jackson_datatype_guava}</version>
+            <version>${version.jackson}</version>
         </dependency>
 
         <!--############################################################################################################
