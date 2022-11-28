@@ -10,6 +10,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
@@ -301,6 +302,36 @@ public class WebmateApiClient {
             req.releaseConnection();
         } catch (IOException e) {
             throw new WebmateApiClientException("Error sending POST to webmate API", e);
+        }
+        return httpResponse;
+    }
+
+    public ApiResponse sendPUT(UriTemplate schema, Map<String, String> params, JsonNode body) {
+        HttpResponse httpResponse = sendPUTUnchecked(schema, params, body);
+        checkErrors(httpResponse, schema.name);
+        return new ApiResponse(httpResponse);
+    }
+
+    protected HttpResponse sendPUTUnchecked(UriTemplate schema, Map<String, String> params, JsonNode body) {
+        try {
+            HttpPut req = new HttpPut(schema.buildUri(environment.baseURI, params));
+            req.setEntity(new StringEntity(body.toString(), "UTF-8"));
+            return sendPUTUnchecked(this.getHttpClient(), req);
+        } catch (Exception e) {
+            throw new WebmateApiClientException("Error sending PUT to webmate API", e);
+        }
+    }
+
+    protected HttpResponse sendPUTUnchecked(HttpClient httpClient, HttpPut req) {
+        HttpResponse httpResponse;
+        try {
+            httpResponse = httpClient.execute(req);
+            // Buffer the response entity in memory, so we can release the connection safely
+            HttpEntity old = httpResponse.getEntity();
+            EntityUtils.updateEntity(httpResponse, new StringEntity(EntityUtils.toString(old)));
+            req.releaseConnection();
+        } catch (IOException e) {
+            throw new WebmateApiClientException("Error sending PUT to webmate API", e);
         }
         return httpResponse;
     }

@@ -25,6 +25,10 @@
             <name>Frederic Burgard</name>
             <email>fburgard@testfabrik.com</email>
         </developer>
+        <developer>
+            <name>Sebastian Kappler</name>
+            <email>skappler@testfabrik.com</email>
+        </developer>
     </developers>
 
     <properties>
