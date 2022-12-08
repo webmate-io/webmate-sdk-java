@@ -194,7 +194,7 @@ public class WebmateAPISession {
         this.mailTest = new MailTestClient(this, artifact, httpClientBuilder);
         this.selenium = new SeleniumServiceClient(this, httpClientBuilder);
         this.packages = new PackageMgmtClient(this, httpClientBuilder);
-        this.blob = new BlobClient(this);
+        this.blob = new BlobClient(this, httpClientBuilder);
     }
 
     /**
@@ -220,7 +220,7 @@ public class WebmateAPISession {
         this.mailTest = new MailTestClient(this, artifact, httpClientBuilder);
         this.selenium = new SeleniumServiceClient(this, httpClientBuilder);
         this.packages = new PackageMgmtClient(this, httpClientBuilder);
-        this.blob = new BlobClient(this);
+        this.blob = new BlobClient(this, httpClientBuilder);
     }
 
     /**

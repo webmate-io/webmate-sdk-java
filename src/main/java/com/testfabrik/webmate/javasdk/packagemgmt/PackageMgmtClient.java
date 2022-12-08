@@ -24,6 +24,7 @@ public class PackageMgmtClient {
 
     private WebmateAPISession session;
     private PackageMgmtApiClient apiClient;
+    private BlobClient blobClient;
 
 
     private static final Logger LOG = LoggerFactory.getLogger(PackageMgmtClient.class);
@@ -117,6 +118,7 @@ public class PackageMgmtClient {
     public PackageMgmtClient(WebmateAPISession session) {
         this.session = session;
         this.apiClient = new PackageMgmtApiClient(session.authInfo, session.environment);
+        this.blobClient = new BlobClient(session);
     }
 
     /**
@@ -128,6 +130,7 @@ public class PackageMgmtClient {
     public PackageMgmtClient(WebmateAPISession session, HttpClientBuilder httpClientBuilder) {
         this.session = session;
         this.apiClient = new PackageMgmtApiClient(session.authInfo, session.environment, httpClientBuilder);
+        this.blobClient = new BlobClient(session, httpClientBuilder);
     }
 
 
@@ -176,8 +179,7 @@ public class PackageMgmtClient {
      */
     public Package uploadApplicationPackage(ProjectId projectId, byte[] appPackage, String packageName, String extension) {
         String contentType = extension.equals("apk") ? "application/vnd.android.package-archive" : "application/x-ios-app";
-        BlobClient blobClient = new BlobClient(this.session);
-        BlobId blobId = blobClient.putBlob(projectId, appPackage, Optional.of(contentType));
+        BlobId blobId = this.blobClient.putBlob(projectId, appPackage, Optional.of(contentType));
         return this.createPackage(projectId, blobId, packageName, extension);
     }
 
@@ -210,8 +212,7 @@ public class PackageMgmtClient {
      */
     public Package updateApplicationPackage(ProjectId projectId, PackageId packageId, byte[] appPackage, String packageName, String extension) {
         String contentType = extension.equals("apk") ? "application/vnd.android.package-archive" : "application/x-ios-app";
-        BlobClient blobClient = new BlobClient(this.session);
-        BlobId blobId = blobClient.putBlob(projectId, appPackage, Optional.of(contentType));
+        BlobId blobId = this.blobClient.putBlob(projectId, appPackage, Optional.of(contentType));
         return this.updatePackage(packageId, blobId, packageName, extension);
     }
 
