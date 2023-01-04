@@ -13,13 +13,16 @@ import com.testfabrik.webmate.javasdk.commonutils.HttpHelpers;
 import com.testfabrik.webmate.javasdk.jobs.WMValue;
 import com.testfabrik.webmate.javasdk.testmgmt.spec.TestExecutionSpec;
 import com.testfabrik.webmate.javasdk.utils.JsonUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 /**
@@ -82,6 +85,9 @@ public class TestMgmtClient {
 
         private final static UriTemplate getTestRunTemplate =
                 new UriTemplate("GetTestRun", "/testmgmt/testruns/${testRunId}");
+
+        private final static UriTemplate exportTemplate =
+                new UriTemplate("TestMgmtExport", "/projects/${projectId}/testlab/export/${exporter}");
 
         public TestMgmtApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
             super(authInfo, environment);
@@ -248,6 +254,27 @@ public class TestMgmtClient {
             }
             return Optional.fromNullable(result);
         }
+
+        public void export(ProjectId projectId, String exporter, ExportConfig config, String targetFilePath) {
+            Optional<HttpResponse> optHttpResponse = sendPOST(exportTemplate, ImmutableMap.of("projectId", projectId.toString(), "exporter", exporter), JsonUtils.getJsonFromData(config)).getOptHttpResponse();
+            if (!optHttpResponse.isPresent()) {
+                throw new WebmateApiClientException("Error getting export from API.");
+            }
+            HttpEntity entity = optHttpResponse.get().getEntity();
+            if (entity != null) {
+                try {
+                    File targetFile = new File(targetFilePath);
+                    InputStream inputStream = entity.getContent();
+                    OutputStream outputStream = Files.newOutputStream(targetFile.toPath());
+                    IOUtils.copy(inputStream, outputStream);
+                    outputStream.close();
+                } catch (Throwable e) {
+                    throw new WebmateApiClientException("Error reading getting export data: " + e.getMessage(), e);
+                }
+            } else {
+                throw new WebmateApiClientException("Error getting export from API.");
+            }
+        }
     }
 
     /**
@@ -380,6 +407,13 @@ public class TestMgmtClient {
      */
     public void finishTestRun(TestRunId id, TestRunEvaluationStatus status, String msg, String detail) {
         apiClient.finishTestRun(id, new TestRunFinishData(status, msg, detail));
+    }
+
+    /**
+     * Generate an export for the given project using the specified exporter and config
+     */
+    public void export(ProjectId projectId, String exporter, ExportConfig config, String targetFilePath) {
+        apiClient.export(projectId, exporter, config, targetFilePath);
     }
 
 }
