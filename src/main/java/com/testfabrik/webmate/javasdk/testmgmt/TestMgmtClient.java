@@ -255,7 +255,7 @@ public class TestMgmtClient {
             return Optional.fromNullable(result);
         }
 
-        public void export(ProjectId projectId, String exporter, ExportConfig config, String targetFilePath) {
+        public void export(ProjectId projectId, String exporter, Map<String, Object> config, String targetFilePath) {
             Optional<HttpResponse> optHttpResponse = sendPOST(exportTemplate, ImmutableMap.of("projectId", projectId.toString(), "exporter", exporter), JsonUtils.getJsonFromData(config)).getOptHttpResponse();
             if (!optHttpResponse.isPresent()) {
                 throw new WebmateApiClientException("Error getting export from API.");
@@ -412,7 +412,7 @@ public class TestMgmtClient {
     /**
      * Generate an export for the given project using the specified exporter and config
      */
-    public void export(ProjectId projectId, String exporter, ExportConfig config, String targetFilePath) {
+    public void export(ProjectId projectId, String exporter, Map<String, Object> config, String targetFilePath) {
         apiClient.export(projectId, exporter, config, targetFilePath);
     }
 
