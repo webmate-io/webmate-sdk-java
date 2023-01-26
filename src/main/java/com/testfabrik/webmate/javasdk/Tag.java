@@ -29,7 +29,7 @@ public class Tag {
 
     public Tag(String name) {
         this.name = name;
-        this.value = JsonNodeFactory.instance.booleanNode(true);
+        this.value = null;
     }
 
     // for jackson
