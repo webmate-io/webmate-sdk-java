@@ -79,8 +79,8 @@ public class TestRun {
                 info = retrieveCurrentInfo();
             } while ((info.getExecutionStatus() == TestRunExecutionStatus.RUNNING ||
                     info.getExecutionStatus() == TestRunExecutionStatus.CREATED ||
-                    info.getExecutionStatus() == TestRunExecutionStatus.PENDING_PASSED ||
-                    info.getExecutionStatus() == TestRunExecutionStatus.PENDING_FAILED) &&
+                    info.getEvaluationStatus() == TestRunEvaluationStatus.PENDING_PASSED ||
+                    info.getEvaluationStatus() == TestRunEvaluationStatus.PENDING_FAILED) &&
                     System.currentTimeMillis() - startTime < MAX_WAITING_TIME_MILLIS);
         } catch (InterruptedException e) {
             e.printStackTrace();
