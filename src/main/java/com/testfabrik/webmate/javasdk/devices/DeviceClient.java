@@ -1,7 +1,9 @@
 package com.testfabrik.webmate.javasdk.devices;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
@@ -169,6 +171,51 @@ public class DeviceClient {
             sendPOST(setCameraSimulation, ImmutableMap.of("deviceId", deviceId.toString()), JsonUtils.getJsonFromData(params));
         }
 
+        private DeviceDTO waitForProperties(DeviceId deviceId, Map<String, JsonNode> expectedProperties) {
+            return waitForProperties(deviceId, expectedProperties, MAX_WAITING_TIME_MILLIS);
+        }
+
+        private DeviceDTO waitForProperties(DeviceId deviceId, Map<String, JsonNode> expectedProperties, long maxWaitingTimeInMilliSeconds) {
+            long startTime = System.currentTimeMillis();
+            DeviceDTO device = null;
+            boolean propertiesMatch = false;
+            try {
+                do {
+                    Thread.sleep(WAITING_POLLING_INTERVAL_MILLIS);
+                    device = this.getDevice(deviceId);
+                    propertiesMatch = true;
+
+                    Map<String, JsonNode> currentProperties = device.getProperties();
+                    for (String key : expectedProperties.keySet()) {
+                        if (!expectedProperties.get(key).equals(currentProperties.get(key))) {
+                            propertiesMatch = false;
+                            break;
+                        }
+                    }
+                } while (!propertiesMatch && System.currentTimeMillis() - startTime < maxWaitingTimeInMilliSeconds);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (propertiesMatch) {
+                return device;
+            } else {
+                throw new WebmateApiClientException("Device was in unexpected state");
+            }
+        }
+
+        public DeviceDTO waitForDeviceForAppInstallation(DeviceId deviceId) {
+            return this.waitForProperties(deviceId, new HashMap<String, JsonNode>() {{
+                put("os.canInstallPackages", BooleanNode.TRUE);
+                put("network.reachability", BooleanNode.TRUE);
+            }});
+        }
+
+        public DeviceDTO waitForDevice(DeviceId deviceId) {
+            return this.waitForProperties(deviceId, new HashMap<String, JsonNode>() {{
+                put("webmate.setup", BooleanNode.TRUE);
+            }});
+        }
     }
 
     /**
@@ -381,6 +428,26 @@ public class DeviceClient {
         ImageId imageId = uploadImageToDevice(projectId, image, imageName, imageType, deviceId);
         setCameraSimulation(deviceId, imageId, true);
         return imageId;
+    }
+
+    /**
+     * Wait for a device to be ready to have an app installed. Timeouts after 5 minutes.
+     *
+     * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
+     * @return the device that the is being waited for
+     */
+    public DeviceDTO waitForDeviceForAppInstallation(DeviceId deviceId) {
+        return this.apiClient.waitForDeviceForAppInstallation(deviceId);
+    }
+
+    /**
+     * Wait for a device to be ready to be used. Timeouts after 5 minutes.
+     *
+     * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
+     * @return the device that the is being waited for
+     */
+    public DeviceDTO waitForDevice(DeviceId deviceId) {
+        return this.apiClient.waitForDevice(deviceId);
     }
 
 }

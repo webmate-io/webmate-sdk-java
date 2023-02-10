@@ -275,6 +275,28 @@ public class TestMgmtClient {
                 throw new WebmateApiClientException("Error getting export from API.");
             }
         }
+
+        public TestRunInfo waitForTestRunCompletion(TestRunId testRunId) {
+            return waitForTestRunCompletion(testRunId, MAX_LONG_WAITING_TIME_MILLIS);
+        }
+
+        public TestRunInfo waitForTestRunCompletion(TestRunId testRunId, long maxWaitingTimeInMilliSeconds) {
+            long startTime = System.currentTimeMillis();
+            TestRunInfo testRunInfo = null;
+            try {
+                do {
+                    Thread.sleep(WAITING_POLLING_INTERVAL_MILLIS);
+                    testRunInfo = this.getTestRun(testRunId);
+                } while ((testRunInfo.getExecutionStatus() == TestRunExecutionStatus.RUNNING ||
+                        testRunInfo.getExecutionStatus() == TestRunExecutionStatus.CREATED ||
+                        testRunInfo.getEvaluationStatus() == TestRunEvaluationStatus.PENDING_PASSED ||
+                        testRunInfo.getEvaluationStatus() == TestRunEvaluationStatus.PENDING_FAILED) &&
+                        System.currentTimeMillis() - startTime < maxWaitingTimeInMilliSeconds);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return testRunInfo;
+        }
     }
 
     /**
@@ -342,16 +364,6 @@ public class TestMgmtClient {
         this.apiClient.setTestRunName(testRunId, name);
     }
 
-//    /**
-//     * Get Id of TestRun associated with a Selenium session.
-//     *
-//     * @param opaqueSeleniumSessionIdString selenium session id
-//     * @return test run id
-//     */
-//    public TestRunId getTestRunIdForSessionId(String opaqueSeleniumSessionIdString) {
-//        return new TestRunId(UUID.randomUUID());
-//    }
-
     public CreateTestExecutionResponse startExecution(TestExecutionSpec spec, ProjectId projectId) {
         CreateTestExecutionResponse executionAndRun = apiClient.createAndStartTestExecution(projectId, spec);
         if (!executionAndRun.optTestRunId.isPresent()) {
@@ -414,6 +426,27 @@ public class TestMgmtClient {
      */
     public void export(ProjectId projectId, String exporter, Map<String, Object> config, String targetFilePath) {
         apiClient.export(projectId, exporter, config, targetFilePath);
+    }
+
+    /**
+     * Block, until the TestRun goes into a finished state (completed or failed) or timeout occurs (after 10 minutes).
+     *
+     * @return the TestRun info of the finished TestRun.
+     */
+    public TestRunInfo waitForTestRunCompletion(TestRunId id) {
+        return apiClient.waitForTestRunCompletion(id);
+    }
+
+    /**
+     * Block, until the TestRun goes into a finished state (completed or failed) or timeout occurs.
+     *
+     * @param id The ID of the TestRun to wait for
+     * @param maxWaitingTimeInMilliSeconds How long to wait before timeout
+     *
+     * @return the TestRun info of the finished TestRun.
+     */
+    public TestRunInfo waitForTestRunCompletion(TestRunId id, long maxWaitingTimeInMilliSeconds) {
+        return apiClient.waitForTestRunCompletion(id, maxWaitingTimeInMilliSeconds);
     }
 
 }

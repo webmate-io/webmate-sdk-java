@@ -31,6 +31,15 @@ import java.util.*;
  */
 public class WebmateApiClient {
 
+
+    protected static final long MAX_WAITING_TIME_MILLIS = 300_000; // 5 Minutes
+    protected static final long MAX_LONG_WAITING_TIME_MILLIS = 600_000; // 10 Minutes
+    protected static final long MAX_SHORT_WAITING_TIME_MILLIS = 60_000; // 1 Minute
+
+    protected static final long WAITING_POLLING_INTERVAL_MILLIS = 3_000; // 3 seconds
+    protected static final long WAITING_SHORT_POLLING_INTERVAL_MILLIS = 1_000; // 3 seconds
+    protected static final long WAITING_LONG_POLLING_INTERVAL_MILLIS = 20_000; // 20 seconds
+
     private final static Logger LOG = LoggerFactory.getLogger(WebmateApiClient.class);
 
     private final static String WEBMATE_JAVASDK_USERAGENT = "webmate-javasdk";
@@ -255,9 +264,7 @@ public class WebmateApiClient {
         }
     }
 
-    protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, byte[] byteParam,
-                                             Optional<String> contentType) {
-        HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params));
+    private HttpResponse sendPostUnchecked(byte[] byteParam, Optional<String> contentType, HttpPost req) {
         HttpClient httpClient;
 
         if (contentType.isPresent()) {
@@ -272,19 +279,15 @@ public class WebmateApiClient {
     }
 
     protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, byte[] byteParam,
+                                             Optional<String> contentType) {
+        HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params));
+        return sendPostUnchecked(byteParam, contentType, req);
+    }
+
+    protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, byte[] byteParam,
                                              Optional<String> contentType, List<NameValuePair> urlParams) {
         HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params, urlParams));
-        HttpClient httpClient;
-
-        if (contentType.isPresent()) {
-            req.setEntity(new ByteArrayEntity(byteParam, ContentType.create(contentType.get())));
-            httpClient = this.getHttpClientAndOverrideContentHeader(new BasicHeader(HttpHeaders.CONTENT_TYPE, contentType.get()));
-        } else {
-            req.setEntity(new ByteArrayEntity(byteParam));
-            httpClient = this.getHttpClient();
-        }
-
-        return sendPOSTUnchecked(httpClient, req);
+        return sendPostUnchecked(byteParam, contentType, req);
     }
 
     protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, String queryString) {
@@ -296,7 +299,7 @@ public class WebmateApiClient {
         HttpResponse httpResponse;
         try {
             httpResponse = httpClient.execute(req);
-            // Buffer the response entity in memory so we can release the connection safely
+            // Buffer the response entity in memory, so we can release the connection safely
             HttpEntity old = httpResponse.getEntity();
             EntityUtils.updateEntity(httpResponse, new StringEntity(EntityUtils.toString(old)));
             req.releaseConnection();
@@ -362,7 +365,7 @@ public class WebmateApiClient {
                 req = new HttpGet(schema.buildUri(environment.baseURI, params));
             }
             httpResponse = this.getHttpClient().execute(req);
-            // Buffer the response entity in memory so we can release the connection safely
+            // Buffer the response entity in memory, so we can release the connection safely
             HttpEntity old = httpResponse.getEntity();
             EntityUtils.updateEntity(httpResponse, new StringEntity(EntityUtils.toString(old)));
             req.releaseConnection();
@@ -373,7 +376,7 @@ public class WebmateApiClient {
     }
 
     /**
-     * Sends a HTTP DELETE to the Uri in schema using params to populate the schema. The body of the request is empty.
+     * Sends an HTTP DELETE to the Uri in schema using params to populate the schema. The body of the request is empty.
      *
      * @param schema The Uri schema that will become the target of the Post
      * @param params The params that should be used in the schema
@@ -384,7 +387,7 @@ public class WebmateApiClient {
         try {
             HttpDelete req = new HttpDelete(schema.buildUri(environment.baseURI, params));
             httpResponse = this.getHttpClient().execute(req);
-            // Buffer the response entity in memory so we can release the connection safely
+            // Buffer the response entity in memory, so we can release the connection safely
             HttpEntity old = httpResponse.getEntity();
             EntityUtils.updateEntity(httpResponse, new StringEntity(EntityUtils.toString(old)));
             req.releaseConnection();
@@ -444,24 +447,7 @@ public class WebmateApiClient {
 
             URIBuilder builder = new URIBuilder();
             builder.setScheme(baseUri.getScheme());
-            builder.setHost(baseUri.getHost());
-            builder.setPort(baseUri.getPort());
-            String path = baseUri.normalize().getPath() + schemaAfterReplacements;
-            builder.setPath(path.replaceAll("//", "/")); // Replace double slashes
-
-            for (String templateParamKey : templateParams.keySet()) {
-                String templateParamKeyAfterReplacements = replaceParamsInTemplate(templateParamKey, params);
-                String templateParamValueAfterReplacements = replaceParamsInTemplate(templateParams.get(templateParamKey), params);
-                builder.setParameter(templateParamKeyAfterReplacements, templateParamValueAfterReplacements);
-            }
-
-            URI result;
-            try {
-                result = builder.build();
-            } catch (URISyntaxException e) {
-                throw new WebmateApiClientException("Could not build valid API URL", e);
-            }
-            return result;
+            return buildUriWithBuilder(baseUri, params, schemaAfterReplacements, builder);
         }
 
         URI buildUri(URI baseUri, Map<String, String> params, String query) {
@@ -470,24 +456,7 @@ public class WebmateApiClient {
             URIBuilder builder = new URIBuilder();
             builder.setScheme(baseUri.getScheme());
             builder.setCustomQuery(query);
-            builder.setHost(baseUri.getHost());
-            builder.setPort(baseUri.getPort());
-            String path = baseUri.normalize().getPath() + schemaAfterReplacements;
-            builder.setPath(path.replaceAll("//", "/")); // Replace double slashes
-
-            for (String templateParamKey : templateParams.keySet()) {
-                String templateParamKeyAfterReplacements = replaceParamsInTemplate(templateParamKey, params);
-                String templateParamValueAfterReplacements = replaceParamsInTemplate(templateParams.get(templateParamKey), params);
-                builder.setParameter(templateParamKeyAfterReplacements, templateParamValueAfterReplacements);
-            }
-
-            URI result;
-            try {
-                result = builder.build();
-            } catch (URISyntaxException e) {
-                throw new WebmateApiClientException("Could not build valid API URL", e);
-            }
-            return result;
+            return buildUriWithBuilder(baseUri, params, schemaAfterReplacements, builder);
         }
 
         URI buildUri(URI baseUri, Map<String, String> params, List<NameValuePair> queryParams) {
@@ -496,6 +465,11 @@ public class WebmateApiClient {
             URIBuilder builder = new URIBuilder();
             builder.setScheme(baseUri.getScheme());
             builder.addParameters(queryParams);
+            return buildUriWithBuilder(baseUri, params, schemaAfterReplacements, builder);
+        }
+
+
+        private URI buildUriWithBuilder(URI baseUri, Map<String, String> params, String schemaAfterReplacements, URIBuilder builder) {
             builder.setHost(baseUri.getHost());
             builder.setPort(baseUri.getPort());
             String path = baseUri.normalize().getPath() + schemaAfterReplacements;
@@ -518,7 +492,7 @@ public class WebmateApiClient {
     }
 
     public static class ApiResponse {
-        private Optional<HttpResponse> optHttpResponse;
+        private final Optional<HttpResponse> optHttpResponse;
 
         public ApiResponse(HttpResponse httpResponse) {
             this.optHttpResponse = Optional.fromNullable(httpResponse);

@@ -7,9 +7,6 @@ import com.testfabrik.webmate.javasdk.WebmateAPISession;
  */
 public class TestRun {
 
-    private static final long MAX_WAITING_TIME_MILLIS = 300_000; // 300 seconds
-    private static final long WAITING_POLLINTERVAL_MILLIS = 3_000; // 3 seconds
-
     private WebmateAPISession session;
 
     private TestRunId id;
@@ -66,26 +63,13 @@ public class TestRun {
     }
 
     /**
-     * Block, until the TestRun goes into a finished state (completed or failed).
+     * Block, until the TestRun goes into a finished state (completed or failed) or timeout occurs (after 10 minutes).
      *
-     * @return returns the TestRun info of the finished TestRun.
+     * @return the TestRun info of the finished TestRun.
+     *
      */
     public TestRunInfo waitForCompletion() {
-        long startTime = System.currentTimeMillis();
-        TestRunInfo info = null;
-        try {
-            do {
-                Thread.sleep(WAITING_POLLINTERVAL_MILLIS);
-                info = retrieveCurrentInfo();
-            } while ((info.getExecutionStatus() == TestRunExecutionStatus.RUNNING ||
-                    info.getExecutionStatus() == TestRunExecutionStatus.CREATED ||
-                    info.getEvaluationStatus() == TestRunEvaluationStatus.PENDING_PASSED ||
-                    info.getEvaluationStatus() == TestRunEvaluationStatus.PENDING_FAILED) &&
-                    System.currentTimeMillis() - startTime < MAX_WAITING_TIME_MILLIS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return info;
+        return this.session.testMgmt.waitForTestRunCompletion(this.id);
     }
 
 }

@@ -110,6 +110,43 @@ public class PackageMgmtClient {
             return aPackage;
         }
 
+        public Package waitForPackage(PackageId packageId) {
+            return waitForPackage(packageId, MAX_LONG_WAITING_TIME_MILLIS);
+        }
+
+        public Package waitForPackage(PackageId packageId, long maxWaitingTimeInMilliSeconds) {
+            long startTime = System.currentTimeMillis();
+            Package pckg = null;
+            boolean success = false;
+            WebmateApiClientException exception = null;
+            try {
+                do {
+                    Thread.sleep(WAITING_POLLING_INTERVAL_MILLIS);
+                    try {
+                        pckg = this.getPackage(packageId);
+                    } catch (WebmateApiClientException e) {
+                        e.printStackTrace();
+                        exception = e;
+                    }
+
+                    if (pckg != null) {
+                        success = true;
+                    }
+
+                } while (!success && System.currentTimeMillis() - startTime < maxWaitingTimeInMilliSeconds);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (exception != null && !success) {
+                System.err.println(exception.getMessage());
+            }
+            if (success) {
+                return pckg;
+            } else {
+                throw exception;
+            }
+        }
+
     }
 
     /**
@@ -243,5 +280,27 @@ public class PackageMgmtClient {
         }
 
         return this.updateApplicationPackage(projectId.get(), packageId, appPackage, packageName, extension);
+    }
+
+
+    /**
+     * Wait for a newly created package to be usable. Timeouts after 10 minutes.
+     *
+     * @param packageId PackageId of the package
+     * @return the package that is being waited for
+     */
+    public Package waitForPackage(PackageId packageId) {
+        return this.apiClient.waitForPackage(packageId);
+    }
+
+    /**
+     * Wait for a newly created package to be usable.
+     *
+     * @param packageId PackageId of the package
+     * @param maxWaitingTimeInMilliSeconds How long to wait before timeout
+     * @return the package that is being waited for
+     */
+    public Package waitForPackage(PackageId packageId, long maxWaitingTimeInMilliSeconds) {
+        return this.apiClient.waitForPackage(packageId, maxWaitingTimeInMilliSeconds);
     }
 }
