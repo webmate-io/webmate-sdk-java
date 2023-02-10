@@ -37,6 +37,8 @@ public class PackageMgmtClient {
 
         private final static UriTemplate getPackageTemplate = new UriTemplate("/package/packages/${packageId}");
 
+        private final static UriTemplate deletePackageTemplate = new UriTemplate("/package/packages/${packageId}");
+
 
         public PackageMgmtApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
             super(authInfo, environment);
@@ -57,15 +59,7 @@ public class PackageMgmtClient {
                 throw new WebmateApiClientException("Could not create package. Got no response");
             }
 
-            Package appPackage;
-            try {
-                String packageJson = EntityUtils.toString(r.get().getEntity());
-                ObjectMapper pMapper = JacksonMapper.getInstance();
-                appPackage = pMapper.readValue(packageJson, Package.class);
-            } catch (IOException e) {
-                throw new WebmateApiClientException("Error reading Package data: " + e.getMessage(), e);
-            }
-            return appPackage;
+            return buildPackageFromResponse(r);
         }
 
         public Package updatePackage(PackageId packageId, BlobId blobId, String packageName, String extension) {
@@ -78,9 +72,17 @@ public class PackageMgmtClient {
                 throw new WebmateApiClientException("Could not update package. Got no response");
             }
 
+            return buildPackageFromResponse(r);
+        }
+
+        public void deletePackage(PackageId packageId) {
+            sendDELETE(deletePackageTemplate, ImmutableMap.of("packageId", packageId.toString()));
+        }
+
+        private Package buildPackageFromResponse(Optional<HttpResponse> httpResponse) {
             Package appPackage;
             try {
-                String packageJson = EntityUtils.toString(r.get().getEntity());
+                String packageJson = EntityUtils.toString(httpResponse.get().getEntity());
                 ObjectMapper pMapper = JacksonMapper.getInstance();
                 appPackage = pMapper.readValue(packageJson, Package.class);
             } catch (IOException e) {
@@ -166,6 +168,15 @@ public class PackageMgmtClient {
      */
     public Package getPackage(PackageId packageId){
         return this.apiClient.getPackage(packageId);
+    }
+
+    /**
+     * Delete a package with a given PackageId
+     *
+     * @param packageId ID of the package
+     */
+    public void deletePackage(PackageId packageId){
+     this.apiClient.deletePackage(packageId);
     }
 
     /**
