@@ -62,8 +62,8 @@ public class MailTestClient {
             try {
                 String testMailAddressBody = EntityUtils.toString(optHttpResponse.get().getEntity());
                 ObjectMapper mapper = JacksonMapper.getInstance();
-                String testMailStr = mapper.readValue(testMailAddressBody, String.class);
-                return new TestMailAddress(testMailStr);
+                TestMailAccount testMailAccount = mapper.readValue(testMailAddressBody, TestMailAccount.class);
+                return testMailAccount.getEmailAddress();
             } catch (IOException e) {
                 throw new WebmateApiClientException("Error reading data: " + e.getMessage(), e);
             }
