@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.51] - 2023-07-11
+### Fixes
+- Fix problem where testmails could not be created
+
 ## [0.50] - 2023-02-10
 ### New Features
 - Added polling API for some long-running operations
