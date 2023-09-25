@@ -29,7 +29,7 @@ public class ExpeditionComparisonSpec extends TestExecutionSpec {
                                      List<TestSessionId> testSessions, ExpeditionSpec referenceSpec,
                                      List<ExpeditionSpec> compareSpecs) {
             super(executionName, StandardTestTypes.ExpeditionComparison.getTestType(),
-                    "Default Expedition Comparison Test", tags, models, testSessions);
+                    "Default Cross-Browser Test", tags, models, testSessions);
 
             this.referenceSpec = referenceSpec;
             this.compareSpecs = compareSpecs;

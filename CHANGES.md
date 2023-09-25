@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.52] - 2023-09-26
+### Fixes
+- Compatibility change for webmate release 2023.4.0
+
 ## [0.51] - 2023-07-11
 ### Fixes
 - Fix problem where testmails could not be created
