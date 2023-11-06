@@ -185,6 +185,8 @@ public class TestMgmtClient {
             if (!optHttpResponse.isPresent()) {
                 throw new WebmateApiClientException("Could not finish TestRun. Got no response");
             }
+
+            waitForTestRunCompletion(id);
         }
 
         public List<TestTemplate> getTestTemplates(ProjectId projectId) {
