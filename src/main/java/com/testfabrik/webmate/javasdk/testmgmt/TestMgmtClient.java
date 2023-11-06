@@ -299,6 +299,25 @@ public class TestMgmtClient {
             }
             return testRunInfo;
         }
+
+        public TestRunInfo waitForTestRunRunning(TestRunId testRunId) {
+            return waitForTestRunRunning(testRunId, MAX_LONG_WAITING_TIME_MILLIS);
+        }
+
+        public TestRunInfo waitForTestRunRunning(TestRunId testRunId, long maxWaitingTimeInMilliSeconds) {
+            long startTime = System.currentTimeMillis();
+            TestRunInfo testRunInfo = null;
+            try {
+                do {
+                    Thread.sleep(WAITING_POLLING_INTERVAL_MILLIS);
+                    testRunInfo = this.getTestRun(testRunId);
+                } while (testRunInfo.getExecutionStatus() == TestRunExecutionStatus.CREATED &&
+                        System.currentTimeMillis() - startTime < maxWaitingTimeInMilliSeconds);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return testRunInfo;
+        }
     }
 
     /**
@@ -371,6 +390,7 @@ public class TestMgmtClient {
         if (!executionAndRun.optTestRunId.isPresent()) {
             throw new WebmateApiClientException("Got no testrun id for new execution.");
         }
+        apiClient.waitForTestRunRunning(executionAndRun.optTestRunId.get());
         return executionAndRun;
     }
 
