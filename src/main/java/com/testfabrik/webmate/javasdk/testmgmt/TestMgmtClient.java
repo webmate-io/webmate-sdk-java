@@ -385,6 +385,16 @@ public class TestMgmtClient {
         this.apiClient.setTestRunName(testRunId, name);
     }
 
+    /**
+     * Create and start a TestExecution.
+     * This method is blocking:
+     * it internally calls a method similar to {@link #waitForTestRunCompletion(TestRunId) waitForTestRunCompletion}
+     * to wait until the associated test run is running.
+     *
+     * @param spec      The specification metadata for the test execution.
+     * @param projectId The id of the project the test execution belongs to.
+     * @return          The returned data, including the test execution id and the id of the associated test run.
+     */
     public CreateTestExecutionResponse startExecution(TestExecutionSpec spec, ProjectId projectId) {
         CreateTestExecutionResponse executionAndRun = apiClient.createAndStartTestExecution(projectId, spec);
         if (!executionAndRun.optTestRunId.isPresent()) {
@@ -396,8 +406,12 @@ public class TestMgmtClient {
 
     /**
      * Create and start a TestExecution.
+     * This method is blocking:
+     * it internally calls a method similar to {@link #waitForTestRunCompletion(TestRunId) waitForTestRunCompletion}
+     * to wait until the associated test run is running.
      *
      * @param specBuilder A builder providing the required information for that test type, e.g. {@code Story}
+     * @return            The test run associated with the test execution
      */
     public TestRun startExecutionWithBuilder(TestExecutionSpecBuilder specBuilder) {
         if (!session.getProjectId().isPresent()) {
@@ -424,6 +438,12 @@ public class TestMgmtClient {
 
     /**
      * Finish a running TestRun.
+     * This method is blocking:
+     * it internally calls the {@link #waitForTestRunCompletion(TestRunId) waitForTestRunCompletion} method
+     * to wait until the test run is finished.
+     *
+     * @param id     The id of the test run to finish.
+     * @param status The status to finish the test run with.
      */
     public void finishTestRun(TestRunId id, TestRunEvaluationStatus status) {
        apiClient.finishTestRun(id, new TestRunFinishData(status));
@@ -431,6 +451,13 @@ public class TestMgmtClient {
 
     /**
      * Finish a running TestRun with message.
+     * This method is blocking:
+     * it internally calls the {@link #waitForTestRunCompletion(TestRunId) waitForTestRunCompletion} method
+     * to wait until the test run is finished.
+     *
+     * @param id     The id of the test run to finish.
+     * @param status The status to finish the test run with.
+     * @param msg    The message to finish the test run with.
      */
     public void finishTestRun(TestRunId id, TestRunEvaluationStatus status, String msg) {
         apiClient.finishTestRun(id, new TestRunFinishData(status, msg));
@@ -438,6 +465,14 @@ public class TestMgmtClient {
 
     /**
      * Finish a running TestRun with message and detail information.
+     * This method is blocking:
+     * it internally calls the {@link #waitForTestRunCompletion(TestRunId) waitForTestRunCompletion} method
+     * to wait until the test run is finished.
+     *
+     * @param id     The id of the test run to finish.
+     * @param status The status to finish the test run with.
+     * @param msg    The message to finish the test run with.
+     * @param detail More details for the finish data.
      */
     public void finishTestRun(TestRunId id, TestRunEvaluationStatus status, String msg, String detail) {
         apiClient.finishTestRun(id, new TestRunFinishData(status, msg, detail));
