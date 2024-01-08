@@ -37,26 +37,39 @@ public class TestRun {
     }
 
     /**
-     * Finish TestRun.
+     * Finish the test run.
+     * This method is blocking:
+     * it internally calls the {@link #waitForCompletion()} waitForCompletion} method
+     * to wait until the test run is finished.
      *
-     * @param msg Short message explaining the result of the test run.
-     * @param detail Detailed information, e.g. stack trace.
+     * @param status The status to finish the test run with.
+     * @param msg    A short message explaining the result of the test run.
+     * @param detail Detailed information, e.g. a stack trace.
      */
     public void finish(TestRunEvaluationStatus status, String msg, String detail) {
         this.session.testMgmt.finishTestRun(id, status, msg, detail);
     }
 
     /**
-     * Finish TestRun.
+     * Finish the test run.
+     * This method is blocking:
+     * it internally calls the {@link #waitForCompletion()} waitForCompletion} method
+     * to wait until the test run is finished.
      *
-     * @param msg Short message explaining the result of the test run.
+     * @param status The status to finish the test run with.
+     * @param msg    A short message explaining the result of the test run.
      */
     public void finish(TestRunEvaluationStatus status, String msg) {
         this.session.testMgmt.finishTestRun(id, status, msg);
     }
 
     /**
-     * Finish TestRun.
+     * Finish the test run.
+     * This method is blocking:
+     * it internally calls the {@link #waitForCompletion()} waitForCompletion} method
+     * to wait until the test run is finished.
+     *
+     * @param status The status to finish the test run with.
      */
     public void finish(TestRunEvaluationStatus status) {
         this.session.testMgmt.finishTestRun(id, status);
