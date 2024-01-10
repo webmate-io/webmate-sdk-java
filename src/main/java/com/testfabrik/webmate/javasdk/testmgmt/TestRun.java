@@ -39,8 +39,10 @@ public class TestRun {
     /**
      * Finish the test run.
      * This method is blocking:
-     * it internally calls the {@link #waitForCompletion()} waitForCompletion} method
+     * it internally calls the {@link #waitForCompletion() waitForCompletion} method
      * to wait until the test run is finished.
+     * If the test run does not finish before the timeout, the method will still return;
+     * to detect this case, you have to check the test run manually.
      *
      * @param status The status to finish the test run with.
      * @param msg    A short message explaining the result of the test run.
@@ -53,8 +55,10 @@ public class TestRun {
     /**
      * Finish the test run.
      * This method is blocking:
-     * it internally calls the {@link #waitForCompletion()} waitForCompletion} method
+     * it internally calls the {@link #waitForCompletion() waitForCompletion} method
      * to wait until the test run is finished.
+     * If the test run does not finish before the timeout, the method will still return;
+     * to detect this case, you have to check the test run manually.
      *
      * @param status The status to finish the test run with.
      * @param msg    A short message explaining the result of the test run.
@@ -66,8 +70,10 @@ public class TestRun {
     /**
      * Finish the test run.
      * This method is blocking:
-     * it internally calls the {@link #waitForCompletion()} waitForCompletion} method
+     * it internally calls the {@link #waitForCompletion() waitForCompletion} method
      * to wait until the test run is finished.
+     * If the test run does not finish before the timeout, the method will still return;
+     * to detect this case, you have to check the test run manually.
      *
      * @param status The status to finish the test run with.
      */
@@ -76,10 +82,12 @@ public class TestRun {
     }
 
     /**
-     * Block, until the TestRun goes into a finished state (completed or failed) or timeout occurs (after 10 minutes).
+     * Block until the test run goes into a finished state (completed or failed) or timeout occurs.
+     * The default timeout is 10 minutes.
+     * If the test run does not finish before the timeout, the method will still return;
+     * to detect this case, you have to check the returned test run info manually.
      *
-     * @return the TestRun info of the finished TestRun.
-     *
+     * @return The test run info of the finished test run.
      */
     public TestRunInfo waitForCompletion() {
         return this.session.testMgmt.waitForTestRunCompletion(this.id);
