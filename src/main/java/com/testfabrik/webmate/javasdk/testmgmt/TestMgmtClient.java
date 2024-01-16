@@ -185,6 +185,8 @@ public class TestMgmtClient {
             if (!optHttpResponse.isPresent()) {
                 throw new WebmateApiClientException("Could not finish TestRun. Got no response");
             }
+
+            waitForTestRunCompletion(id);
         }
 
         public List<TestTemplate> getTestTemplates(ProjectId projectId) {
@@ -280,7 +282,7 @@ public class TestMgmtClient {
             return waitForTestRunCompletion(testRunId, MAX_LONG_WAITING_TIME_MILLIS);
         }
 
-        public TestRunInfo waitForTestRunCompletion(TestRunId testRunId, long maxWaitingTimeInMilliSeconds) {
+        public TestRunInfo waitForTestRunCompletion(TestRunId testRunId, long maxWaitingTimeMillis) {
             long startTime = System.currentTimeMillis();
             TestRunInfo testRunInfo = null;
             try {
@@ -291,6 +293,25 @@ public class TestMgmtClient {
                         testRunInfo.getExecutionStatus() == TestRunExecutionStatus.CREATED ||
                         testRunInfo.getEvaluationStatus() == TestRunEvaluationStatus.PENDING_PASSED ||
                         testRunInfo.getEvaluationStatus() == TestRunEvaluationStatus.PENDING_FAILED) &&
+                        System.currentTimeMillis() - startTime < maxWaitingTimeMillis);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return testRunInfo;
+        }
+
+        public TestRunInfo waitForTestRunRunning(TestRunId testRunId) {
+            return waitForTestRunRunning(testRunId, MAX_LONG_WAITING_TIME_MILLIS);
+        }
+
+        public TestRunInfo waitForTestRunRunning(TestRunId testRunId, long maxWaitingTimeInMilliSeconds) {
+            long startTime = System.currentTimeMillis();
+            TestRunInfo testRunInfo = null;
+            try {
+                do {
+                    Thread.sleep(WAITING_POLLING_INTERVAL_MILLIS);
+                    testRunInfo = this.getTestRun(testRunId);
+                } while (testRunInfo.getExecutionStatus() == TestRunExecutionStatus.CREATED &&
                         System.currentTimeMillis() - startTime < maxWaitingTimeInMilliSeconds);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -364,18 +385,37 @@ public class TestMgmtClient {
         this.apiClient.setTestRunName(testRunId, name);
     }
 
+    /**
+     * Create and start a test execution.
+     * This method is blocking:
+     * it internally calls a method similar to {@link #waitForTestRunCompletion(TestRunId) waitForTestRunCompletion}
+     * to wait until the associated test run is running.
+     * If the test run is not running after the timeout, the method will still return;
+     * to detect this case, you have to check the test run manually.
+     *
+     * @param spec      The specification metadata for the test execution.
+     * @param projectId The id of the project the test execution belongs to.
+     * @return          The response data, including the test execution id and the id of the associated test run.
+     */
     public CreateTestExecutionResponse startExecution(TestExecutionSpec spec, ProjectId projectId) {
         CreateTestExecutionResponse executionAndRun = apiClient.createAndStartTestExecution(projectId, spec);
         if (!executionAndRun.optTestRunId.isPresent()) {
             throw new WebmateApiClientException("Got no testrun id for new execution.");
         }
+        apiClient.waitForTestRunRunning(executionAndRun.optTestRunId.get());
         return executionAndRun;
     }
 
     /**
-     * Create and start a TestExecution.
+     * Create and start a test execution.
+     * This method is blocking:
+     * it internally calls a method similar to {@link #waitForTestRunCompletion(TestRunId) waitForTestRunCompletion}
+     * to wait until the associated test run is running.
+     * If the test run is not running after the timeout, the method will still return;
+     * to detect this case, you have to check the test run manually.
      *
-     * @param specBuilder A builder providing the required information for that test type, e.g. {@code Story}
+     * @param specBuilder A builder providing the required information for that test type, e.g. {@code Story}.
+     * @return            The test run associated with the test execution.
      */
     public TestRun startExecutionWithBuilder(TestExecutionSpecBuilder specBuilder) {
         if (!session.getProjectId().isPresent()) {
@@ -401,21 +441,48 @@ public class TestMgmtClient {
     }
 
     /**
-     * Finish a running TestRun.
+     * Finish a running test run.
+     * This method is blocking:
+     * it internally calls the {@link #waitForTestRunCompletion(TestRunId) waitForTestRunCompletion} method
+     * to wait until the test run is finished.
+     * If the test run does not finish before the timeout, the method will still return;
+     * to detect this case, you have to check the test run manually.
+     *
+     * @param id     The id of the test run to finish.
+     * @param status The status to finish the test run with.
      */
     public void finishTestRun(TestRunId id, TestRunEvaluationStatus status) {
        apiClient.finishTestRun(id, new TestRunFinishData(status));
     }
 
     /**
-     * Finish a running TestRun with message.
+     * Finish a running test run.
+     * This method is blocking:
+     * it internally calls the {@link #waitForTestRunCompletion(TestRunId) waitForTestRunCompletion} method
+     * to wait until the test run is finished.
+     * If the test run does not finish before the timeout, the method will still return;
+     * to detect this case, you have to check the test run manually.
+     *
+     * @param id     The id of the test run to finish.
+     * @param status The status to finish the test run with.
+     * @param msg    A short message explaining the result of the test run.
      */
     public void finishTestRun(TestRunId id, TestRunEvaluationStatus status, String msg) {
         apiClient.finishTestRun(id, new TestRunFinishData(status, msg));
     }
 
     /**
-     * Finish a running TestRun with message and detail information.
+     * Finish a running test run.
+     * This method is blocking:
+     * it internally calls the {@link #waitForTestRunCompletion(TestRunId) waitForTestRunCompletion} method
+     * to wait until the test run is finished.
+     * If the test run does not finish before the timeout, the method will still return;
+     * to detect this case, you have to check the test run manually.
+     *
+     * @param id     The id of the test run to finish.
+     * @param status The status to finish the test run with.
+     * @param msg    A short message explaining the result of the test run.
+     * @param detail Detailed information, e.g. a stack trace.
      */
     public void finishTestRun(TestRunId id, TestRunEvaluationStatus status, String msg, String detail) {
         apiClient.finishTestRun(id, new TestRunFinishData(status, msg, detail));
@@ -429,24 +496,29 @@ public class TestMgmtClient {
     }
 
     /**
-     * Block, until the TestRun goes into a finished state (completed or failed) or timeout occurs (after 10 minutes).
+     * Block until the test run goes into a finished state (completed or failed) or timeout occurs.
+     * The default timeout is 10 minutes.
+     * If the test run does not finish before the timeout, the method will still return;
+     * to detect this case, you have to check the returned test run info manually.
      *
-     * @return the TestRun info of the finished TestRun.
+     * @param id The id of the test run to wait for.
+     * @return   The test run info of the finished test run.
      */
     public TestRunInfo waitForTestRunCompletion(TestRunId id) {
         return apiClient.waitForTestRunCompletion(id);
     }
 
     /**
-     * Block, until the TestRun goes into a finished state (completed or failed) or timeout occurs.
+     * Block until the test run goes into a finished state (completed or failed) or timeout occurs.
+     * If the test run does not finish before the timeout, the method will still return;
+     * to detect this case, you have to check the returned test run info manually.
      *
-     * @param id The ID of the TestRun to wait for
-     * @param maxWaitingTimeInMilliSeconds How long to wait before timeout
-     *
-     * @return the TestRun info of the finished TestRun.
+     * @param id                   The id of the test run to wait for.
+     * @param maxWaitingTimeMillis How long to wait before timeout.
+     * @return                     The test run info of the finished test run.
      */
-    public TestRunInfo waitForTestRunCompletion(TestRunId id, long maxWaitingTimeInMilliSeconds) {
-        return apiClient.waitForTestRunCompletion(id, maxWaitingTimeInMilliSeconds);
+    public TestRunInfo waitForTestRunCompletion(TestRunId id, long maxWaitingTimeMillis) {
+        return apiClient.waitForTestRunCompletion(id, maxWaitingTimeMillis);
     }
 
 }
