@@ -6,6 +6,10 @@
   - Methods to create or finish a test run are now blocking
   - Selenium actions will no longer go missing
 
+## [0.53] - 2023-12-15
+### Fixes
+- Add missing DevicePropertyName enum values
+
 ## [0.52] - 2023-09-26
 ### Fixes
 - Compatibility change for webmate release 2023.4.0
