@@ -60,6 +60,8 @@ public class DeviceClient {
 
         private final static UriTemplate setCameraSimulation = new UriTemplate("/device/devices/${deviceId}/capabilities");
 
+        private final static UriTemplate setBiometricsSimulation = new UriTemplate("/device/devices/${deviceId}/capabilities");
+
         public DeviceApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
             super(authInfo, environment);
         }
@@ -169,6 +171,11 @@ public class DeviceClient {
             simulateCameraNode.put("selectedImage", selectedImageId);
             Map<String, Object> params = ImmutableMap.of(CapabilityConstants.SIMULATE_CAMERA, simulateCameraNode, CapabilityConstants.MEDIA_SETTINGS, imagePool.toJson());
             sendPOST(setCameraSimulation, ImmutableMap.of("deviceId", deviceId.toString()), JsonUtils.getJsonFromData(params));
+        }
+
+        public void setBiometricsSimulation(DeviceId deviceId, boolean simulate, boolean accept) {
+            Map<String, Boolean> params = ImmutableMap.of(CapabilityConstants.SIMULATE_BIOMETRICS, simulate, CapabilityConstants.ACCEPT_BIOMETRICS, accept);
+            sendPOST(setBiometricsSimulation, ImmutableMap.of("deviceId", deviceId.toString()), JsonUtils.getJsonFromData(params));
         }
 
         private DeviceDTO waitForProperties(DeviceId deviceId, Map<String, JsonNode> expectedProperties) {
@@ -409,6 +416,19 @@ public class DeviceClient {
      */
     public void setCameraSimulation(DeviceId deviceId, ImageId selectedImageId, boolean simulate) {
         setCameraSimulation(deviceId, selectedImageId, simulate, new ImagePool(selectedImageId));
+    }
+
+    /**
+     * Configure the biometrics simulation on a device.
+     *
+     * @param deviceId             The device id of the device.
+     * @param simulateBiometrics   True if the biometrics simulation should be enabled, false otherwise.
+     * @param acceptAuthentication True if the device should immediately accept the simulated authentication,
+     *                             false if the device should immediately reject the simulated authentication.
+     *                             Note that this flag only has any effect if <code>simulateBiometrics</code> is true.
+     */
+    public void setBiometricsSimulation(DeviceId deviceId, boolean simulateBiometrics, boolean acceptAuthentication) {
+        this.apiClient.setBiometricsSimulation(deviceId, simulateBiometrics, acceptAuthentication);
     }
 
     /**
