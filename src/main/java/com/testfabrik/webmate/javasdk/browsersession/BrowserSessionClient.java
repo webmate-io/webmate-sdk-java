@@ -76,6 +76,9 @@ public class BrowserSessionClient {
         private final static UriTemplate terminateBrowsersessionTemplate =
                 new UriTemplate("/browsersession/${browserSessionId}");
 
+        private final static UriTemplate retrieveBrowserSessionInfoTemplate =
+                new UriTemplate("/browsersession/${browserSessionId}/info");
+
 
         /**
          * Creates an webmate api client.
@@ -142,6 +145,11 @@ public class BrowserSessionClient {
         public void finishAction(BrowserSessionId expeditionId, FinishStoryActionAddArtifactData art) {
             Map<String, String>  params = ImmutableMap.of("expeditionId", expeditionId.getValueAsString());
             sendPOST(addArtifactTemplate, params, JsonUtils.getJsonFromData(art)).getOptHttpResponse();
+        }
+
+        public BrowserSessionInfo getBrowserSessionInfo(BrowserSessionId id) {
+            Optional<HttpResponse> r = sendGET(retrieveBrowserSessionInfoTemplate, ImmutableMap.of("browserSessionId", id.toString())).getOptHttpResponse();
+            return HttpHelpers.getObjectFromJsonEntity(r.get(), BrowserSessionInfo.class);
         }
     }
 
@@ -377,6 +385,15 @@ public class BrowserSessionClient {
     public boolean terminateBrowsersession(BrowserSessionId browserSessionId) {
         LOG.debug("Trying to terminate Browsersession with id ["+ browserSessionId +"]");
         return apiClient.terminateSession(browserSessionId);
+    }
+
+    /**
+     * Retrieves info for this BrowserSession
+     * @param id The id of the BrowserSession that info should be retrieved for
+     * @return BrowserSessionInfo for this BrowserSession
+     */
+    public BrowserSessionInfo getBrowserSessionInfo(BrowserSessionId id) {
+        return apiClient.getBrowserSessionInfo(id);
     }
 
 }
