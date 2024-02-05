@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.55] - 2024-02-05
+### New Features
+- A method in the device client to configure the simulation of biometric authentication
+- Methods to retrieve the browser session info (including the device id) for a running Selenium test
+
 ## [0.54] - 2024-01-16
 ### Fixes
 - Wait for test run creation/completion to finish

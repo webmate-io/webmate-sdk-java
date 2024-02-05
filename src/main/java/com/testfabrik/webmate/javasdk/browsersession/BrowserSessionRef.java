@@ -101,6 +101,14 @@ public class BrowserSessionRef {
         return session.browserSession.terminateBrowsersession(browserSessionId);
     }
 
+    /**
+     * Retrieves info for this BrowserSession
+     * @return BrowserSessionInfo for this BrowserSession
+     */
+    public BrowserSessionInfo getBrowserSessionInfo() {
+        return session.browserSession.getBrowserSessionInfo(browserSessionId);
+    }
+
 
     @Override
     public int hashCode() {
