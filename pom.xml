@@ -29,6 +29,10 @@
             <name>Sebastian Kappler</name>
             <email>skappler@testfabrik.com</email>
         </developer>
+        <developer>
+            <name>Alexander Schlosser</name>
+            <email>aschlosser@testfabrik.com</email>
+        </developer>
     </developers>
 
     <properties>
@@ -47,7 +51,7 @@
         <connection>scm:git:git@github.com:webmate-io/webmate-sdk-java.git</connection>
         <developerConnection>scm:git:git@github.com:webmate-io/webmate-sdk-java.git</developerConnection>
         <url>git@github.com:webmate-io/webmate-sdk-java.git</url>
-        <tag>java-sdk-0.44</tag>
+        <tag>java-sdk-0.54</tag>
     </scm>
     <dependencies>
 
