@@ -73,9 +73,6 @@ public class BrowserSessionClient {
         private final static UriTemplate addArtifactTemplate =
                 new UriTemplate("/browsersession/${expeditionId}/artifacts");
 
-        private final static UriTemplate terminateBrowsersessionTemplate =
-                new UriTemplate("/browsersession/${browserSessionId}");
-
         private final static UriTemplate retrieveBrowserSessionInfoTemplate =
                 new UriTemplate("/browsersession/${browserSessionId}/info");
 
@@ -100,28 +97,6 @@ public class BrowserSessionClient {
          */
         public BrowserSessionApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
             super(authInfo, environment, httpClientBuilder);
-        }
-
-        /**
-         * Tries to terminate a Browsersession. Will return whether the process was successful or not.
-         *
-         * @param browserSessionId The id of the session that should be terminated
-         * @return true, if the Browersession was terminated successfully.
-         */
-        public boolean terminateSession(BrowserSessionId browserSessionId) {
-            Optional<HttpResponse> r = sendPOST(terminateBrowsersessionTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), "terminate").getOptHttpResponse();
-            boolean stopped = false;
-            if (!r.isPresent()){
-                throw new WebmateApiClientException("Could not stop Browsersession. Got no response");
-            }
-            else {
-                try {
-                    stopped = EntityUtils.toString(r.get().getEntity()).equals("true");
-                } catch (IOException e) {
-                    LOG.error("Failed to read response:", e);
-                }
-            }
-            return stopped;
         }
 
         /**
@@ -377,14 +352,14 @@ public class BrowserSessionClient {
     }
 
     /**
-     * Terminate the given BrowserSession
-     *
-     * @param browserSessionId The Id for the BrowserSession that is supposed to be terminated
-     * @return true if the Browsersession was successfully terminated
+     * @deprecated
+     * This method is deprecated.
+     * It is no longer possible to manually terminate browser sessions.
+     * @return False (because no browser session is being terminated successfully).
      */
     public boolean terminateBrowsersession(BrowserSessionId browserSessionId) {
-        LOG.debug("Trying to terminate Browsersession with id ["+ browserSessionId +"]");
-        return apiClient.terminateSession(browserSessionId);
+        LOG.warn("Deprecated method terminateBrowsersession used: it is no longer possible to manually terminate browser sessions");
+        return false;
     }
 
     /**

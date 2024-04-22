@@ -93,9 +93,10 @@ public class BrowserSessionRef {
     }
 
     /**
-     * Terminates the BrowserSession.
-     *
-     * @return true if the BrowserSession was successfully terminated
+     * @deprecated
+     * This method is deprecated.
+     * It is no longer possible to manually terminate browser sessions.
+     * @return False (because no browser session is being terminated successfully).
      */
     public boolean terminateSession() {
         return session.browserSession.terminateBrowsersession(browserSessionId);
