@@ -17,6 +17,8 @@ import com.testfabrik.webmate.javasdk.testmgmt.ApplicationModelId;
 import com.testfabrik.webmate.javasdk.testmgmt.TestMgmtClient;
 import com.testfabrik.webmate.javasdk.testmgmt.TestSessionId;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,8 @@ import java.util.UUID;
  * WebmateSession
  */
 public class WebmateAPISession {
+
+    private static final Logger LOG = LoggerFactory.getLogger(WebmateAPISession.class);
 
     public final WebmateAuthInfo authInfo;
     public final WebmateEnvironment environment;
@@ -109,13 +113,20 @@ public class WebmateAPISession {
 
     /**
      * Check if there is only one associated Expedition / BrowserSession and return it.
+     * If there are none, log a warning and return null.
+     * If there are more than one, log a warning and return the newest one.
      */
     public BrowserSessionId getOnlyAssociatedExpedition() {
-        if (associatedExpeditions.size() != 1) {
-            throw new WebmateApiClientException("Expected exactly one active Expedition (e.g. BrowserSession) in WebmateSession, but there are " +
-                    associatedExpeditions.size());
+        switch (associatedExpeditions.size()) {
+        case 0:
+            LOG.warn("Expected exactly one active Expedition (e.g. BrowserSession), but there are none; returning null");
+            return null;
+        case 1:
+            return associatedExpeditions.get(0);
+        default:
+            LOG.warn("Expected exactly one active Expedition (e.g. BrowserSession), but there are more; returning the newest one");
+            return associatedExpeditions.get(associatedExpeditions.size() - 1);
         }
-        return associatedExpeditions.get(0);
     }
 
     public List<TestSessionId> getAssociatedTestSessions() {

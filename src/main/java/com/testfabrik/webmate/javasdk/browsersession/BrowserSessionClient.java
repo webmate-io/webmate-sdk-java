@@ -170,16 +170,12 @@ public class BrowserSessionClient {
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
     public BrowserSessionStateId createState(String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
-        List<BrowserSessionId> associatedExpeditions = session.getAssociatedExpeditions();
-        if (associatedExpeditions.size() != 1) {
+        BrowserSessionId browserSessionId = session.getOnlyAssociatedExpedition();
+        if (browserSessionId == null) {
             throw new WebmateApiClientException("If createState is called without browsersession id, there must be only one " +
-                    "BrowserSession associated with the API session (to be able to identify the correct one) " +
-                    "but currently there are " + associatedExpeditions.size());
+                    "BrowserSession associated with the API session (to be able to identify the correct one)");
         }
-
-        BrowserSessionId browserSessionId = associatedExpeditions.get(0);
         LOG.info("Creating state for browsersession " + browserSessionId);
-
         return createState(browserSessionId, matchingId, browserSessionStateExtractionConfig);
     }
 
@@ -191,16 +187,12 @@ public class BrowserSessionClient {
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
     public BrowserSessionStateId createState(String matchingId) {
-        List<BrowserSessionId> associatedExpeditions = session.getAssociatedExpeditions();
-        if (associatedExpeditions.size() != 1) {
+        BrowserSessionId browserSessionId = session.getOnlyAssociatedExpedition();
+        if (browserSessionId == null) {
             throw new WebmateApiClientException("If createState is called without browsersession id, there must be only one " +
-                    "BrowserSession associated with the API session (to be able to identify the correct one) " +
-                    "but currently there are " + associatedExpeditions.size());
+                    "BrowserSession associated with the API session (to be able to identify the correct one)");
         }
-
-        BrowserSessionId browserSessionId = associatedExpeditions.get(0);
         LOG.info("Creating state for browsersession " + browserSessionId);
-
         return createState(browserSessionId, matchingId);
     }
 
