@@ -24,7 +24,7 @@ public class BrowserSessionClient {
     private WebmateAPISession session;
     private BrowserSessionApiClient apiClient;
 
-    private Stack<ActionSpanId> currentSpanIds = new Stack<>();
+    private final Map<BrowserSessionId, Stack<ActionSpanId>> currentSpanIds = new HashMap<>();
 
     private static final Logger LOG = LoggerFactory.getLogger(BrowserSessionClient.class);
 
@@ -221,14 +221,32 @@ public class BrowserSessionClient {
     }
 
     /**
-     * Wrap the given action (lambda) in an Action with the given name. The action can be
-     * closed explicitly with the ActionDelegate argument provided to the lambda. It also
-     * implicitly finishes as successful or an error if an exception is throws within the lambda.
-     *
-     * @param actionName Name of action
-     * @param actionFunc function executed within action.
-     * @param <T> Return value of inner code.
-     * @return Returned value of lambda
+     * Wrap the given action lambda function in an action of the given expedition with the given name.
+     * The action can be closed explicitly with the ActionDelegate argument provided to the lambda.
+     * It also implicitly finishes as successful or an error if an exception is thrown within the lambda.
+     * @return The return value of the lambda function, null on failure.
+     */
+    public <T> T withAction(BrowserSessionId expeditionId, String actionName, ActionFunc<T> actionFunc) {
+        this.startAction(expeditionId, actionName);
+        ActionDelegate actionDelegate = new ActionDelegate(this);
+        T result = null;
+        try {
+            result = actionFunc.op(actionDelegate);
+        } catch (Throwable e) {
+            this.finishActionAsFailure(expeditionId, "Exception in '" + actionName + "': " + e.getMessage());
+        } finally {
+            this.finishAction(expeditionId);
+        }
+        return result;
+    }
+
+    /**
+     * Wrap the given action lambda function in an action with the given name.
+     * The expedition of the action is supplied using {@link WebmateAPISession#getOnlyAssociatedExpedition}.
+     * If it returns null, the action lambda function is still executed, but not wrapped in an action.
+     * The action can be closed explicitly with the ActionDelegate argument provided to the lambda.
+     * It also implicitly finishes as successful or an error if an exception is thrown within the lambda.
+     * @return The return value of the lambda function, null on failure.
      */
     public <T> T withAction(String actionName, ActionFunc<T> actionFunc) {
         this.startAction(actionName);
@@ -237,20 +255,36 @@ public class BrowserSessionClient {
         try {
             result = actionFunc.op(actionDelegate);
         } catch (Throwable e) {
-            this.finishActionAsFailureIgnoreNoneActive("Exception in '" + actionName + "': " + e.getMessage());
+            this.finishActionAsFailure("Exception in '" + actionName + "': " + e.getMessage());
         } finally {
-            this.finishActionAsSuccessIgnoreNoneActive();
+            this.finishAction();
         }
         return result;
     }
 
     /**
-     * Wrap the given action (lambda) in an Action with the given name. The action can be
-     * closed explicitly with the ActionDelegate argument provided to the lambda. It also
-     * implicitly finishes as successful or an error if an exception is throws within the lambda.
-     *
-     * @param actionName Name of action
-     * @param actionFunc function executed within action.
+     * Wrap the given action lambda function in an action of the given expedition with the given name.
+     * The action can be closed explicitly with the ActionDelegate argument provided to the lambda.
+     * It also implicitly finishes as successful or an error if an exception is thrown within the lambda.
+     */
+    public void withAction(BrowserSessionId expeditionId, String actionName, ActionFuncVoid actionFunc) {
+        this.startAction(expeditionId, actionName);
+        ActionDelegate actionDelegate = new ActionDelegate(this);
+        try {
+            actionFunc.op(actionDelegate);
+        } catch (Throwable e) {
+            this.finishActionAsFailure(expeditionId, "Exception in '" + actionName + "': " + e.getMessage());
+        } finally {
+            this.finishAction(expeditionId);
+        }
+    }
+
+    /**
+     * Wrap the given action lambda function in an action with the given name.
+     * The expedition of the action is supplied using {@link WebmateAPISession#getOnlyAssociatedExpedition}.
+     * If it returns null, the action lambda function is still executed, but not wrapped in an action.
+     * The action can be closed explicitly with the ActionDelegate argument provided to the lambda.
+     * It also implicitly finishes as successful or an error if an exception is thrown within the lambda.
      */
     public void withAction(String actionName, ActionFuncVoid actionFunc) {
         this.startAction(actionName);
@@ -258,89 +292,137 @@ public class BrowserSessionClient {
         try {
             actionFunc.op(actionDelegate);
         } catch (Throwable e) {
-            this.finishActionAsFailureIgnoreNoneActive("Exception in '" + actionName + "': " + e.getMessage());
+            this.finishActionAsFailure("Exception in '" + actionName + "': " + e.getMessage());
         } finally {
-            this.finishActionAsSuccessIgnoreNoneActive();
+            this.finishAction();
         }
     }
 
     /**
-     * Start action with the given name.
+     * Start an action for the given expedition with the given name.
      */
-    public void startAction(String actionName) {
+    public void startAction(BrowserSessionId expeditionId, String actionName) {
         LOG.debug("Start action " + actionName);
-        BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
         ActionSpanId spanId = new ActionSpanId(UUID.randomUUID());
         StartStoryActionAddArtifactData artifactData = new StartStoryActionAddArtifactData(actionName, spanId);
         apiClient.startAction(expeditionId, artifactData);
-        this.currentSpanIds.push(spanId);
+        if (!currentSpanIds.containsKey(expeditionId)) {
+            currentSpanIds.put(expeditionId, new Stack<>());
+        }
+        currentSpanIds.get(expeditionId).push(spanId);
     }
 
     /**
-     * Finish the currently active Action and provide a success message.
-     *
-     * @param successMessage message that should be added to the action
-     * @throws WebmateApiClientException if no action is active
+     * Start an action with the given name.
+     * The expedition of the action is supplied using {@link WebmateAPISession#getOnlyAssociatedExpedition}.
+     * If it returns null, log a warning and do nothing.
      */
-    public void finishAction(String successMessage) {
+    public void startAction(String actionName) {
         BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
-        if (this.currentSpanIds.isEmpty()) {
-            throw new WebmateApiClientException("Trying to finish action but none is active.");
+        if (expeditionId == null) {
+            LOG.warn("Could not start action " + actionName);
+            return;
         }
-        ActionSpanId spanId = this.currentSpanIds.pop();
+        startAction(expeditionId, actionName);
+    }
+
+    /**
+     * Finish the newest action of the given expedition.
+     * If there is no active action, log a warning and do nothing.
+     */
+    public void finishAction(BrowserSessionId expeditionId) {
+        if (!currentSpanIds.containsKey(expeditionId) || currentSpanIds.get(expeditionId).isEmpty()) {
+            LOG.warn("Trying to finish action but none is active.");
+            return;
+        }
+        ActionSpanId spanId = currentSpanIds.get(expeditionId).pop();
+        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId));
+    }
+
+    /**
+     * Finish the newest action of the given expedition with the given message.
+     * If there is no active action, log a warning and do nothing.
+     */
+    public void finishAction(BrowserSessionId expeditionId, String successMessage) {
+        if (!currentSpanIds.containsKey(expeditionId) || currentSpanIds.get(expeditionId).isEmpty()) {
+            LOG.warn("Trying to finish action but none is active.");
+            return;
+        }
+        ActionSpanId spanId = currentSpanIds.get(expeditionId).pop();
         apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId, successMessage));
     }
 
+    /**
+     * Fail the newest action of the given expedition with the given message.
+     * If there is no active action, log a warning and do nothing.
+     */
+    public void finishActionAsFailure(BrowserSessionId expeditionId, String errorMessage) {
+        if (!currentSpanIds.containsKey(expeditionId) || currentSpanIds.get(expeditionId).isEmpty()) {
+            LOG.warn("Trying to finish action but none is active.");
+            return;
+        }
+        ActionSpanId spanId = currentSpanIds.get(expeditionId).pop();
+        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.failure(spanId, errorMessage, Optional.absent()));
+    }
+
+    /**
+     * Finish the newest action of the newest expedition with the given message.
+     * The expedition of the action is supplied using {@link WebmateAPISession#getOnlyAssociatedExpedition}.
+     * If it returns null, or if there is no active action, log a warning and do nothing.
+     */
+    public void finishAction(String successMessage) {
+        BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
+        if (expeditionId == null) {
+            LOG.warn("Could not finish action");
+            return;
+        }
+        finishAction(expeditionId, successMessage);
+    }
+
+    /**
+     * Finish the newest action of the newest expedition.
+     * The expedition of the action is supplied using {@link WebmateAPISession#getOnlyAssociatedExpedition}.
+     * If it returns null, or if there is no active action, log a warning and do nothing.
+     */
     public void finishAction() {
         BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
-        if (this.currentSpanIds.isEmpty()) {
-            throw new WebmateApiClientException("Trying to finish action but none is active.");
+        if (expeditionId == null) {
+            LOG.warn("Could not finish action");
+            return;
         }
-        ActionSpanId spanId = this.currentSpanIds.pop();
-        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId));
+        finishAction(expeditionId);
     }
 
     /**
-     * Finish the currently active Action. Do nothing if there is no active action.
+     * @deprecated
+     * This method is deprecated.
+     * Use {@link BrowserSessionClient#finishAction() finishAction} instead.
      */
     public void finishActionAsSuccessIgnoreNoneActive() {
-        BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
-        if (this.currentSpanIds.isEmpty()) {
-            // we don't care
-            return;
-        }
-        ActionSpanId spanId = this.currentSpanIds.pop();
-        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.successful(spanId));
+        finishAction();
     }
 
     /**
-     * Finish the currently active Action and mark is as failed. Do nothing if there is no active action.
-     *
-     * @param errorMessage Error message indicating why this action has failed.
+     * @deprecated
+     * This method is deprecated.
+     * Use {@link BrowserSessionClient#finishActionAsFailure(String) finishActionAsFailure} instead.
      */
     public void finishActionAsFailureIgnoreNoneActive(String errorMessage) {
-        BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
-        if (this.currentSpanIds.isEmpty()) {
-            // we don't care
-            return;
-        }
-        ActionSpanId spanId = this.currentSpanIds.pop();
-        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.failure(spanId, errorMessage, Optional.<JsonNode>absent()));
+        finishActionAsFailure(errorMessage);
     }
 
     /**
-     * Finish the currently active Action and mark it as failure.
-     *
-     * @param errorMessage Error message indicating why this action has failed.
-     * @throws WebmateApiClientException if no action is active
+     * Fail the newest action of the newest expedition with the given message.
+     * The expedition of the action is supplied using {@link WebmateAPISession#getOnlyAssociatedExpedition}.
+     * If it returns null, or if there is no active action, log a warning and do nothing.
      */
     public void finishActionAsFailure(String errorMessage) {
         BrowserSessionId expeditionId = session.getOnlyAssociatedExpedition();
-        if (this.currentSpanIds.isEmpty()) {
-           throw new WebmateApiClientException("Trying to finish action but none is active.");
+        if (expeditionId == null) {
+            LOG.warn("Could not finish action");
+            return;
         }
-        ActionSpanId spanId = this.currentSpanIds.pop();
-        apiClient.finishAction(expeditionId, FinishStoryActionAddArtifactData.failure(spanId, errorMessage, Optional.<JsonNode>absent()));
+        finishActionAsFailure(expeditionId, errorMessage);
     }
 
     /**

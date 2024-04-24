@@ -276,21 +276,50 @@ public class WebmateAPISession {
     }
 
     /**
-     * Start an action of type "story" with the given name.
+     * Start an action for the given expedition with the given name.
+     */
+    public void startAction(BrowserSessionId expeditionId, String actionName) {
+        this.browserSession.startAction(expeditionId, actionName);
+    }
+
+    /**
+     * Start an action with the given name.
+     * The expedition of the action is supplied using {@link WebmateAPISession#getOnlyAssociatedExpedition}.
+     * If it returns null, log a warning and do nothing.
      */
     public void startAction(String actionName) {
         this.browserSession.startAction(actionName);
     }
 
     /**
-     * Finish the current action with successful result.
+     * Finish the newest action of the given expedition.
+     * If there is no active action, log a warning and do nothing.
+     */
+    public void finishAction(BrowserSessionId expeditionId) {
+        this.browserSession.finishAction(expeditionId);
+    }
+
+    /**
+     * Finish the newest action of the newest expedition.
+     * The expedition of the action is supplied using {@link WebmateAPISession#getOnlyAssociatedExpedition}.
+     * If it returns null, or if there is no active action, log a warning and do nothing.
      */
     public void finishAction() {
         this.browserSession.finishAction();
     }
 
     /**
-     * Finish the current action with successful result.
+     * Fail the newest action of the given expedition with the given message.
+     * If there is no active action, log a warning and do nothing.
+     */
+    public void finishActionAsFailure(BrowserSessionId expeditionId, String message) {
+        this.browserSession.finishActionAsFailure(expeditionId, message);
+    }
+
+    /**
+     * Fail the newest action of the newest expedition with the given message.
+     * The expedition of the action is supplied using {@link WebmateAPISession#getOnlyAssociatedExpedition}.
+     * If it returns null, or if there is no active action, log a warning and do nothing.
      */
     public void finishActionAsFailure(String message) {
         this.browserSession.finishActionAsFailure(message);
