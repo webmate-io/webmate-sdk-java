@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class BrowserSessionId {
 
-    private UUID value;
+    private final UUID value;
 
 
     @JsonCreator

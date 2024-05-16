@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.56] - 2024-04-25
+### Fixes
+- Deprecate `terminateBrowsersession` whose backend route has been removed
+- Add methods that accept an explicit expedition (browser session) id, rather than relying on a unique implicit one
+- Replace exceptions with warnings when an implicit expedition id is not unique
+
 ## [0.55] - 2024-02-05
 ### New Features
 - A method in the device client to configure the simulation of biometric authentication

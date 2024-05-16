@@ -38,64 +38,61 @@ public class BrowserSessionRef {
     }
 
     /**
-     * Start custom action with given name. If there is another action already active, this action will be a
-     * child action of that one.
+     * Start a custom action with the given name.
+     * If there is another action already active, this action will be a child action of that one.
      */
     public void startAction(String actionName) {
-        session.browserSession.startAction(actionName);
+        session.browserSession.startAction(browserSessionId, actionName);
     }
 
     /**
-     * Wrap the given action (lambda) in an Action with the given name. The action can be
-     * closed explicitly with the ActionDelegate argument provided to the lambda. It also
-     * implicitly finishes as successful or an error if an exception is throws within the lambda.
-     *
-     * @param actionName Name of action
-     * @param actionFunc function executed within action.
-     * @param <T> Return value of inner code.
-     * @return Returned value of lambda
+     * Wrap the given action lambda function in a custom action with the given name.
+     * The action can be closed explicitly with the ActionDelegate argument provided to the lambda.
+     * It also implicitly finishes as successful or an error if an exception is thrown within the lambda.
+     * @return The return value of the lambda function, null on failure.
      */
     public <T> T withAction(String actionName, BrowserSessionClient.ActionFunc<T> actionFunc) {
-        return session.browserSession.withAction(actionName, actionFunc);
+        return session.browserSession.withAction(browserSessionId, actionName, actionFunc);
     }
 
     /**
-     * Wrap the given action (lambda) in an Action with the given name. The action can be
-     * closed explicitly with the ActionDelegate argument provided to the lambda. It also
-     * implicitly finishes as successful or an error if an exception is throws within the lambda.
-     *
-     * @param actionName Name of action
-     * @param actionFunc function executed within action.
+     * Wrap the given action lambda function in a custom action with the given name.
+     * The action can be closed explicitly with the ActionDelegate argument provided to the lambda.
+     * It also implicitly finishes as successful or an error if an exception is thrown within the lambda.
      */
     public void withAction(String actionName, BrowserSessionClient.ActionFuncVoid actionFunc) {
-        session.browserSession.withAction(actionName, actionFunc);
+        session.browserSession.withAction(browserSessionId, actionName, actionFunc);
     }
 
     /**
-     * Finish the current active custom action as a success.
+     * Finish the newest custom action.
+     * If there is no active action, log a warning and do nothing.
      */
     public void finishAction() {
-        session.browserSession.finishAction();
+        session.browserSession.finishAction(browserSessionId);
     }
 
     /**
-     * Finish the currently active custom action successfully with message.
+     * Finish the newest custom action with the given message.
+     * If there is no active action, log a warning and do nothing.
      */
     public void finishAction(String successMessage) {
-        session.browserSession.finishAction(successMessage);
+        session.browserSession.finishAction(browserSessionId, successMessage);
     }
 
     /**
-     * Finish the currently active custom action and mark as failed with the given message.
+     * Fail the newest custom action with the given message.
+     * If there is no active action, log a warning and do nothing.
      */
     public void finishActionAsFailure(String errorMessage) {
-        session.browserSession.finishActionAsFailure(errorMessage);
+        session.browserSession.finishActionAsFailure(browserSessionId, errorMessage);
     }
 
     /**
-     * Terminates the BrowserSession.
-     *
-     * @return true if the BrowserSession was successfully terminated
+     * @deprecated
+     * This method is deprecated.
+     * It is no longer possible to manually terminate browser sessions.
+     * @return False (because no browser session is being terminated successfully).
      */
     public boolean terminateSession() {
         return session.browserSession.terminateBrowsersession(browserSessionId);
