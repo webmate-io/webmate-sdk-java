@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.57] - 2024-12-11
+### Fixes
+- Fix timeout issues when installing apps/packages using `installAppOnDevice`
+
 ## [0.56] - 2024-04-25
 ### Fixes
 - Deprecate `terminateBrowsersession` whose backend route has been removed

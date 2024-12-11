@@ -14,6 +14,8 @@ import com.testfabrik.webmate.javasdk.packagemgmt.ImageId;
 import com.testfabrik.webmate.javasdk.packagemgmt.ImagePool;
 import com.testfabrik.webmate.javasdk.packagemgmt.ImageType;
 import com.testfabrik.webmate.javasdk.packagemgmt.PackageId;
+import com.testfabrik.webmate.javasdk.packagemgmt.*;
+import com.testfabrik.webmate.javasdk.packagemgmt.Package;
 import com.testfabrik.webmate.javasdk.utils.JsonUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -53,6 +55,8 @@ public class DeviceClient {
         private final static UriTemplate resetDevice = new UriTemplate("/device/devices/${deviceId}/reset");
 
         private final static UriTemplate installAppOnDevice = new UriTemplate("/device/${deviceId}/appinstall/${packageId}");
+
+        private final static UriTemplate imposePropertyRequirement = new UriTemplate("/device/devices/${deviceId}/requirements/propertyRequirement");
 
         private final static UriTemplate uploadImage = new UriTemplate("/projects/${projectId}/images");
 
@@ -132,6 +136,14 @@ public class DeviceClient {
 
         public void installAppOnDevice(DeviceId deviceId, PackageId appId, Boolean instrumented) {
             sendPOST(installAppOnDevice, ImmutableMap.of("deviceId", deviceId.toString(), "packageId", appId.toString()), "wait=true&instrumented=" + instrumented.toString());
+        }
+
+        public void installAppOnDeviceNew(DeviceId deviceId, PackageId appId, String packageType) {
+            PackageInstallation packageInstallation = new PackageInstallation(UUID.randomUUID(), appId, packageType, PackageInstallationState.FINISHED);
+            DeviceRequirements requirement = new DeviceRequirements(
+                    ImmutableMap.of(DevicePropertyName.InstalledPackages, packageInstallation.toJson())
+            );
+            sendPOST(imposePropertyRequirement, ImmutableMap.of("deviceId", deviceId.toString()), requirement.toJson());
         }
 
         public ImageId uploadImage(ProjectId projectId, byte[] image, String imageName, ImageType imageType) {
@@ -335,8 +347,51 @@ public class DeviceClient {
      * @param appId Id of app to be installed. Can be found in App management of the webmate device overview.
      * @param instrumented If true, the instrumented version of the app will be installed, if available.
      */
-    public void installAppOnDevice(DeviceId deviceId, PackageId appId, Boolean instrumented) {
-        this.apiClient.installAppOnDevice(deviceId, appId, instrumented);
+    public void installAppOnDevice(DeviceId deviceId, PackageId appId, Boolean instrumented) throws InterruptedException {
+        Package p = session.packages.getPackage(appId);
+        PackageId id;
+        if (instrumented) {
+            id = p.getInstrumentedPackageId().get();
+            this.apiClient.installAppOnDeviceNew(deviceId, p.getInstrumentedPackageId().get(), p.getOrigPackageType());
+        } else {
+            id = p.getOrigPackageId();
+            this.apiClient.installAppOnDeviceNew(deviceId, p.getOrigPackageId(), p.getOrigPackageType());
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        int retries = 0;
+        while (retries < 30 ) {
+            retries++;
+            DeviceDTO deviceDTO = this.apiClient.getDevice(deviceId);
+
+            JsonNode installedApps = deviceDTO.getProperties().get("package.installedPackages");
+            if (installedApps != null) {
+                List<PackageInstallation> installations = objectMapper.convertValue(
+                        installedApps,
+                        new TypeReference<List<PackageInstallation>>() {}
+                );
+                for (PackageInstallation installation : installations) {
+                    if (installation.getPackageId().toString().equals(id.toString())) {
+                        switch (installation.getState()) {
+                            case FAILED:
+                                System.err.println("Installation failed for package: " + appId);
+                            case REQUESTED:
+                                System.out.println("Installation still in progress for package: " + appId);
+                            case FINISHED:
+                                System.out.println("Installation finished for package: " + appId);
+                                return;
+                            default:
+                                System.out.println("Unknown state: " + installation.getState());
+                                break;
+                        }
+                    }
+                }
+            }
+
+            Thread.sleep(10000);
+        }
+
+        System.err.println("Timeout reached: Installation process could not complete for package: " + appId);
     }
 
     /**
@@ -345,8 +400,8 @@ public class DeviceClient {
      * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
      * @param appId Id of app to be installed. Can be found in App management of the webmate device overview.
      */
-    public void installAppOnDevice(DeviceId deviceId, PackageId appId) {
-        this.apiClient.installAppOnDevice(deviceId, appId, false);
+    public void installAppOnDevice(DeviceId deviceId, PackageId appId) throws InterruptedException {
+        installAppOnDevice(deviceId,appId, false);
     }
 
     /**

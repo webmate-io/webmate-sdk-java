@@ -96,6 +96,9 @@ public enum DevicePropertyName {
     NetworkConnectivity("network.connectivity"),
     IpAddress("network.ip"),
 
+    //Package properties
+    InstalledPackages("package.installedPackages"),
+
     SimulateBandwidth("network.simulation.bandwidth"),
     SimulatePaketLoss("network.simulation.packetloss"),
     SimulateDisconnect("network.simulation.disconnect"),
