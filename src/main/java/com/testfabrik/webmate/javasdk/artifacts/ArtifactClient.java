@@ -1,5 +1,6 @@
 package com.testfabrik.webmate.javasdk.artifacts;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
@@ -35,7 +36,7 @@ public class ArtifactClient {
     private static class ArtifactApiClient extends WebmateApiClient {
 
         private final static UriTemplate queryArtifactsTemplate =
-                new UriTemplate("/projects/${projectId}/artifacts");
+                new UriTemplate("/projects/${projectId}/artifact-infos");
 
         private final static UriTemplate queryArtifactsForBrowserSessionTemplate =
                 new UriTemplate("/browsersession/${browsersessionId}/artifacts");
@@ -81,16 +82,16 @@ public class ArtifactClient {
                 return Optional.absent();
             }
 
-            ArtifactInfo[] artifactInfos;
+            ApiDataResult<ArtifactInfo[]> artifactInfos;
             try {
                 String testInfosJson = EntityUtils.toString(optHttpResponse.get().getEntity());
                 ObjectMapper mapper = JacksonMapper.getInstance();
                 mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-                artifactInfos = mapper.readValue(testInfosJson, ArtifactInfo[].class);
+                artifactInfos = mapper.readValue(testInfosJson, new TypeReference<ApiDataResult<ArtifactInfo[]>>() {});
             } catch (IOException e) {
                 throw new WebmateApiClientException("Error reading data: " + e.getMessage(), e);
             }
-            return Optional.of(Arrays.asList(artifactInfos));
+            return Optional.of(Arrays.asList(artifactInfos.data));
         }
 
         /**
