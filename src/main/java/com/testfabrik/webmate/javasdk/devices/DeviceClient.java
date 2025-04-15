@@ -47,7 +47,7 @@ public class DeviceClient {
 
         private final static UriTemplate requestDeviceByRequirementsForProject = new UriTemplate("/projects/${projectId}/device/devices");
 
-        private final static UriTemplate queryDeployablesByRequirementsForProject = new UriTemplate("/project/${projectId}/deployables");
+        private final static UriTemplate queryDeployablesByRequirementsForProject = new UriTemplate("/projects/${projectId}/deployables");
 
         private final static UriTemplate synchronizeDevice = new UriTemplate("/device/devices/${deviceId}/sync");
 
