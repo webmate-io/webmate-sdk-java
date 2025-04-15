@@ -4,7 +4,7 @@
 
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
-    <version>0.58-SNAPSHOT</version>
+    <version>0.59-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.58] - 2025-04-15
+### New Features
+- A method that allows to query deployable devices for a given Project and requirements
+### Fixes
+- Fix deprecated route used to query artifacts
+
 ## [0.57] - 2024-12-11
 ### Fixes
 - Fix timeout issues when installing apps/packages using `installAppOnDevice`
