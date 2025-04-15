@@ -104,7 +104,6 @@ public class DeviceClient {
         public Set<DeviceOffer> queryDeployablesByRequirements(ProjectId projectId, String platformType) {
             Map<String, String> parameters = new HashMap<>();
             parameters.put("projectId", projectId.toString());
-
             List<NameValuePair> queryParams = null;
             if (platformType != null && !platformType.trim().isEmpty()) {
                 queryParams = new ArrayList<>();
@@ -348,7 +347,6 @@ public class DeviceClient {
                                                  String browser) {
         return offers.stream()
                 .filter(offer -> {
-                    System.out.println(offer.toString());
                     DeviceProperties props = offer.getDeviceProperties();
                     boolean matchesPlatform = true;
                     boolean matchesPlatformVersion = true;
@@ -373,7 +371,6 @@ public class DeviceClient {
                                                 browser.equalsIgnoreCase(String.valueOf(browserMap.get("browserType")))
                                         );
                     }
-                    System.out.println("matchesPlatform " + matchesPlatform + " matchesPlatformVersion " + matchesPlatformVersion + " matchesBrowserType " + matchesBrowserType);
                     return matchesPlatform && matchesPlatformVersion && matchesBrowserType;
                 })
                 .collect(Collectors.toSet());
