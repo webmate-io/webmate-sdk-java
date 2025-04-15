@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Facade to webmate's Device subsystem.
@@ -45,6 +46,8 @@ public class DeviceClient {
         private final static UriTemplate getDevice = new UriTemplate("/device/devices/${deviceId}");
 
         private final static UriTemplate requestDeviceByRequirementsForProject = new UriTemplate("/projects/${projectId}/device/devices");
+
+        private final static UriTemplate queryDeployablesByRequirementsForProject = new UriTemplate("/project/${projectId}/deployables");
 
         private final static UriTemplate synchronizeDevice = new UriTemplate("/device/devices/${deviceId}/sync");
 
@@ -96,6 +99,43 @@ public class DeviceClient {
             }
             return deviceIds;
         }
+
+
+        public Set<DeviceOffer> queryDeployablesByRequirements(ProjectId projectId, String platformType) {
+            Map<String, String> parameters = new HashMap<>();
+            parameters.put("projectId", projectId.toString());
+
+            List<NameValuePair> queryParams = null;
+            if (platformType != null && !platformType.trim().isEmpty()) {
+                queryParams = new ArrayList<>();
+                String normalizedPlatform = platformType.trim().toLowerCase();
+                if (normalizedPlatform.equals("ios") || normalizedPlatform.equals("android")) {
+                    queryParams.add(new BasicNameValuePair("platformFamily", "mobile"));
+                } else {
+                    queryParams.add(new BasicNameValuePair("platformFamily", "desktop"));
+                }
+            }
+            queryParams = null;
+            Optional<HttpResponse> optHttpResponse = sendGET(
+                    queryDeployablesByRequirementsForProject,
+                    ImmutableMap.copyOf(parameters),
+                    queryParams
+            ).getOptHttpResponse();
+
+            if (!optHttpResponse.isPresent()) {
+                throw new WebmateApiClientException("Could not request device. Got no response");
+            }
+            try {
+                String deployablesJson = EntityUtils.toString(optHttpResponse.get().getEntity());
+                ObjectMapper mapper = JacksonMapper.getInstance();
+                return mapper.readValue(deployablesJson, new TypeReference<Set<DeviceOffer>>() {});
+            } catch (IOException e) {
+                throw new WebmateApiClientException("Could not retrieve deployable list", e);
+            }
+        }
+
+
+
 
         public DeviceDTO requestDeviceByRequirements(ProjectId projectId, DeviceRequest deviceRequest) {
             ObjectMapper mapper = JacksonMapper.getInstance();
@@ -300,6 +340,61 @@ public class DeviceClient {
             throw new WebmateApiClientException("No project id associated with webmate session.");
         }
         return this.requestDeviceByRequirements(projectId.get(), deviceRequest);
+    }
+
+    public Set<DeviceOffer> filterMatchingOffers(Set<DeviceOffer> offers,
+                                                 String platform,
+                                                 String platformVersion,
+                                                 String browser) {
+        return offers.stream()
+                .filter(offer -> {
+                    System.out.println(offer.toString());
+                    DeviceProperties props = offer.getDeviceProperties();
+                    boolean matchesPlatform = true;
+                    boolean matchesPlatformVersion = true;
+                    boolean matchesBrowserType = true;
+                    String[] offeredPlatform = props.getPlatform().split("_");
+                    if (platform != null && !platform.trim().isEmpty()) {
+                        matchesPlatform = platform.equalsIgnoreCase(offeredPlatform[0]);
+                    }
+                    if (platformVersion != null && !platformVersion.trim().isEmpty()) {
+                        if (offeredPlatform.length > 1) {
+                            String majorVersion = offeredPlatform[1].contains(".")
+                                    ? offeredPlatform[1].split("\\.")[0]
+                                    : offeredPlatform[1];
+                            matchesPlatformVersion = platformVersion.equals(majorVersion);
+                        }
+                    }
+                    if (browser != null && !browser.trim().isEmpty()) {
+                        List<Map<String, Object>> browserList = props.getBrowsers();
+                        matchesBrowserType = browserList != null &&
+                                browserList.stream()
+                                        .anyMatch(browserMap ->
+                                                browser.equalsIgnoreCase(String.valueOf(browserMap.get("browserType")))
+                                        );
+                    }
+                    System.out.println("matchesPlatform " + matchesPlatform + " matchesPlatformVersion " + matchesPlatformVersion + " matchesBrowserType " + matchesBrowserType);
+                    return matchesPlatform && matchesPlatformVersion && matchesBrowserType;
+                })
+                .collect(Collectors.toSet());
+    }
+
+
+    public Set<DeviceOffer> queryDeployablesByRequirements(ProjectId projectId, String platform, String platformVersion, String browser) {
+        boolean applyFilter =
+                (platform != null && !platform.trim().isEmpty()) || (platformVersion != null && !platformVersion.trim().isEmpty()) || (browser != null && !browser.trim().isEmpty());
+        if (applyFilter) {
+            return filterMatchingOffers(this.apiClient.queryDeployablesByRequirements(projectId, platform),  platform,  platformVersion,  browser);
+        } else
+            return this.apiClient.queryDeployablesByRequirements(projectId,null);
+    }
+
+    public Set<DeviceOffer> queryDeployablesByRequirements(String platform, String platformVersion, String browser) {
+        Optional<ProjectId> projectId = this.session.getProjectId();
+        if (!projectId.isPresent()) {
+            throw new WebmateApiClientException("No project id associated with webmate session.");
+        }
+        return this.queryDeployablesByRequirements(projectId.get(), platform,  platformVersion,  browser);
     }
 
     /**
