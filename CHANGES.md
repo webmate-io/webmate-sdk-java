@@ -1,4 +1,7 @@
 # Changelog
+## [0.59] - 2025-95-06
+### Fixes
+- Fix filter issues in  `queryDevicesByRequirements`
 
 ## [0.58] - 2025-04-15
 ### New Features

@@ -22,7 +22,7 @@ This release is also distributed via Maven Central. Just include the following d
 <dependency>
     <groupId>com.testfabrik.webmate.sdk</groupId>
     <artifactId>java-sdk</artifactId>
-    <version>0.58</version>
+    <version>0.59</version>
 </dependency>
 ```
 
