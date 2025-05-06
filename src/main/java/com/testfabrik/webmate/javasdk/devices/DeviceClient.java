@@ -341,42 +341,69 @@ public class DeviceClient {
         return this.requestDeviceByRequirements(projectId.get(), deviceRequest);
     }
 
-    public Set<DeviceOffer> filterMatchingOffers(Set<DeviceOffer> offers,
+    /**
+     * Filters the given set of device offers based on the specified platform, platform version, and browser.
+     *
+     * @param deviceOffers the set of device offers to filter.
+     * @param platform the required platform name; if null or empty, no filtering on platform is applied.
+     * @param platformVersion the required platform version; if null or empty, no filtering on version is applied.
+     * @param browser the required browser type; if null or empty, no filtering on browser is applied.
+     */
+    public Set<DeviceOffer> filterMatchingOffers(Set<DeviceOffer> deviceOffers,
                                                  String platform,
                                                  String platformVersion,
                                                  String browser) {
-        return offers.stream()
+        return deviceOffers.stream()
                 .filter(offer -> {
                     DeviceProperties props = offer.getDeviceProperties();
-                    boolean matchesPlatform = true;
-                    boolean matchesPlatformVersion = true;
-                    boolean matchesBrowserType = true;
                     String[] offeredPlatform = props.getPlatform().split("_");
-                    if (platform != null && !platform.trim().isEmpty()) {
-                        matchesPlatform = platform.equalsIgnoreCase(offeredPlatform[0]);
+
+                    boolean matchesPlatform = true;
+                    if (platform != null && !platform.isEmpty()) {
+                        matchesPlatform = offeredPlatform.length > 0 && platform.equalsIgnoreCase(offeredPlatform[0]);
                     }
-                    if (platformVersion != null && !platformVersion.trim().isEmpty()) {
-                        if (offeredPlatform.length > 1) {
-                            String majorVersion = offeredPlatform[1].contains(".")
-                                    ? offeredPlatform[1].split("\\.")[0]
-                                    : offeredPlatform[1];
-                            matchesPlatformVersion = platformVersion.equals(majorVersion);
+
+                    boolean matchesPlatformVersion = true;
+                    if (platformVersion != null && !platformVersion.isEmpty()) {
+                        if (offeredPlatform.length < 2) {
+                            matchesPlatformVersion = false;
+                        } else {
+                            String offeredVersion = offeredPlatform[1];
+                            String[] requestedParts = platformVersion.split("\\.");
+                            String[] offeredParts = offeredVersion.split("\\.");
+
+                            if (requestedParts.length == 1) { // just major version provided
+                                matchesPlatformVersion = requestedParts[0].equals(offeredParts[0]);
+                            } else { // in depth match
+                                matchesPlatformVersion = requestedParts[0].equals(offeredParts[0]) &&
+                                        requestedParts[1].equals(offeredParts.length > 1 ? offeredParts[1] : "0");
+                            }
                         }
                     }
-                    if (browser != null && !browser.trim().isEmpty()) {
+
+                    boolean matchesBrowser = true;
+                    if (browser != null && !browser.isEmpty()) {
                         List<Map<String, Object>> browserList = props.getBrowsers();
-                        matchesBrowserType = browserList != null &&
+                        matchesBrowser = browserList != null &&
                                 browserList.stream()
                                         .anyMatch(browserMap ->
                                                 browser.equalsIgnoreCase(String.valueOf(browserMap.get("browserType")))
                                         );
                     }
-                    return matchesPlatform && matchesPlatformVersion && matchesBrowserType;
+                    return matchesPlatform && matchesPlatformVersion && matchesBrowser;
                 })
                 .collect(Collectors.toSet());
     }
 
-
+    /**
+     * Queries deployable devices for the specified project and filters them by the provided platform,
+     * platform version, and browser criteria if any of these parameters are present.
+     *
+     * @param projectId Id of Project (as found in dashboard), for which devices should be retrieved.
+     * @param platform the required platform name; if null or empty, no filtering on platform is applied.
+     * @param platformVersion the required platform version; if null or empty, no filtering on version is applied.
+     * @param browser the required browser type; if null or empty, no filtering on browser is applied.
+     */
     public Set<DeviceOffer> queryDeployablesByRequirements(ProjectId projectId, String platform, String platformVersion, String browser) {
         boolean applyFilter =
                 (platform != null && !platform.trim().isEmpty()) || (platformVersion != null && !platformVersion.trim().isEmpty()) || (browser != null && !browser.trim().isEmpty());
@@ -386,6 +413,14 @@ public class DeviceClient {
             return this.apiClient.queryDeployablesByRequirements(projectId,null);
     }
 
+    /**
+     * Queries deployable devices for the project associated with the current session and filters them by the provided platform,
+     * platform version, and browser criteria if any of these parameters are present.
+     *
+     * @param platform the required platform name; if null or empty, no filtering on platform is applied.
+     * @param platformVersion the required platform version; if null or empty, no filtering on version is applied.
+     * @param browser the required browser type; if null or empty, no filtering on browser is applied.
+     */
     public Set<DeviceOffer> queryDeployablesByRequirements(String platform, String platformVersion, String browser) {
         Optional<ProjectId> projectId = this.session.getProjectId();
         if (!projectId.isPresent()) {
