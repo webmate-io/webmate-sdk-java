@@ -1,13 +1,20 @@
 # Changelog
-## [0.59] - 2025-95-06
+## [0.61] - 2025-06-10
+### Fixes
+- Update dependencies with known vulnerabilities
+
+## [0.60] - 2025-05-06
 ### Fixes
 - Fix filter issues in  `queryDevicesByRequirements`
 
-## [0.58] - 2025-04-15
+## [0.59] - 2025-04-25
 ### New Features
 - A method that allows to query deployable devices for a given Project and requirements
 ### Fixes
 - Fix deprecated route used to query artifacts
+
+## [0.58] 2025-04-15
+This release was rolled back
 
 ## [0.57] - 2024-12-11
 ### Fixes
