@@ -1,4 +1,8 @@
 # Changelog
+## [0.62] - 2025-07-10
+### Fixes
+- Make email address optional in WebmateAuthInfo
+
 ## [0.61] - 2025-06-10
 ### Fixes
 - Update dependencies with known vulnerabilities
