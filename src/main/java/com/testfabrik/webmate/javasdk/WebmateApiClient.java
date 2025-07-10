@@ -114,7 +114,9 @@ public class WebmateApiClient {
     private static HttpClient makeHttpClient(WebmateAuthInfo authInfo, WebmateEnvironment environment,
                                              HttpClientBuilder httpClientBuilder, Header contentType) {
         List<Header> headers = new ArrayList<>();
-        headers.add(new BasicHeader(WEBMATE_USER_HEADERKEY, authInfo.emailAddress));
+        if (authInfo.emailAddress.isPresent()) {
+            headers.add(new BasicHeader(WEBMATE_USER_HEADERKEY, authInfo.emailAddress.get()));
+        }
         headers.add(new BasicHeader(WEBMATE_APITOKEN_HEADERKEY, authInfo.apiKey));
         headers.add(contentType);
 
