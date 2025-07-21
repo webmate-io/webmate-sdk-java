@@ -86,6 +86,7 @@ public class ArtifactClient {
             try {
                 String testInfosJson = EntityUtils.toString(optHttpResponse.get().getEntity());
                 ObjectMapper mapper = JacksonMapper.getInstance();
+                mapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE);
                 mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
                 artifactInfos = mapper.readValue(testInfosJson, new TypeReference<ApiDataResult<ArtifactInfo[]>>() {});
             } catch (IOException e) {
@@ -111,7 +112,6 @@ public class ArtifactClient {
             try {
                 String testInfosJson = EntityUtils.toString(optHttpResponse.get().getEntity());
                 ObjectMapper mapper = JacksonMapper.getInstance();
-                mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
                 artifactInfos = mapper.readValue(testInfosJson, ArtifactInfo[].class);
             } catch (IOException e) {
                 throw new WebmateApiClientException("Error reading data: " + e.getMessage(), e);

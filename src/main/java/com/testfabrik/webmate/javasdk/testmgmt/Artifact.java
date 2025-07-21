@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.testfabrik.webmate.javasdk.JacksonMapper;
 import com.testfabrik.webmate.javasdk.ProjectId;
-import com.testfabrik.webmate.javasdk.browsersession.BrowserSessionId;
 import org.joda.time.DateTime;
 
 import java.io.IOException;

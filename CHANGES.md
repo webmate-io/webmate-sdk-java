@@ -1,4 +1,9 @@
 # Changelog
+## [0.63] - 2025-07-29
+### Fixes
+- Add ArtifactAssociationType for TestMailAccount
+- Don't fail on unknown ArtifactAssociationType
+
 ## [0.62] - 2025-07-10
 ### Fixes
 - Make email address optional in WebmateAuthInfo

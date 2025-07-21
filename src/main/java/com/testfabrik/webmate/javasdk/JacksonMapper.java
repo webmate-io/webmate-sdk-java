@@ -1,5 +1,6 @@
 package com.testfabrik.webmate.javasdk;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
@@ -22,6 +23,8 @@ public class JacksonMapper {
             JacksonMapper.theInstance.registerModule(new Jdk8Module().configureAbsentsAsNulls(true));
             JacksonMapper.theInstance.registerModule(new GuavaModule());
             JacksonMapper.theInstance.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+            JacksonMapper.theInstance.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE);
+            JacksonMapper.theInstance.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         }
         return JacksonMapper.theInstance;
     }
