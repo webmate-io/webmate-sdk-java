@@ -1,6 +1,9 @@
 package com.testfabrik.webmate.javasdk.browsersession;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.testfabrik.webmate.javasdk.commonutils.Dimension;
+
+import java.util.List;
 
 /**
  * A Wrapper class for proper state extraction Configuration. The different parameters determine the behaviour during
@@ -8,11 +11,13 @@ import com.testfabrik.webmate.javasdk.commonutils.Dimension;
  * that specific operations are not done, e.g if the warmUpConfig parameter is set to null, the state extraction will
  * not perform a warmup before extracting the state. For further information, please refer to the online documentation.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BrowserSessionStateExtractionConfig {
 
     private BrowserSessionStateId stateId;
     private Integer extractionDelay;
     private Integer extractionCooldown;
+    private List<FactRequest> requestedFacts;
     private Dimension optViewportDimension;
     private Integer maxAdditionWaitingTimeForStateExtraction;
     private Boolean extractDomStateData;
@@ -23,7 +28,38 @@ public class BrowserSessionStateExtractionConfig {
      * Creates a BrowserSessionStateExtractionConfig with all parameters set to null, i.e the choice of parameters is the webmate default.
      */
     public BrowserSessionStateExtractionConfig() {
-        this(null, null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null, null);
+    }
+
+    /**
+     * Creates a new StateExtractionConfig.
+     *
+     * @param stateId The Session Id the state should belong to.
+     * @param extractionDelay The delay before state extraction is triggered.
+     * @param extractionCooldown The delay after state extraction is finished.
+     * @param optViewportDimension The dimensions the viewport should be resized to.
+     * @param maxAdditionWaitingTimeForStateExtraction How much additional time the state extraction should get, after the projected end time is reached.
+     * @param extractDomStateData wether DOM data should be extracted or not.
+     * @param screenShotConfig The configuration for the screenshot extraction. If set to null, the default behaviour is chosen (Take no screenshot)
+     * @param requestedFacts The facts that should be extracted. If set to null, the default behaviour is chosen.
+     * @param warmUpConfig The configuration for the warmup. If set to null, the default behaviour is chosen (Do not warm up)
+     */
+    public BrowserSessionStateExtractionConfig(BrowserSessionStateId stateId, Integer extractionDelay,
+                                               Integer extractionCooldown, Dimension optViewportDimension,
+                                               Integer maxAdditionWaitingTimeForStateExtraction,
+                                               Boolean extractDomStateData,
+                                               List<FactRequest> requestedFacts,
+                                               BrowserSessionScreenshotExtractionConfig screenShotConfig,
+                                               BrowserSessionWarmUpConfig warmUpConfig) {
+        this.stateId = stateId;
+        this.extractionDelay = extractionDelay;
+        this.extractionCooldown = extractionCooldown;
+        this.optViewportDimension = optViewportDimension;
+        this.requestedFacts = requestedFacts;
+        this.maxAdditionWaitingTimeForStateExtraction = maxAdditionWaitingTimeForStateExtraction;
+        this.extractDomStateData = extractDomStateData;
+        this.screenShotConfig = screenShotConfig;
+        this.warmUpConfig = warmUpConfig;
     }
 
     /**
@@ -39,19 +75,13 @@ public class BrowserSessionStateExtractionConfig {
      * @param warmUpConfig The configuration for the warmup. If set to null, the default behaviour is chosen (Do not warm up)
      */
     public BrowserSessionStateExtractionConfig(BrowserSessionStateId stateId, Integer extractionDelay,
-                                               Integer extractionCooldown, Dimension optViewportDimension,
-                                               Integer maxAdditionWaitingTimeForStateExtraction,
-                                               Boolean extractDomStateData,
-                                               BrowserSessionScreenshotExtractionConfig screenShotConfig,
-                                               BrowserSessionWarmUpConfig warmUpConfig) {
-        this.stateId = stateId;
-        this.extractionDelay = extractionDelay;
-        this.extractionCooldown = extractionCooldown;
-        this.optViewportDimension = optViewportDimension;
-        this.maxAdditionWaitingTimeForStateExtraction = maxAdditionWaitingTimeForStateExtraction;
-        this.extractDomStateData = extractDomStateData;
-        this.screenShotConfig = screenShotConfig;
-        this.warmUpConfig = warmUpConfig;
+                                                   Integer extractionCooldown, Dimension optViewportDimension,
+                                                   Integer maxAdditionWaitingTimeForStateExtraction,
+                                                   Boolean extractDomStateData,
+                                                   BrowserSessionScreenshotExtractionConfig screenShotConfig,
+                                                   BrowserSessionWarmUpConfig warmUpConfig) {
+        this(stateId, extractionDelay, extractionCooldown, optViewportDimension, maxAdditionWaitingTimeForStateExtraction,
+                extractDomStateData, null, screenShotConfig, warmUpConfig);
     }
 
     public BrowserSessionStateId getStateId() {
@@ -92,6 +122,14 @@ public class BrowserSessionStateExtractionConfig {
 
     public void setMaxAdditionWaitingTimeForStateExtraction(Integer maxAdditionWaitingTimeForStateExtraction) {
         this.maxAdditionWaitingTimeForStateExtraction = maxAdditionWaitingTimeForStateExtraction;
+    }
+
+    public List<FactRequest> getRequestedFacts() {
+        return requestedFacts;
+    }
+
+    public void setRequestedFacts(List<FactRequest> requestedFacts) {
+        this.requestedFacts = requestedFacts;
     }
 
     public Boolean isExtractDomStateData() {

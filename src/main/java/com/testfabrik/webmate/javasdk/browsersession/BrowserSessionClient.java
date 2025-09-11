@@ -30,7 +30,7 @@ public class BrowserSessionClient {
 
     // Sane default Config, extracting DOM and taking non fullpage Screenshots. Otherwise take Webmate Defaults.
     private static final BrowserSessionStateExtractionConfig DefaultStateExtractionConfig = new BrowserSessionStateExtractionConfig(null, null, null, null, null, true,
-                                                                                                                                       new BrowserSessionScreenshotExtractionConfig(true, false), null);
+            new BrowserSessionScreenshotExtractionConfig(true, false), null);
     public interface ActionFunc<T> {
         T op(ActionDelegate action);
     }
@@ -80,7 +80,7 @@ public class BrowserSessionClient {
         /**
          * Creates an webmate api client.
          *
-         * @param authInfo The authentication information needed for the API interaction
+         * @param authInfo    The authentication information needed for the API interaction
          * @param environment The environment the client should be used in, i.e which urls to use for communication
          */
         public BrowserSessionApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
@@ -91,8 +91,8 @@ public class BrowserSessionClient {
         /**
          * Creates an webmate api client using a custom HttpClientBuilder, which allows the use of proxies.
          *
-         * @param authInfo The authentication information needed for the API interaction
-         * @param environment The environment the client should be used in, i.e which urls to use for communication
+         * @param authInfo          The authentication information needed for the API interaction
+         * @param environment       The environment the client should be used in, i.e which urls to use for communication
          * @param httpClientBuilder The HttpClientBuilder that is used for the underlying connection.
          */
         public BrowserSessionApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment, HttpClientBuilder httpClientBuilder) {
@@ -103,22 +103,22 @@ public class BrowserSessionClient {
          * Creates a State for a Browsersession with a matching id. The extraction parameters are set to default.
          *
          * @param browserSessionId The Browsersession Id for which the state should be associated with.
-         * @param matchingId The Id for the state. Used for matching.
+         * @param matchingId       The Id for the state. Used for matching.
          */
         public BrowserSessionStateId createState(BrowserSessionId browserSessionId, String matchingId, BrowserSessionStateExtractionConfig browserSessionStateExtractionConfig) {
-            Map<String, Object>  params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", browserSessionStateExtractionConfig);
+            Map<String, Object> params = ImmutableMap.of("optMatchingId", matchingId, "extractionConfig", browserSessionStateExtractionConfig);
             JsonNode body = JsonUtils.getJsonFromData(params, JsonInclude.Include.NON_NULL);
             Optional<HttpResponse> optHttpResponse = sendPOST(createStateTemplate, ImmutableMap.of("browserSessionId", browserSessionId.toString()), body).getOptHttpResponse();
             return HttpHelpers.getObjectFromJsonEntity(optHttpResponse.get(), BrowserSessionStateId.class);
         }
 
         public void startAction(BrowserSessionId expeditionId, StartStoryActionAddArtifactData art) {
-            Map<String, String>  params = ImmutableMap.of("expeditionId", expeditionId.getValueAsString());
+            Map<String, String> params = ImmutableMap.of("expeditionId", expeditionId.getValueAsString());
             sendPOST(addArtifactTemplate, params, JsonUtils.getJsonFromData(art)).getOptHttpResponse();
         }
 
         public void finishAction(BrowserSessionId expeditionId, FinishStoryActionAddArtifactData art) {
-            Map<String, String>  params = ImmutableMap.of("expeditionId", expeditionId.getValueAsString());
+            Map<String, String> params = ImmutableMap.of("expeditionId", expeditionId.getValueAsString());
             sendPOST(addArtifactTemplate, params, JsonUtils.getJsonFromData(art)).getOptHttpResponse();
         }
 
@@ -141,7 +141,7 @@ public class BrowserSessionClient {
     /**
      * Creates a BrowserSessionClient based on a WebmateApiSession and a custom HttpClientBuilder.
      *
-     * @param session The WebmateApiSession the BrowserSessionClient is supposed to be based on
+     * @param session           The WebmateApiSession the BrowserSessionClient is supposed to be based on
      * @param httpClientBuilder The HttpClientBuilder that is used for building the underlying connection
      */
     public BrowserSessionClient(WebmateAPISession session, HttpClientBuilder httpClientBuilder) {
@@ -165,7 +165,7 @@ public class BrowserSessionClient {
     /**
      * Create a new State for the BrowserSession registered in webmate session (there must be only one).
      *
-     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
+     * @param matchingId                          Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
@@ -200,7 +200,7 @@ public class BrowserSessionClient {
      * Create a new State for the given BrowserSession.
      *
      * @param browserSessionId BrowserSession, in which the state should be extracted.
-     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
+     * @param matchingId       Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
     public BrowserSessionStateId createState(BrowserSessionId browserSessionId, String matchingId) {
@@ -210,8 +210,8 @@ public class BrowserSessionClient {
     /**
      * Create a new State for the given BrowserSession.
      *
-     * @param browserSessionId BrowserSession, in which the state should be extracted.
-     * @param matchingId Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
+     * @param browserSessionId                    BrowserSession, in which the state should be extracted.
+     * @param matchingId                          Label for state (should be unique for BrowserSession, otherwise some tests could get confused).
      * @param browserSessionStateExtractionConfig configuration controlling the state extraction process. See {@link BrowserSessionStateExtractionConfig}.
      * @throws WebmateApiClientException if an error occurs while requesting state extraction or if the timeout is exceeded.
      */
@@ -394,8 +394,7 @@ public class BrowserSessionClient {
     }
 
     /**
-     * @deprecated
-     * This method is deprecated.
+     * @deprecated This method is deprecated.
      * Use {@link BrowserSessionClient#finishAction() finishAction} instead.
      */
     public void finishActionAsSuccessIgnoreNoneActive() {
@@ -403,8 +402,7 @@ public class BrowserSessionClient {
     }
 
     /**
-     * @deprecated
-     * This method is deprecated.
+     * @deprecated This method is deprecated.
      * Use {@link BrowserSessionClient#finishActionAsFailure(String) finishActionAsFailure} instead.
      */
     public void finishActionAsFailureIgnoreNoneActive(String errorMessage) {
@@ -426,10 +424,9 @@ public class BrowserSessionClient {
     }
 
     /**
-     * @deprecated
-     * This method is deprecated.
-     * It is no longer possible to manually terminate browser sessions.
      * @return False (because no browser session is being terminated successfully).
+     * @deprecated This method is deprecated.
+     * It is no longer possible to manually terminate browser sessions.
      */
     public boolean terminateBrowsersession(BrowserSessionId browserSessionId) {
         LOG.warn("Deprecated method terminateBrowsersession used: it is no longer possible to manually terminate browser sessions");
@@ -438,6 +435,7 @@ public class BrowserSessionClient {
 
     /**
      * Retrieves info for this BrowserSession
+     *
      * @param id The id of the BrowserSession that info should be retrieved for
      * @return BrowserSessionInfo for this BrowserSession
      */

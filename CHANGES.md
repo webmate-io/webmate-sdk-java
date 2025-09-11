@@ -1,4 +1,8 @@
 # Changelog
+## [0.64] - 2025-09-11
+### New Features
+- `BrowserSessionStateExtractionConfig` does now accept an optional list of `requestedFacts` that can be used to trigger analysis plugins ("fact agents)".
+
 ## [0.63] - 2025-07-29
 ### Fixes
 - Add ArtifactAssociationType for TestMailAccount
