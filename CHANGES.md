@@ -1,4 +1,8 @@
 # Changelog
+## [0.64] - 2026-02-11
+### Fixes
+- Fix UserID serialization issue
+
 ## [0.63] - 2025-07-29
 ### Fixes
 - Add ArtifactAssociationType for TestMailAccount
