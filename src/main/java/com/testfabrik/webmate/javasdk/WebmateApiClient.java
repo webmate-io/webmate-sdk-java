@@ -136,10 +136,10 @@ public class WebmateApiClient {
             }
             if (endpointName.isPresent()) {
                 throw new WebmateApiClientException("An error occurred during '" + endpointName.get() + "' request: " +
-                        httpResponse.getStatusLine().getReasonPhrase() + ": " + entityContent);
+                        httpResponse.getStatusLine().getReasonPhrase() + ": " + entityContent, statusCode);
             } else {
                 throw new WebmateApiClientException("An error occurred during request: " +
-                        httpResponse.getStatusLine().getReasonPhrase() + ": " + entityContent);
+                        httpResponse.getStatusLine().getReasonPhrase() + ": " + entityContent, statusCode);
             }
         }
     }

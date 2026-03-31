@@ -148,7 +148,19 @@ public class DeviceClient {
         }
 
         public DeviceDTO getDevice(DeviceId deviceId) {
-            Optional<HttpResponse> optHttpResponse = sendGET(getDevice, ImmutableMap.of("deviceId", deviceId.toString())).getOptHttpResponse();
+            Optional<HttpResponse> optHttpResponse;
+            try {
+                optHttpResponse = sendGET(getDevice, ImmutableMap.of("deviceId", deviceId.toString())).getOptHttpResponse();
+            } catch (WebmateApiClientException e) {
+                if (e.getStatusCode() == 404) {
+                    throw new WebmateApiClientException(
+                            "Could not get device " + deviceId + ". Device could not be deployed, is not available in the project you specified or you lack permissions to access it. ",
+                            e.getStatusCode() != null ? e.getStatusCode() : 404,
+                            e
+                    );
+                }
+                throw e;
+            }
 
             if (!optHttpResponse.isPresent()) {
                 throw new WebmateApiClientException("Could not request device. Got no response");
