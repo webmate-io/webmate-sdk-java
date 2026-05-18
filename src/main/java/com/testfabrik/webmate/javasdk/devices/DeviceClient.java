@@ -16,7 +16,6 @@ import com.testfabrik.webmate.javasdk.packagemgmt.ImageType;
 import com.testfabrik.webmate.javasdk.packagemgmt.PackageId;
 import com.testfabrik.webmate.javasdk.packagemgmt.*;
 import com.testfabrik.webmate.javasdk.packagemgmt.Package;
-import com.testfabrik.webmate.javasdk.utils.JsonUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -57,17 +56,11 @@ public class DeviceClient {
 
         private final static UriTemplate resetDevice = new UriTemplate("/device/devices/${deviceId}/reset");
 
-        private final static UriTemplate installAppOnDevice = new UriTemplate("/device/${deviceId}/appinstall/${packageId}");
-
         private final static UriTemplate imposePropertyRequirement = new UriTemplate("/device/devices/${deviceId}/requirements/propertyRequirement");
 
         private final static UriTemplate uploadImage = new UriTemplate("/projects/${projectId}/images");
 
         private final static UriTemplate uploadImageToDevice = new UriTemplate("/device/${deviceId}/image/${imageId}");
-
-        private final static UriTemplate setCameraSimulation = new UriTemplate("/device/devices/${deviceId}/capabilities");
-
-        private final static UriTemplate setBiometricsSimulation = new UriTemplate("/device/devices/${deviceId}/capabilities");
 
         public DeviceApiClient(WebmateAuthInfo authInfo, WebmateEnvironment environment) {
             super(authInfo, environment);
@@ -185,16 +178,16 @@ public class DeviceClient {
             sendPOST(resetDevice, ImmutableMap.of("deviceId", deviceId.toString()));
         }
 
-        public void installAppOnDevice(DeviceId deviceId, PackageId appId, Boolean instrumented) {
-            sendPOST(installAppOnDevice, ImmutableMap.of("deviceId", deviceId.toString(), "packageId", appId.toString()), "wait=true&instrumented=" + instrumented.toString());
-        }
-
-        public void installAppOnDeviceNew(DeviceId deviceId, PackageId appId, String packageType) {
-            PackageInstallation packageInstallation = new PackageInstallation(UUID.randomUUID(), appId, packageType, PackageInstallationState.FINISHED);
+        private void sendPropertyRequirement(DeviceId deviceId, DevicePropertyName propertyName, Object value) {
             DeviceRequirements requirement = new DeviceRequirements(
-                    ImmutableMap.of(DevicePropertyName.InstalledPackages, packageInstallation.toJson())
+                    ImmutableMap.of(propertyName, value)
             );
             sendPOST(imposePropertyRequirement, ImmutableMap.of("deviceId", deviceId.toString()), requirement.toJson());
+        }
+
+        private void writeAppInstallRequirement(DeviceId deviceId, PackageId appId, String packageType) {
+            PackageInstallation packageInstallation = new PackageInstallation(UUID.randomUUID(), appId, packageType, PackageInstallationState.FINISHED);
+            sendPropertyRequirement(deviceId, DevicePropertyName.InstalledPackages, packageInstallation.toJson());
         }
 
         public ImageId uploadImage(ProjectId projectId, byte[] image, String imageName, ImageType imageType) {
@@ -232,13 +225,13 @@ public class DeviceClient {
             simulateCameraNode.put("enabled", simulate);
             String selectedImageId = imageId == null ? null : imageId.toString();
             simulateCameraNode.put("selectedImage", selectedImageId);
-            Map<String, Object> params = ImmutableMap.of(CapabilityConstants.SIMULATE_CAMERA, simulateCameraNode, CapabilityConstants.MEDIA_SETTINGS, imagePool.toJson());
-            sendPOST(setCameraSimulation, ImmutableMap.of("deviceId", deviceId.toString()), JsonUtils.getJsonFromData(params));
+            sendPropertyRequirement(deviceId, DevicePropertyName.SimulateCamera, simulateCameraNode);
+            sendPropertyRequirement(deviceId, DevicePropertyName.MediaSettings, imagePool.toJson());
         }
 
         public void setBiometricsSimulation(DeviceId deviceId, boolean simulate, boolean accept) {
-            Map<String, Boolean> params = ImmutableMap.of(CapabilityConstants.SIMULATE_BIOMETRICS, simulate, CapabilityConstants.ACCEPT_BIOMETRICS, accept);
-            sendPOST(setBiometricsSimulation, ImmutableMap.of("deviceId", deviceId.toString()), JsonUtils.getJsonFromData(params));
+            sendPropertyRequirement(deviceId, DevicePropertyName.SimulateBiometrics, simulate);
+            sendPropertyRequirement(deviceId, DevicePropertyName.BiometricAuthentication, accept);
         }
 
         private DeviceDTO waitForProperties(DeviceId deviceId, Map<String, JsonNode> expectedProperties) {
@@ -479,8 +472,11 @@ public class DeviceClient {
     }
 
     /**
-     * Install the app wit the given Id on a device. If instrumented is set to true, the instrumented version will be
-     * used if available.
+     * Request the installation of the app with the given Id on a device. If instrumented is set to true, the
+     * instrumented version will be used if available.
+     *
+     * This call writes the corresponding device property requirement. It does not wait for the installation process to
+     * complete.
      *
      * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
      * @param appId Id of app to be installed. Can be found in App management of the webmate device overview.
@@ -488,53 +484,20 @@ public class DeviceClient {
      */
     public void installAppOnDevice(DeviceId deviceId, PackageId appId, Boolean instrumented) throws InterruptedException {
         Package p = session.packages.getPackage(appId);
-        PackageId id;
         if (instrumented) {
-            id = p.getInstrumentedPackageId().get();
-            this.apiClient.installAppOnDeviceNew(deviceId, p.getInstrumentedPackageId().get(), p.getOrigPackageType());
+            this.apiClient.writeAppInstallRequirement(
+                    deviceId,
+                    p.getInstrumentedPackageId().get(),
+                    p.getInstrumentedPackageType().or(p.getOrigPackageType())
+            );
         } else {
-            id = p.getOrigPackageId();
-            this.apiClient.installAppOnDeviceNew(deviceId, p.getOrigPackageId(), p.getOrigPackageType());
+            this.apiClient.writeAppInstallRequirement(deviceId, p.getOrigPackageId(), p.getOrigPackageType());
         }
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        int retries = 0;
-        while (retries < 30 ) {
-            retries++;
-            DeviceDTO deviceDTO = this.apiClient.getDevice(deviceId);
-
-            JsonNode installedApps = deviceDTO.getProperties().get("package.installedPackages");
-            if (installedApps != null) {
-                List<PackageInstallation> installations = objectMapper.convertValue(
-                        installedApps,
-                        new TypeReference<List<PackageInstallation>>() {}
-                );
-                for (PackageInstallation installation : installations) {
-                    if (installation.getPackageId().toString().equals(id.toString())) {
-                        switch (installation.getState()) {
-                            case FAILED:
-                                System.err.println("Installation failed for package: " + appId);
-                            case REQUESTED:
-                                System.out.println("Installation still in progress for package: " + appId);
-                            case FINISHED:
-                                System.out.println("Installation finished for package: " + appId);
-                                return;
-                            default:
-                                System.out.println("Unknown state: " + installation.getState());
-                                break;
-                        }
-                    }
-                }
-            }
-
-            Thread.sleep(10000);
-        }
-
-        System.err.println("Timeout reached: Installation process could not complete for package: " + appId);
     }
 
     /**
-     * Install the app wit the given Id on a device. The non-instrumented version of the App will be installed.
+     * Request the installation of the app with the given Id on a device. The non-instrumented version of the App will
+     * be used.
      *
      * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
      * @param appId Id of app to be installed. Can be found in App management of the webmate device overview.
