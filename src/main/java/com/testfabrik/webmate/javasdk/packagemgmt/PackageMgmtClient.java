@@ -1,6 +1,7 @@
 package com.testfabrik.webmate.javasdk.packagemgmt;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
@@ -15,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,6 +39,8 @@ public class PackageMgmtClient {
         private final static UriTemplate updatePackageTemplate = new UriTemplate("/package/packages/${packageId}");
 
         private final static UriTemplate getPackageTemplate = new UriTemplate("/package/packages/${packageId}");
+
+        private final static UriTemplate getPackagesForProjectTemplate = new UriTemplate("/projects/${projectId}/packages/full");
 
         private final static UriTemplate deletePackageTemplate = new UriTemplate("/package/packages/${packageId}");
 
@@ -98,16 +103,26 @@ public class PackageMgmtClient {
                 throw new WebmateApiClientException("Could not get package. Got no response");
             }
 
-            Package aPackage;
+            return buildPackageFromResponse(r);
+        }
+
+        public Collection<Package> getPackagesForProject(ProjectId projectId) {
+            Optional<HttpResponse> r = sendGET(getPackagesForProjectTemplate, ImmutableMap.of("projectId", projectId.toString())).getOptHttpResponse();
+
+            if (!r.isPresent()) {
+                throw new WebmateApiClientException("Could not get packages for project. Got no response");
+            }
+
+            List<Package> packages;
             try {
-                String packageJson = EntityUtils.toString(r.get().getEntity());
+                String packagesJson = EntityUtils.toString(r.get().getEntity());
                 ObjectMapper pMapper = JacksonMapper.getInstance();
                 pMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-                aPackage = pMapper.readValue(packageJson, Package.class);
+                packages = pMapper.readValue(packagesJson, new TypeReference<List<Package>>() {});
             } catch (IOException e) {
                 throw new WebmateApiClientException("Error reading Package data: " + e.getMessage(), e);
             }
-            return aPackage;
+            return packages;
         }
 
         public Package waitForPackage(PackageId packageId) {
@@ -203,8 +218,18 @@ public class PackageMgmtClient {
      * @param packageId  Id of the package
      * @return Package information
      */
-    public Package getPackage(PackageId packageId){
+    public Package getPackage(PackageId packageId) {
         return this.apiClient.getPackage(packageId);
+    }
+
+    /**
+     * Get all packages information for a given ProjectId.
+     *
+     * @param projectId  Id of the project to get packages for
+     * @return List of Package information
+     */
+    public Collection<Package> getPackagesForProject(ProjectId projectId) {
+        return this.apiClient.getPackagesForProject(projectId);
     }
 
     /**
