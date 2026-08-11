@@ -1,4 +1,8 @@
 # Changelog
+## [0.65] - 2026-08-10
+### New Features
+- New method `packages.getPackagesForProject` that allows to query complete info for all packages of a given Project
+
 ## [0.64] - 2026-02-11
 ### Fixes
 - Fix UserID serialization issue
