@@ -131,8 +131,9 @@ public class DeviceClient {
 
         public DeviceDTO requestDeviceByRequirements(ProjectId projectId, DeviceRequest deviceRequest, Boolean useDeployed) {
             ObjectMapper mapper = JacksonMapper.getInstance();
-            List<NameValuePair> queryParams = new ArrayList<>();
+            List<NameValuePair> queryParams = null;
             if (useDeployed != null) {
+                queryParams = new ArrayList<>();
                 queryParams.add(new BasicNameValuePair("useDeployed", useDeployed.toString()));
             }
             Optional<HttpResponse> optHttpResponse = sendPOST(requestDeviceByRequirementsForProject, ImmutableMap.of("projectId", projectId.toString()), queryParams, mapper.valueToTree(deviceRequest)).getOptHttpResponse();

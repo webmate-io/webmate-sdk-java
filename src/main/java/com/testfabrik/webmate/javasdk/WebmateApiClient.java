@@ -258,7 +258,8 @@ public class WebmateApiClient {
 
     protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, List<NameValuePair> urlParams, JsonNode body) {
         try {
-            HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params, urlParams));
+            URI uri = urlParams != null ? schema.buildUri(environment.baseURI, params, urlParams) : schema.buildUri(environment.baseURI, params);
+            HttpPost req = new HttpPost(uri);
             req.setEntity(new StringEntity(body.toString(), "UTF-8"));
             return sendPOSTUnchecked(this.getHttpClient(), req);
         } catch (Exception e) {
