@@ -164,6 +164,22 @@ public class WebmateApiClient {
         checkErrors(httpResponse, schema.name);
         return new ApiResponse(httpResponse);
     }
+
+    /**
+     * Sends a Post to the Uri in schema using params to populate the schema. urlParams will be appended to the Uri
+     * as query parameters. The body of the request is a Json Node.
+     *
+     * @param schema The Uri schema that will become the target of the Post
+     * @param params The params that should be used in the schema
+     * @param urlParams The query parameters that should be appended to the Uri
+     * @param body The json node that is supposed to be sent in the body
+     * @return The response of the API
+     */
+    public ApiResponse sendPOST(UriTemplate schema, Map<String, String> params, List<NameValuePair> urlParams, JsonNode body) {
+        HttpResponse httpResponse = sendPOSTUnchecked(schema, params, urlParams, body);
+        checkErrors(httpResponse, schema.name);
+        return new ApiResponse(httpResponse);
+    }
     /**
      * Sends a Post to the Uri in schema using params to populate the schema. The body of the request is empty.
      *
@@ -233,6 +249,17 @@ public class WebmateApiClient {
     protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, JsonNode body) {
         try {
             HttpPost req = new HttpPost(schema.buildUri(environment.baseURI, params));
+            req.setEntity(new StringEntity(body.toString(), "UTF-8"));
+            return sendPOSTUnchecked(this.getHttpClient(), req);
+        } catch (Exception e) {
+            throw new WebmateApiClientException("Error sending POST to webmate API", e);
+        }
+    }
+
+    protected HttpResponse sendPOSTUnchecked(UriTemplate schema, Map<String, String> params, List<NameValuePair> urlParams, JsonNode body) {
+        try {
+            URI uri = urlParams != null ? schema.buildUri(environment.baseURI, params, urlParams) : schema.buildUri(environment.baseURI, params);
+            HttpPost req = new HttpPost(uri);
             req.setEntity(new StringEntity(body.toString(), "UTF-8"));
             return sendPOSTUnchecked(this.getHttpClient(), req);
         } catch (Exception e) {

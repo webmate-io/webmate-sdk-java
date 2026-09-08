@@ -129,9 +129,14 @@ public class DeviceClient {
 
 
 
-        public DeviceDTO requestDeviceByRequirements(ProjectId projectId, DeviceRequest deviceRequest) {
+        public DeviceDTO requestDeviceByRequirements(ProjectId projectId, DeviceRequest deviceRequest, Boolean useDeployed) {
             ObjectMapper mapper = JacksonMapper.getInstance();
-            Optional<HttpResponse> optHttpResponse = sendPOST(requestDeviceByRequirementsForProject, ImmutableMap.of("projectId", projectId.toString()), mapper.valueToTree(deviceRequest)).getOptHttpResponse();
+            List<NameValuePair> queryParams = null;
+            if (useDeployed != null) {
+                queryParams = new ArrayList<>();
+                queryParams.add(new BasicNameValuePair("useDeployed", useDeployed.toString()));
+            }
+            Optional<HttpResponse> optHttpResponse = sendPOST(requestDeviceByRequirementsForProject, ImmutableMap.of("projectId", projectId.toString()), queryParams, mapper.valueToTree(deviceRequest)).getOptHttpResponse();
 
             if (!optHttpResponse.isPresent()) {
                 throw new WebmateApiClientException("Could not request device. Got no response");
@@ -330,7 +335,19 @@ public class DeviceClient {
      * @param deviceRequest Contains the defined device properties.
      */
     public DeviceDTO requestDeviceByRequirements(ProjectId projectId, DeviceRequest deviceRequest) {
-        return this.apiClient.requestDeviceByRequirements(projectId, deviceRequest);
+        return this.apiClient.requestDeviceByRequirements(projectId, deviceRequest, null);
+    }
+
+    /**
+     * Request a device deployment by the specified device request.
+     *
+     * @param projectId Id of Project (as found in dashboard), for which devices should be retrieved.
+     * @param deviceRequest Contains the defined device properties.
+     * @param useDeployed If true, an already deployed device matching the requirements may be reused instead of
+     *                     deploying a new one. If null, the API default is used.
+     */
+    public DeviceDTO requestDeviceByRequirements(ProjectId projectId, DeviceRequest deviceRequest, Boolean useDeployed) {
+        return this.apiClient.requestDeviceByRequirements(projectId, deviceRequest, useDeployed);
     }
 
     /**
@@ -339,11 +356,22 @@ public class DeviceClient {
      * @param deviceRequest Contains the defined device properties.
      */
     public DeviceDTO requestDeviceByRequirements(DeviceRequest deviceRequest) {
+        return this.requestDeviceByRequirements(deviceRequest, null);
+    }
+
+    /**
+     * Request a device deployment by the specified device request in the currently active project.
+     *
+     * @param deviceRequest Contains the defined device properties.
+     * @param useDeployed If true, an already deployed device matching the requirements may be reused instead of
+     *                     deploying a new one. If null, the API default is used.
+     */
+    public DeviceDTO requestDeviceByRequirements(DeviceRequest deviceRequest, Boolean useDeployed) {
         Optional<ProjectId> projectId = this.session.getProjectId();
         if (!projectId.isPresent()) {
             throw new WebmateApiClientException("No project id associated with webmate session.");
         }
-        return this.requestDeviceByRequirements(projectId.get(), deviceRequest);
+        return this.requestDeviceByRequirements(projectId.get(), deviceRequest, useDeployed);
     }
 
     /**

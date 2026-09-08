@@ -1,4 +1,8 @@
 # Changelog
+## [0.66] - unreleased
+### New Features
+- `DeviceClient.requestDeviceByRequirements` accepts an optional `useDeployed` flag, passed through to the API as a query parameter
+
 ## [0.65] - 2026-08-10
 ### New Features
 - New method `packages.getPackagesForProject` that allows to query complete info for all packages of a given Project
