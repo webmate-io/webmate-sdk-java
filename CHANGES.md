@@ -1,5 +1,5 @@
 # Changelog
-## [0.66] - unreleased
+## [0.66] - 2026-09-09
 ### New Features
 - `DeviceClient.requestDeviceByRequirements` accepts an optional `useDeployed` flag, passed through to the API as a query parameter
 
