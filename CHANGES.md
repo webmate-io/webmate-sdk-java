@@ -1,4 +1,8 @@
 # Changelog
+## [Unreleased]
+### New Features
+- New overload `DeviceClient.installAppOnDevice(deviceId, appId, instrumented, waitForInstallation)` that can block until the device reports the app as installed (fails if the installation fails or does not finish within 10 minutes)
+
 ## [0.66] - 2026-09-09
 ### New Features
 - `DeviceClient.requestDeviceByRequirements` accepts an optional `useDeployed` flag, passed through to the API as a query parameter

@@ -190,9 +190,11 @@ public class DeviceClient {
             sendPOST(imposePropertyRequirement, ImmutableMap.of("deviceId", deviceId.toString()), requirement.toJson());
         }
 
-        private void writeAppInstallRequirement(DeviceId deviceId, PackageId appId, String packageType) {
-            PackageInstallation packageInstallation = new PackageInstallation(UUID.randomUUID(), appId, packageType, PackageInstallationState.FINISHED);
+        private UUID writeAppInstallRequirement(DeviceId deviceId, PackageId appId, String packageType) {
+            UUID installationId = UUID.randomUUID();
+            PackageInstallation packageInstallation = new PackageInstallation(installationId, appId, packageType, PackageInstallationState.FINISHED);
             sendPropertyRequirement(deviceId, DevicePropertyName.InstalledPackages, packageInstallation.toJson());
+            return installationId;
         }
 
         public ImageId uploadImage(ProjectId projectId, byte[] image, String imageName, ImageType imageType) {
@@ -270,6 +272,53 @@ public class DeviceClient {
             } else {
                 throw new WebmateApiClientException("Device was in unexpected state");
             }
+        }
+
+        public DeviceDTO waitForInstalledPackage(DeviceId deviceId, PackageId packageId, UUID installationId) throws InterruptedException {
+            return waitForInstalledPackage(deviceId, packageId, installationId, MAX_LONG_WAITING_TIME_MILLIS);
+        }
+
+        public DeviceDTO waitForInstalledPackage(DeviceId deviceId, PackageId packageId, UUID installationId, long maxWaitingTimeInMilliSeconds) throws InterruptedException {
+            long startTime = System.currentTimeMillis();
+            do {
+                DeviceDTO device = this.getDevice(deviceId);
+                String state = getInstallationState(device, installationId);
+                if (PackageInstallationState.FINISHED.getValue().equals(state)) {
+                    return device;
+                }
+                if (PackageInstallationState.FAILED.getValue().equals(state)) {
+                    throw new WebmateApiClientException("Installation of package " + packageId + " on device " + deviceId + " failed");
+                }
+                Thread.sleep(WAITING_POLLING_INTERVAL_MILLIS);
+            } while (System.currentTimeMillis() - startTime < maxWaitingTimeInMilliSeconds);
+            throw new WebmateApiClientException("Package " + packageId + " was not installed on device " + deviceId +
+                    " within " + maxWaitingTimeInMilliSeconds + " ms");
+        }
+
+        /**
+         * State of the installation with the given id reported by the device, or null if there is none. Matching on the
+         * installation id (rather than the package id) ensures that a previous installation of the same package is not
+         * mistaken for the one that has just been requested.
+         */
+        private static String getInstallationState(DeviceDTO device, UUID installationId) {
+            JsonNode installedPackages = device.getProperties() == null ? null :
+                    device.getProperties().get(DevicePropertyName.InstalledPackages.property);
+            if (installedPackages == null) {
+                return null;
+            }
+            List<JsonNode> installations = new ArrayList<>();
+            if (installedPackages.isArray()) {
+                installedPackages.forEach(installations::add);
+            } else {
+                installations.add(installedPackages);
+            }
+            String state = null;
+            for (JsonNode installation : installations) {
+                if (installationId.toString().equals(installation.path("installationId").asText())) {
+                    state = installation.path("state").asText();
+                }
+            }
+            return state;
         }
 
         public DeviceDTO waitForDeviceForAppInstallation(DeviceId deviceId) {
@@ -511,15 +560,38 @@ public class DeviceClient {
      * @param instrumented If true, the instrumented version of the app will be installed, if available.
      */
     public void installAppOnDevice(DeviceId deviceId, PackageId appId, Boolean instrumented) throws InterruptedException {
+        installAppOnDevice(deviceId, appId, instrumented, false);
+    }
+
+    /**
+     * Request the installation of the app with the given Id on a device. If instrumented is set to true, the
+     * instrumented version will be used if available.
+     *
+     * If waitForInstallation is set to true, this call blocks until the device reports the package as installed.
+     * It fails if the device reports the installation as failed or if it does not finish within 10 minutes.
+     *
+     * @param deviceId DeviceId of device. Can be found in "Details" dialog of an item in webmate device overview.
+     * @param appId Id of app to be installed. Can be found in App management of the webmate device overview.
+     * @param instrumented If true, the instrumented version of the app will be installed, if available.
+     * @param waitForInstallation If true, wait until the installation has finished.
+     */
+    public void installAppOnDevice(DeviceId deviceId, PackageId appId, Boolean instrumented, boolean waitForInstallation) throws InterruptedException {
         Package p = session.packages.getPackage(appId);
+        PackageId installedPackageId;
+        UUID installationId;
         if (instrumented) {
-            this.apiClient.writeAppInstallRequirement(
+            installedPackageId = p.getInstrumentedPackageId().get();
+            installationId = this.apiClient.writeAppInstallRequirement(
                     deviceId,
-                    p.getInstrumentedPackageId().get(),
+                    installedPackageId,
                     p.getInstrumentedPackageType().or(p.getOrigPackageType())
             );
         } else {
-            this.apiClient.writeAppInstallRequirement(deviceId, p.getOrigPackageId(), p.getOrigPackageType());
+            installedPackageId = p.getOrigPackageId();
+            installationId = this.apiClient.writeAppInstallRequirement(deviceId, installedPackageId, p.getOrigPackageType());
+        }
+        if (waitForInstallation) {
+            this.apiClient.waitForInstalledPackage(deviceId, installedPackageId, installationId);
         }
     }
 
