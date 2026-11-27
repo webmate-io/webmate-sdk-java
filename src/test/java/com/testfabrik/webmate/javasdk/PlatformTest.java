@@ -22,7 +22,7 @@ public class PlatformTest {
 
     @Test(expected = WebmateApiClientException.class)
     public void testIfPlatformIsParsedCorrectlyFromOpaqueString_IncorrectString() {
-        Platform.fromString("WINDOWS10"); // must fail because string has wrong format
+        Platform.fromString("WINDOWS_"); // must fail because string has wrong format
     }
 
     @Test(expected = WebmateApiClientException.class)
