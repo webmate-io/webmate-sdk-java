@@ -2,6 +2,8 @@
 ## [Unreleased]
 ### New Features
 - New overload `DeviceClient.installAppOnDevice(deviceId, appId, instrumented, waitForInstallation)` that can block until the device reports the app as installed (fails if the installation fails or does not finish within 10 minutes)
+### Fixes
+- Support platforms without an OS version, such as `LINUX`, when reading Selenium sessions and parsing platform values.
 
 ## [0.66] - 2026-09-09
 ### New Features
